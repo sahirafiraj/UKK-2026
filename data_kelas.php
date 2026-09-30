@@ -42,6 +42,9 @@ $data = mysqli_query($koneksi, "SELECT * FROM t_kelas ORDER BY id desc ");
     <input type="text" name="jurusan" required>
     <br><br>
 
+    <button type="submit" value="simpan"> Simpan
+    </button>
+
 </form>
 
 <h3>Data Kelas</h3>
