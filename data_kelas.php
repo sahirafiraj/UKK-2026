@@ -1,65 +1,76 @@
 <?php
-session_start();
-include "config/koneksi.php";
+include 'includes/cek_session.php';
+include 'config/koneksi.php';
 
-if (!isset($_SESSION['login']) || $_SESSION['role'] != 'admin') {
+if ($_SESSION['role'] != 'admin') {
     echo "Anda tidak memiliki akses";
     exit;
 }
 
-if (isset($_POST['simpan'])) {
-
-    $nama = $_POST['nama'];
-    $tingkat = $_POST['tingkat'];
-    $jurusan = $_POST['jurusan'];
-
-    mysqli_query($koneksi, " INSERT INTO t_kelas (nama, tingkat, jurusan, status_aktif)
-    VALUES ('$nama', '$tingkat', '$jurusan', 1)
-    ");
-
-    header("Location: kelas.php");
-    exit;
-}
-
-$data = mysqli_query($koneksi, "SELECT * FROM t_kelas ORDER BY id desc ");
-
+$data = mysqli_query($koneksi, "SELECT * FROM t_kelas ORDER BY id DESC");
 ?>
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Kelas</title>
+</head>
+<body>
 
 <h2>Kelola Kelas</h2>
 
-<a href=dashboard.php>Kembali ke Dashboard</a>
+<a href="dashboard.php">Kembali ke Dashboard</a>
 <br><br>
-<form method="POST">
-    Nama Kelas:
-    <input type="text" name="nama" required>
-    <br><br>
 
-    Tingkat:
-    <input type="text" name="tingkat" required>
-    <br><br>
+<a href="tambah_kelas.php">+ Tambah Kelas</a>
 
-    Jurusan:
-    <input type="text" name="jurusan" required>
-    <br><br>
+<br><br>
 
-    <button type="submit" value="simpan"> Simpan
-    </button>
-
-</form>
-
-<h3>Data Kelas</h3>
-<table border="1" cellpadding="8">
+<table border="1" cellpadding="8" cellspacing="0">
     <tr>
-        <th>Nama</th>
+        <th>No</th>
+        <th>Nama Kelas</th>
         <th>Tingkat</th>
         <th>Jurusan</th>
+        <th>Status</th>
+        <th>Aksi</th>
     </tr>
 
-<?php while ($row = mysqli_fetch_assoc($data)) { ?>
+    <?php
+    $no = 1;
+    while ($row = mysqli_fetch_assoc($data)) {
+    ?>
+
     <tr>
-        <td><?= $row['nama']; ?></td>
-        <td><?= $row['tingkat']; ?></td>
-        <td><?= $row['jurusan']; ?></td>
+        <td><?= $no++; ?></td>
+        <td><?= htmlspecialchars($row['nama']); ?></td>
+        <td><?= htmlspecialchars($row['tingkat']); ?></td>
+        <td><?= htmlspecialchars($row['jurusan']); ?></td>
+
+        <td>
+            <?php
+            if ($row['status_aktif'] == 1) {
+                echo "Aktif";
+            } else {
+                echo "Tidak Aktif";
+            }
+            ?>
+        </td>
+
+        <td>
+            <a href="edit_kelas.php?id=<?= $row['id']; ?>">Edit</a> |
+            <a href="hapus_kelas.php?id=<?= $row['id']; ?>"
+               onclick="return confirm('Yakin ingin menghapus data kelas ini?')">
+                Hapus
+            </a>
+        </td>
     </tr>
-<?php } ?>
+
+    <?php } ?>
+
 </table>
+
+</body>
+</html>
