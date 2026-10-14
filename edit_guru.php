@@ -1,7 +1,5 @@
 <?php
 
-session_start();
-
 include "config/koneksi.php";
 include "includes/cek_session.php";
 

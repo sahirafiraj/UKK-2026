@@ -1,4 +1,5 @@
-<?php 
+
+<?php
 session_start();
 
 if (!isset($_SESSION['login'])) {
@@ -8,538 +9,294 @@ if (!isset($_SESSION['login'])) {
 
 $role = $_SESSION['role'];
 $name = $_SESSION['name'];
-
+$halaman = basename($_SERVER['PHP_SELF']);
 ?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet">
 </head>
-<body>
-    <div class="container-fluid">
+
+<body class="bg-light">
+
+<div class="container-fluid">
     <div class="row">
 
-        <!-- = SIDEBAR ADMIN = -->
+        <!-- SIDEBAR ADMIN TETAP -->
         <?php if ($role == 'admin') { ?>
 
-        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
+        <div class="col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto"
+             style="background-color: #172554;">
 
-            <h4 class="text-white mb-4">
-                Sistem Pelanggaran
-            </h4>
+            <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
 
-            <ul class="nav nav-pills flex-column">
+            <ul class="nav nav-pills flex-column gap-1">
 
-                <li class="nav-item mb-2">
+                <li class="nav-item">
                     <a href="dashboard.php"
-                       class="nav-link active">
+                       class="nav-link <?= $halaman == 'dashboard.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
                         Dashboard
                     </a>
                 </li>
 
-                <li class="nav-item mb-2">
+                <li class="nav-item">
                     <a href="data_siswa.php"
-                       class="nav-link text-white">
+                       class="nav-link <?= $halaman == 'data_siswa.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
                         Kelola Data Siswa
                     </a>
                 </li>
 
-                <li class="nav-item mb-2">
+                <li class="nav-item">
                     <a href="data_guru.php"
-                       class="nav-link text-white">
+                       class="nav-link <?= $halaman == 'data_guru.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
                         Kelola Data Guru
                     </a>
                 </li>
 
-                <li class="nav-item mb-2">
+                <li class="nav-item">
                     <a href="data_kelas.php"
-                       class="nav-link text-white">
+                       class="nav-link <?= $halaman == 'data_kelas.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
                         Kelola Data Kelas
                     </a>
                 </li>
 
-                <li class="nav-item mb-2">
+                <li class="nav-item">
                     <a href="data_tahun_ajaran.php"
-                       class="nav-link text-white">
+                       class="nav-link <?= $halaman == 'data_tahun_ajaran.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
                         Kelola Tahun Ajaran
                     </a>
                 </li>
 
-                <li class="nav-item mb-2">
+                <li class="nav-item">
                     <a href="data_penempatan_siswa.php"
-                       class="nav-link text-white">
+                       class="nav-link <?= $halaman == 'data_penempatan_siswa.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
                         Penempatan Siswa
                     </a>
                 </li>
 
-                <li class="nav-item mb-2">
+                <li class="nav-item">
                     <a href="data_wali_kelas.php"
-                       class="nav-link text-white">
+                       class="nav-link <?= $halaman == 'data_wali_kelas.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
                         Kelola Data Wali Kelas
                     </a>
                 </li>
 
-                <li class="nav-item mb-2">
+                <li class="nav-item">
                     <a href="data_kategori_pelanggaran.php"
-                       class="nav-link text-white">
+                       class="nav-link <?= $halaman == 'data_kategori_pelanggaran.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
                         Kelola Kategori Pelanggaran
                     </a>
                 </li>
 
-                <li class="nav-item mb-2">
+                <li class="nav-item">
                     <a href="data_jenis_pelanggaran.php"
-                       class="nav-link text-white">
+                       class="nav-link <?= $halaman == 'data_jenis_pelanggaran.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
                         Kelola Jenis Pelanggaran
                     </a>
                 </li>
 
-                <li class="nav-item mb-2">
+                <li class="nav-item">
                     <a href="laporan.php"
-                       class="nav-link text-white">
+                       class="nav-link <?= $halaman == 'laporan.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
                         Laporan
                     </a>
                 </li>
 
-                
-<li class="nav-item mb-2">
-    <a href="about_me.php"
-       class="nav-link text-white">
-        About Me
-    </a>
-</li>
-
-               <hr class="text-secondary">
-
-<li class="nav-item">
-    <a href="logout.php"
-       class="nav-link text-danger">
-        Logout
-    </a>
-</li>
-
-            </ul>
-
-        </div>
-
-
-        <!-- ================= SIDEBAR GURU ================= -->
-        <?php } elseif ($role == 'guru') { ?>
-
-        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
-
-            <h4 class="text-white mb-4">
-                Sistem Pelanggaran
-            </h4>
-
-            <ul class="nav nav-pills flex-column">
-
-                <li class="nav-item mb-2">
-                    <a href="dashboard.php"
-                       class="nav-link active">
-                        Dashboard
-                    </a>
-                </li>
-
-                <li class="nav-item mb-2">
-                    <a href="data_pelanggaran.php"
-                       class="nav-link text-white">
-                        Catatan Pelanggaran
-                    </a>
-                </li>
-
-                <li class="nav-item mb-2">
-                    <a href="data_tindakan.php"
-                       class="nav-link text-white">
-                        Tindakan
-                    </a>
-                </li>
-
-                <li class="nav-item mb-2">
-                    <a href="data_riwayat.php"
-                       class="nav-link text-white">
-                        Riwayat
-                    </a>
-                </li>
-
-                <li class="nav-item mb-2">
-                    <a href="data_rekap_poin.php"
-                       class="nav-link text-white">
-                        Rekap Poin
-                    </a>
-                </li>
-
-                <li class="nav-item mb-2">
+                <li class="nav-item">
                     <a href="about_me.php"
-                       class="nav-link text-white">
+                       class="nav-link <?= $halaman == 'about_me.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
                         About Me
                     </a>
                 </li>
 
-               <hr class="text-secondary">
+                <hr class="border-white">
 
-<li class="nav-item">
-    <a href="logout.php"
-       class="nav-link text-danger">
-        Logout
-    </a>
-</li>
+                <li class="nav-item">
+                    <a href="logout.php" class="nav-link text-white">
+                        Logout
+                    </a>
+                </li>
 
             </ul>
-
         </div>
 
-        <?php } ?>
-
-
-        <!-- ================= KONTEN ================= -->
-
-        <main class="col-md-9 col-lg-10 p-4">
-
-            <h2>
-                Dashboard <?= ucfirst($role); ?>
-            </h2>
-
-            <p>
-                Selamat datang,
-                <b><?= $name; ?></b>
-            </p>
-
-
-            <!-- ================= CARD ADMIN ================= -->
-
-            <?php if ($role == 'admin') { ?>
-
-            <div class="row">
-
-                <!-- SISWA -->
-                <div class="col-md-4 mb-3">
-
-                    <div class="card shadow-sm">
-
-                        <div class="card-body">
-
-                            <h5 class="card-title">
-                                Data Siswa
-                            </h5>
-
-                            <p class="card-text">
-                                Kelola data siswa.
-                            </p>
-
-                            <a href="data_siswa.php"
-                               class="btn btn-primary">
-                                Lihat Data
-                            </a>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- GURU -->
-                <div class="col-md-4 mb-3">
-
-                    <div class="card shadow-sm">
-
-                        <div class="card-body">
-
-                            <h5 class="card-title">
-                                Data Guru
-                            </h5>
-
-                            <p class="card-text">
-                                Kelola data guru.
-                            </p>
-
-                            <a href="data_guru.php"
-                               class="btn btn-primary">
-                                Lihat Data
-                            </a>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- KELAS -->
-                <div class="col-md-4 mb-3">
-
-                    <div class="card shadow-sm">
-
-                        <div class="card-body">
-
-                            <h5 class="card-title">
-                                Data Kelas
-                            </h5>
-
-                            <p class="card-text">
-                                Kelola data kelas.
-                            </p>
-
-                            <a href="data_kelas.php"
-                               class="btn btn-primary">
-                                Lihat Data
-                            </a>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                
-                <!-- TAHUN AJARAN -->
-                <div class="col-md-4 mb-3">
-
-                    <div class="card shadow-sm">
-
-                        <div class="card-body">
-
-                            <h5 class="card-title">
-                                Data Tahun Ajaran
-                            </h5>
-
-                            <p class="card-text">
-                                Kelola data tahun ajaran.
-                            </p>
-
-                            <a href="data_tahun_ajaran.php"
-                               class="btn btn-primary">
-                                Lihat Data
-                            </a>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <!-- PENEMPATAN SISWA -->
-                <div class="col-md-4 mb-3">
-
-                    <div class="card shadow-sm">
-
-                        <div class="card-body">
-
-                            <h5 class="card-title">
-                                Data Penempatan Siswa
-                            </h5>
-
-                            <p class="card-text">
-                                Kelola data penempatan siswa.
-                            </p>
-
-                            <a href="data_penempatan_siswa.php"
-                               class="btn btn-primary">
-                                Lihat Data
-                            </a>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <!-- WALI KELAS -->
-                <div class="col-md-4 mb-3">
-
-                    <div class="card shadow-sm">
-
-                        <div class="card-body">
-
-                            <h5 class="card-title">
-                                Data Wali Kelas
-                            </h5>
-
-                            <p class="card-text">
-                                Kelola data wali kelas.
-                            </p>
-
-                            <a href="data_wali_kelas.php"
-                               class="btn btn-primary">
-                                Lihat Data
-                            </a>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <!-- KATEGORI PELANGGARAN -->
-                <div class="col-md-4 mb-3">
-
-                    <div class="card shadow-sm">
-
-                        <div class="card-body">
-
-                            <h5 class="card-title">
-                                Data Kategori Pelanggaran
-                            </h5>
-
-                            <p class="card-text">
-                                Kelola data kategori pelanggaran.
-                            </p>
-
-                            <a href="data_kategori_pelanggaran.php"
-                               class="btn btn-primary">
-                                Lihat Data
-                            </a>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <!-- JENIS PELANGGARAN -->
-                <div class="col-md-4 mb-3">
-
-                    <div class="card shadow-sm">
-
-                        <div class="card-body">
-
-                            <h5 class="card-title">
-                                Data Jenis Pelanggaran
-                            </h5>
-
-                            <p class="card-text">
-                                Kelola data jenis pelanggaran.
-                            </p>
-
-                            <a href="data_jenis_pelanggaran.php"
-                               class="btn btn-primary">
-                                Lihat Data
-                            </a>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                
+        <!-- SIDEBAR GURU -->
+        <?php } elseif ($role == 'guru') { ?>
+
+        <div class="col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto"
+             style="background-color: #172554;">
+
+            <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
+
+            <ul class="nav nav-pills flex-column gap-1">
+
+                <li class="nav-item">
+                    <a href="dashboard.php"
+                       class="nav-link <?= $halaman == 'dashboard.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
+                        Dashboard
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="data_pelanggaran.php"
+                       class="nav-link <?= $halaman == 'data_pelanggaran.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
+                        Catatan Pelanggaran
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="data_tindakan.php"
+                       class="nav-link <?= $halaman == 'data_tindakan.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
+                        Tindakan
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="data_riwayat.php"
+                       class="nav-link <?= $halaman == 'data_riwayat.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
+                        Riwayat
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="data_rekap_poin.php"
+                       class="nav-link <?= $halaman == 'data_rekap_poin.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
+                        Rekap Poin
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="about_me.php"
+                       class="nav-link <?= $halaman == 'about_me.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
+                        About Me
+                    </a>
+                </li>
+
+                <hr class="border-white">
+
+                <li class="nav-item">
+                    <a href="logout.php" class="nav-link text-white">
+                        Logout
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+
+        <?php } else { ?>
+
+        <div class="col-12 p-4">
+            <div class="alert alert-danger">
+                Role pengguna tidak dikenali.
+            </div>
+        </div>
+
+        <?php exit; } ?>
+
+        <!-- KONTEN DASHBOARD -->
+        <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
+
+            <div class="bg-white rounded shadow-sm p-4 mb-4">
+                <h2 class="fw-bold">
+                    Dashboard <?= ucfirst($role); ?>
+                </h2>
+
+                <p class="text-secondary mb-0">
+                    Selamat datang,
+                    <b><?= htmlspecialchars($name); ?></b>
+                </p>
             </div>
 
-            <!-- ================= CARD GURU ================= -->
+            <!-- CARD ADMIN -->
+            <?php if ($role == 'admin') { ?>
 
-            <?php } elseif ($role == 'guru') { ?>
+            <?php
+            $menu_admin = [
+                ['Data Siswa', 'Kelola data siswa.', 'data_siswa.php'],
+                ['Data Guru', 'Kelola data guru.', 'data_guru.php'],
+                ['Data Kelas', 'Kelola data kelas.', 'data_kelas.php'],
+                ['Data Tahun Ajaran', 'Kelola data tahun ajaran.', 'data_tahun_ajaran.php'],
+                ['Penempatan Siswa', 'Kelola penempatan siswa.', 'data_penempatan_siswa.php'],
+                ['Data Wali Kelas', 'Kelola data wali kelas.', 'data_wali_kelas.php'],
+                ['Kategori Pelanggaran', 'Kelola kategori pelanggaran.', 'data_kategori_pelanggaran.php'],
+                ['Jenis Pelanggaran', 'Kelola jenis pelanggaran.', 'data_jenis_pelanggaran.php'],
+                ['Laporan', 'Lihat laporan sistem.', 'laporan.php']
+            ];
+            ?>
 
             <div class="row">
 
-                <!-- CATATAN PELANGGARAN -->
-                <div class="col-md-6 mb-3">
+                <?php foreach ($menu_admin as $menu) { ?>
 
-                    <div class="card shadow-sm">
-
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card shadow-sm h-100 border-0">
                         <div class="card-body">
 
-                            <h5 class="card-title">
-                                Catatan Pelanggaran
+                            <h5 class="card-title fw-bold">
+                                <?= htmlspecialchars($menu[0]); ?>
                             </h5>
 
-                            <p class="card-text">
-                                Mencatat data pelanggaran siswa.
+                            <p class="card-text text-secondary">
+                                <?= htmlspecialchars($menu[1]); ?>
                             </p>
 
-                            <a href="data_pelanggaran.php"
+                            <a href="<?= htmlspecialchars($menu[2]); ?>"
+                               class="btn btn-primary">
+                                Lihat Data
+                            </a>
+
+                        </div>
+                    </div>
+                </div>
+
+                <?php } ?>
+
+            </div>
+
+            <!-- CARD GURU -->
+            <?php } elseif ($role == 'guru') { ?>
+
+            <?php
+            $menu_guru = [
+                ['Catatan Pelanggaran', 'Mencatat data pelanggaran siswa.', 'data_pelanggaran.php'],
+                ['Tindakan', 'Mengelola tindakan pelanggaran.', 'data_tindakan.php'],
+                ['Riwayat', 'Melihat riwayat pelanggaran siswa.', 'data_riwayat.php'],
+                ['Rekap Poin', 'Melihat rekap poin pelanggaran siswa.', 'data_rekap_poin.php']
+            ];
+            ?>
+
+            <div class="row">
+
+                <?php foreach ($menu_guru as $menu) { ?>
+
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm h-100 border-0">
+                        <div class="card-body">
+
+                            <h5 class="card-title fw-bold">
+                                <?= htmlspecialchars($menu[0]); ?>
+                            </h5>
+
+                            <p class="card-text text-secondary">
+                                <?= htmlspecialchars($menu[1]); ?>
+                            </p>
+
+                            <a href="<?= htmlspecialchars($menu[2]); ?>"
                                class="btn btn-primary">
                                 Buka
                             </a>
 
                         </div>
-
                     </div>
-
                 </div>
 
-
-                <!-- TINDAKAN -->
-                <div class="col-md-6 mb-3">
-
-                    <div class="card shadow-sm">
-
-                        <div class="card-body">
-
-                            <h5 class="card-title">
-                                Tindakan
-                            </h5>
-
-                            <p class="card-text">
-                                Mengelola tindakan terhadap pelanggaran.
-                            </p>
-
-                            <a href="data_tindakan.php"
-                               class="btn btn-primary">
-                                Buka
-                            </a>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- RIWAYAT -->
-                <div class="col-md-6 mb-3">
-
-                    <div class="card shadow-sm">
-
-                        <div class="card-body">
-
-                            <h5 class="card-title">
-                                Riwayat
-                            </h5>
-
-                            <p class="card-text">
-                                Melihat riwayat pelanggaran siswa.
-                            </p>
-
-                            <a href="data_riwayat.php"
-                               class="btn btn-primary">
-                                Buka
-                            </a>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- REKAP POIN -->
-                <div class="col-md-6 mb-3">
-
-                    <div class="card shadow-sm">
-
-                        <div class="card-body">
-
-                            <h5 class="card-title">
-                                Rekap Poin
-                            </h5>
-
-                            <p class="card-text">
-                                Melihat rekap poin pelanggaran siswa.
-                            </p>
-
-                            <a href="data_rekap_poin.php"
-                               class="btn btn-primary">
-                                Buka
-                            </a>
-
-                        </div>
-
-                    </div>
-
-                </div>
+                <?php } ?>
 
             </div>
 
@@ -548,11 +305,10 @@ $name = $_SESSION['name'];
         </main>
 
     </div>
-
 </div>
- 
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js" integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y" crossorigin="anonymous"></script>
 
 </body>
 </html>
