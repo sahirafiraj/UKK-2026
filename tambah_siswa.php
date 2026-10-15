@@ -46,29 +46,29 @@ $halaman = basename($_SERVER['PHP_SELF']);
 
                 <li class="nav-item">
                     <a href="data_siswa.php"
-                       class="nav-link text-white">
-                        Kelola Data Siswa
+                       class="nav-link active">
+                        Data Siswa
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a href="data_guru.php"
                        class="nav-link text-white">
-                        Kelola Data Guru
+                        Data Guru
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a href="data_kelas.php"
                        class="nav-link text-white">
-                        Kelola Data Kelas
+                        Data Kelas
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a href="data_tahun_ajaran.php"
                        class="nav-link text-white">
-                        Kelola Tahun Ajaran
+                        Tahun Ajaran
                     </a>
                 </li>
 
@@ -82,21 +82,21 @@ $halaman = basename($_SERVER['PHP_SELF']);
                 <li class="nav-item">
                     <a href="data_wali_kelas.php"
                        class="nav-link text-white">
-                        Kelola Data Wali Kelas
+                        Data Wali Kelas
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a href="data_kategori_pelanggaran.php"
                        class="nav-link text-white">
-                        Kelola Kategori Pelanggaran
+                        Kategori Pelanggaran
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a href="data_jenis_pelanggaran.php"
                        class="nav-link text-white">
-                        Kelola Jenis Pelanggaran
+                        Jenis Pelanggaran
                     </a>
                 </li>
 
@@ -139,7 +139,6 @@ $halaman = basename($_SERVER['PHP_SELF']);
 
             </div>
 
-            <!-- FORM TAMBAH SISWA -->
             <div class="card shadow-sm border-0">
 
                 <div class="card-header bg-white">
@@ -209,7 +208,6 @@ $halaman = basename($_SERVER['PHP_SELF']);
                         </div>
 
                         
-<!-- STATUS AKTIF -->
 <div class="col-12 mb-3">
 
     <label class="form-label">Status Aktif</label>
@@ -221,8 +219,6 @@ $halaman = basename($_SERVER['PHP_SELF']);
 
 </div>
 
-
-                        <!-- TOMBOL -->
                         <div class="d-flex gap-2">
 
                             <button type="submit"

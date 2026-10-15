@@ -41,68 +41,78 @@ $halaman = basename($_SERVER['PHP_SELF']);
             <ul class="nav nav-pills flex-column gap-1">
 
                 <li class="nav-item">
-                    <a href="dashboard.php" class="nav-link text-white">
+                    <a href="dashboard.php"
+                       class="nav-link text-white">
                         Dashboard
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_siswa.php" class="nav-link text-white">
-                        Kelola Data Siswa
+                    <a href="data_siswa.php"
+                       class="nav-link text-white">
+                        Data Siswa
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_guru.php" class="nav-link text-white">
-                        Kelola Data Guru
+                    <a href="data_guru.php"
+                       class="nav-link text-white">
+                        Data Guru
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a href="data_kelas.php"
-                       class="nav-link <?= $halaman == 'tambah_kelas.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
-                        Kelola Data Kelas
+                       class="nav-link active">
+                        Data Kelas
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_tahun_ajaran.php" class="nav-link text-white">
-                        Kelola Tahun Ajaran
+                    <a href="data_tahun_ajaran.php"
+                       class="nav-link text-white">
+                        Tahun Ajaran
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_penempatan_siswa.php" class="nav-link text-white">
+                    <a href="data_penempatan_siswa.php"
+                       class="nav-link text-white">
                         Penempatan Siswa
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_wali_kelas.php" class="nav-link text-white">
-                        Kelola Data Wali Kelas
+                    <a href="data_wali_kelas.php"
+                       class="nav-link text-white">
+                        Data Wali Kelas
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_kategori_pelanggaran.php" class="nav-link text-white">
-                        Kelola Kategori Pelanggaran
+                    <a href="data_kategori_pelanggaran.php"
+                       class="nav-link text-white">
+                        Kategori Pelanggaran
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_jenis_pelanggaran.php" class="nav-link text-white">
-                        Kelola Jenis Pelanggaran
+                    <a href="data_jenis_pelanggaran.php"
+                       class="nav-link text-white">
+                        Jenis Pelanggaran
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="laporan.php" class="nav-link text-white">
+                    <a href="laporan.php"
+                       class="nav-link text-white">
                         Laporan
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="about_me.php" class="nav-link text-white">
+                    <a href="about_me.php"
+                       class="nav-link text-white">
                         About Me
                     </a>
                 </li>

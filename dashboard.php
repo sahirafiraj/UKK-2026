@@ -29,9 +29,8 @@ $halaman = basename($_SERVER['PHP_SELF']);
     <div class="row">
 
         <!-- SIDEBAR ADMIN TETAP -->
-        <?php if ($role == 'admin') { ?>
-
-        <div class="col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto"
+         <?php if ($role == 'admin') { ?>
+             <div class="col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto"
              style="background-color: #172554;">
 
             <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
@@ -40,77 +39,77 @@ $halaman = basename($_SERVER['PHP_SELF']);
 
                 <li class="nav-item">
                     <a href="dashboard.php"
-                       class="nav-link <?= $halaman == 'dashboard.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
+                       class="nav-link active">
                         Dashboard
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a href="data_siswa.php"
-                       class="nav-link <?= $halaman == 'data_siswa.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
-                        Kelola Data Siswa
+                       class="nav-link text-white">
+                        Data Siswa
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a href="data_guru.php"
-                       class="nav-link <?= $halaman == 'data_guru.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
-                        Kelola Data Guru
+                       class="nav-link text-white">
+                        Data Guru
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a href="data_kelas.php"
-                       class="nav-link <?= $halaman == 'data_kelas.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
-                        Kelola Data Kelas
+                       class="nav-link text-white">
+                        Data Kelas
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a href="data_tahun_ajaran.php"
-                       class="nav-link <?= $halaman == 'data_tahun_ajaran.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
-                        Kelola Tahun Ajaran
+                       class="nav-link text-white">
+                        Tahun Ajaran
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a href="data_penempatan_siswa.php"
-                       class="nav-link <?= $halaman == 'data_penempatan_siswa.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
+                       class="nav-link text-white">
                         Penempatan Siswa
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a href="data_wali_kelas.php"
-                       class="nav-link <?= $halaman == 'data_wali_kelas.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
-                        Kelola Data Wali Kelas
+                       class="nav-link text-white">
+                        Data Wali Kelas
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a href="data_kategori_pelanggaran.php"
-                       class="nav-link <?= $halaman == 'data_kategori_pelanggaran.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
-                        Kelola Kategori Pelanggaran
+                       class="nav-link text-white">
+                        Kategori Pelanggaran
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a href="data_jenis_pelanggaran.php"
-                       class="nav-link <?= $halaman == 'data_jenis_pelanggaran.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
-                        Kelola Jenis Pelanggaran
+                       class="nav-link text-white">
+                        Jenis Pelanggaran
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a href="laporan.php"
-                       class="nav-link <?= $halaman == 'laporan.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
+                       class="nav-link text-white">
                         Laporan
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a href="about_me.php"
-                       class="nav-link <?= $halaman == 'about_me.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
+                       class="nav-link text-white">
                         About Me
                     </a>
                 </li>
@@ -128,7 +127,6 @@ $halaman = basename($_SERVER['PHP_SELF']);
 
         <!-- SIDEBAR GURU -->
         <?php } elseif ($role == 'guru') { ?>
-
         <div class="col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto"
              style="background-color: #172554;">
 
@@ -138,42 +136,43 @@ $halaman = basename($_SERVER['PHP_SELF']);
 
                 <li class="nav-item">
                     <a href="dashboard.php"
-                       class="nav-link <?= $halaman == 'dashboard.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
+                       class="nav-link active">
                         Dashboard
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_pelanggaran.php"
-                       class="nav-link <?= $halaman == 'data_pelanggaran.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
+                    <a href="data_siswa.php"
+                       class="nav-link text-white">
                         Catatan Pelanggaran
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_tindakan.php"
-                       class="nav-link <?= $halaman == 'data_tindakan.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
+                    <a href="data_guru.php"
+                       class="nav-link text-white">
                         Tindakan
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_riwayat.php"
-                       class="nav-link <?= $halaman == 'data_riwayat.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
+                    <a href="data_kelas.php"
+                       class="nav-link text-white">
                         Riwayat
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_rekap_poin.php"
-                       class="nav-link <?= $halaman == 'data_rekap_poin.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
+                    <a href="data_tahun_ajaran.php"
+                       class="nav-link text-white">
                         Rekap Poin
                     </a>
                 </li>
 
+
                 <li class="nav-item">
-                    <a href="about_me.php"
-                       class="nav-link <?= $halaman == 'about_me.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
+                    <a href="data_guru.php"
+                       class="nav-link text-white">
                         About Me
                     </a>
                 </li>
