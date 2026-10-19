@@ -15,24 +15,32 @@ if ($_SESSION['role'] != 'admin') {
 
 $id = $_GET['id'];
 
-$hapus_pelanggaran = mysqli_query($koneksi, "DELETE FROM t_pelanggaran
-WHERE pelanggaran_kategori_id = '$id'");
+mysqli_begin_transaction($koneksi);
 
-if ($hapus_pelanggaran) {
+$hapus_siswa = mysqli_query($koneksi, "
+    DELETE FROM t_pelanggaran_siswa
+    WHERE pelanggaran_id IN (
+        SELECT id FROM t_pelanggaran
+        WHERE pelanggaran_kategori_id = '$id'
+    )
+");
 
-    $hapus_kategori = mysqli_query($koneksi, "DELETE FROM t_pelanggaran_kategori
-    WHERE id = '$id'");
+$hapus_pelanggaran = mysqli_query($koneksi, "
+    DELETE FROM t_pelanggaran
+    WHERE pelanggaran_kategori_id = '$id'
+");
 
-    if ($hapus_kategori) {
-        header("Location: data_kategori_pelanggaran.php?pesan=hapus_berhasil");
-        exit;
-    } else {
-        header("Location: data_kategori_pelanggaran.php?pesan=hapus_gagal");
-        exit;
-    }
+$hapus_kategori = mysqli_query($koneksi, "
+    DELETE FROM t_pelanggaran_kategori
+    WHERE id = '$id'
+");
 
-} else {
-    header("Location: data_kategori_pelanggaran.php?pesan=hapus_gagal");
+if ($hapus_siswa && $hapus_pelanggaran && $hapus_kategori) {
+    mysqli_commit($koneksi);
+    header("Location: data_kategori_pelanggaran.php");
     exit;
+} else {
+    mysqli_rollback($koneksi);
+    echo "Gagal menghapus: " . mysqli_error($koneksi);
 }
 ?>

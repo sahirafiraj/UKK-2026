@@ -62,9 +62,15 @@ $data = mysqli_query($koneksi, "SELECT * FROM t_pelanggaran_kategori ORDER BY id
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                 <h5 class="mb-0 fw-bold">Daftar Kategori Pelanggaran</h5>
 
-                <a href="tambah_kategori_pelanggaran.php" class="btn btn-primary">
-                    + Tambah Kategori
-                </a>
+                <div>
+        <a href="dashboard.php" class="btn btn-secondary">
+            Kembali ke Dashboard
+        </a>
+
+        <a href="tambah_kategori_pelanggaran.php" class="btn btn-primary">
+            Tambah Kategori Pelanggaran
+        </a>
+    </div>
             </div>
 
             <div class="card-body">

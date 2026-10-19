@@ -1,3 +1,4 @@
+
 <?php
 // Memulai session
 session_start();
@@ -11,11 +12,11 @@ if (!isset($_SESSION['login']) || $_SESSION['role'] != 'admin') {
     exit;
 }
 
-// Mengambil nama pengguna yang sedang login
+// Mengambil nama pengguna
 $halaman = basename($_SERVER['PHP_SELF']);
 $nama_login = $_SESSION['name'] ?? 'Admin';
 
-// Mengambil semua data guru dari database
+// Mengambil data guru
 $query = mysqli_query($koneksi, "SELECT * FROM t_guru ORDER BY id DESC");
 ?>
 
@@ -31,6 +32,10 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_guru ORDER BY id DESC");
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
           rel="stylesheet">
+
+    <!-- DataTables CSS -->
+    <link href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css"
+          rel="stylesheet">
 </head>
 
 <body class="bg-light">
@@ -38,8 +43,8 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_guru ORDER BY id DESC");
 <div class="container-fluid">
     <div class="row">
 
-        <!-- SIDEBAR ADMIN TETAP -->
-             <div class="col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto"
+        <!-- SIDEBAR ADMIN -->
+        <div class="col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto"
              style="background-color: #172554;">
 
             <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
@@ -47,78 +52,67 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_guru ORDER BY id DESC");
             <ul class="nav nav-pills flex-column gap-1">
 
                 <li class="nav-item">
-                    <a href="dashboard.php"
-                       class="nav-link text-white">
+                    <a href="dashboard.php" class="nav-link text-white">
                         Dashboard
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_siswa.php"
-                       class="nav-link text-white">
+                    <a href="data_siswa.php" class="nav-link text-white">
                         Data Siswa
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_guru.php"
-                       class="nav-link active">
+                    <a href="data_guru.php" class="nav-link active">
                         Data Guru
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_kelas.php"
-                       class="nav-link text-white">
+                    <a href="data_kelas.php" class="nav-link text-white">
                         Data Kelas
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_tahun_ajaran.php"
-                       class="nav-link text-white">
+                    <a href="data_tahun_ajaran.php" class="nav-link text-white">
                         Tahun Ajaran
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_penempatan_siswa.php"
-                       class="nav-link text-white">
+                    <a href="data_penempatan_siswa.php" class="nav-link text-white">
                         Penempatan Siswa
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_wali_kelas.php"
-                       class="nav-link text-white">
+                    <a href="data_wali_kelas.php" class="nav-link text-white">
                         Data Wali Kelas
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_kategori_pelanggaran.php"
-                       class="nav-link text-white">
+                    <a href="data_kategori_pelanggaran.php" class="nav-link text-white">
                         Kategori Pelanggaran
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_jenis_pelanggaran.php"
-                       class="nav-link text-white">
+                    <a href="data_jenis_pelanggaran.php" class="nav-link text-white">
                         Jenis Pelanggaran
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="laporan.php"
-                       class="nav-link text-white">
+                    <a href="laporan.php" class="nav-link text-white">
                         Laporan
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="about_me.php"
-                       class="nav-link text-white">
+                    <a href="about_me.php" class="nav-link text-white">
                         About Me
                     </a>
                 </li>
@@ -133,7 +127,6 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_guru ORDER BY id DESC");
 
             </ul>
         </div>
-
 
         <!-- KONTEN UTAMA -->
         <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
@@ -150,11 +143,10 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_guru ORDER BY id DESC");
 
             </div>
 
-            <!-- CARD DAFTAR DATA GURU -->
+            <!-- CARD DATA GURU -->
             <div class="card shadow-sm border-0">
 
-                <!-- JUDUL TABEL DAN TOMBOL -->
-                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center flex-wrap gap-2">
 
                     <h5 class="mb-0 fw-bold">Daftar Data Guru</h5>
 
@@ -170,12 +162,12 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_guru ORDER BY id DESC");
 
                 </div>
 
-                <!-- ISI TABEL -->
                 <div class="card-body">
 
                     <div class="table-responsive">
 
-                        <table class="table table-bordered table-striped table-hover align-middle">
+                        <table id="tabelGuru"
+                               class="table table-bordered table-striped table-hover align-middle">
 
                             <thead class="table-primary">
                                 <tr>
@@ -191,13 +183,10 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_guru ORDER BY id DESC");
                             <tbody>
 
                                 <?php
-                                // Nomor urut data
                                 $no = 1;
 
-                                // Memeriksa apakah data guru tersedia
                                 if ($query && mysqli_num_rows($query) > 0) {
 
-                                    // Mengambil data guru satu per satu
                                     while ($data = mysqli_fetch_assoc($query)) {
                                 ?>
 
@@ -213,21 +202,19 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_guru ORDER BY id DESC");
                                     </td>
 
                                     <td>
-                                        <?php
-                                        if (($data['status_aktif'] ?? 0) == 1) {
-                                        ?>
+                                        <?php if (($data['status_aktif'] ?? 0) == 1) { ?>
+
                                             <span class="badge bg-success">
                                                 Aktif
                                             </span>
-                                        <?php
-                                        } else {
-                                        ?>
+
+                                        <?php } else { ?>
+
                                             <span class="badge bg-secondary">
                                                 Tidak Aktif
                                             </span>
-                                        <?php
-                                        }
-                                        ?>
+
+                                        <?php } ?>
                                     </td>
 
                                     <td>
@@ -250,6 +237,7 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_guru ORDER BY id DESC");
 
                                 <?php
                                     }
+
                                 } else {
                                 ?>
 
@@ -278,6 +266,57 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_guru ORDER BY id DESC");
 
 <!-- Bootstrap JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- DataTables JavaScript -->
+<script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/2.3.4/js/dataTables.bootstrap5.min.js"></script>
+
+<!-- Mengaktifkan DataTables -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const tabel = document.querySelector('#tabelGuru');
+
+    if (tabel && typeof DataTable !== 'undefined') {
+
+        new DataTable(tabel, {
+            pageLength: 10,
+            lengthMenu: [5, 10, 25, 50, 100],
+            order: [],
+
+            language: {
+                search: 'Cari:',
+                searchPlaceholder: 'Cari data guru...',
+                lengthMenu: 'Tampilkan _MENU_ data',
+                info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+                infoEmpty: 'Tidak ada data',
+                infoFiltered: '(difilter dari _MAX_ total data)',
+                zeroRecords: 'Data tidak ditemukan',
+                emptyTable: 'Belum ada data guru',
+
+                paginate: {
+                    first: 'Pertama',
+                    last: 'Terakhir',
+                    next: 'Berikutnya',
+                    previous: 'Sebelumnya'
+                }
+            },
+
+            columnDefs: [
+                {
+                    targets: 5,
+                    orderable: false,
+                    searchable: false
+                }
+            ]
+        });
+
+    } else {
+        console.error('DataTables belum berhasil dimuat.');
+    }
+
+});
+</script>
 
 </body>
 </html>
