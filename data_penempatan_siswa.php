@@ -1,4 +1,3 @@
-
 <?php
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
@@ -54,8 +53,9 @@ $hasil = mysqli_query($koneksi, $sql);
 
     <title>Penempatan Siswa</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-          rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css">
 </head>
 
 <body class="bg-light">
@@ -72,77 +72,53 @@ $hasil = mysqli_query($koneksi, $sql);
             <ul class="nav nav-pills flex-column gap-1">
 
                 <li class="nav-item">
-                    <a href="dashboard.php" class="nav-link text-white">
-                        Dashboard
-                    </a>
+                    <a href="dashboard.php" class="nav-link text-white">Dashboard</a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_siswa.php" class="nav-link text-white">
-                        Data Siswa
-                    </a>
+                    <a href="data_siswa.php" class="nav-link text-white">Data Siswa</a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_guru.php" class="nav-link text-white">
-                        Data Guru
-                    </a>
+                    <a href="data_guru.php" class="nav-link text-white">Data Guru</a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_kelas.php" class="nav-link text-white">
-                        Data Kelas
-                    </a>
+                    <a href="data_kelas.php" class="nav-link text-white">Data Kelas</a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_tahun_ajaran.php" class="nav-link text-white">
-                        Tahun Ajaran
-                    </a>
+                    <a href="data_tahun_ajaran.php" class="nav-link text-white">Tahun Ajaran</a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_penempatan_siswa.php" class="nav-link active">
-                        Penempatan Siswa
-                    </a>
+                    <a href="data_penempatan_siswa.php" class="nav-link active">Penempatan Siswa</a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_wali_kelas.php" class="nav-link text-white">
-                        Data Wali Kelas
-                    </a>
+                    <a href="data_wali_kelas.php" class="nav-link text-white">Data Wali Kelas</a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_kategori_pelanggaran.php" class="nav-link text-white">
-                        Kategori Pelanggaran
-                    </a>
+                    <a href="data_kategori_pelanggaran.php" class="nav-link text-white">Kategori Pelanggaran</a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_jenis_pelanggaran.php" class="nav-link text-white">
-                        Jenis Pelanggaran
-                    </a>
+                    <a href="data_jenis_pelanggaran.php" class="nav-link text-white">Jenis Pelanggaran</a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="laporan.php" class="nav-link text-white">
-                        Laporan
-                    </a>
+                    <a href="laporan.php" class="nav-link text-white">Laporan</a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="about_me.php" class="nav-link text-white">
-                        About Me
-                    </a>
+                    <a href="about_me.php" class="nav-link text-white">About Me</a>
                 </li>
 
                 <hr class="border-white">
 
                 <li class="nav-item">
-                    <a href="logout.php" class="nav-link text-white">
-                        Logout
-                    </a>
+                    <a href="logout.php" class="nav-link text-white">Logout</a>
                 </li>
 
             </ul>
@@ -308,7 +284,7 @@ $hasil = mysqli_query($koneksi, $sql);
 
                     <div class="table-responsive">
 
-                        <table class="table table-bordered table-striped table-hover align-middle">
+                        <table id="tabelPenempatan" class="table table-bordered table-striped table-hover align-middle">
 
                             <thead class="table-primary">
                                 <tr>
@@ -384,6 +360,40 @@ $hasil = mysqli_query($koneksi, $sql);
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    new DataTable('#tabelPenempatan', {
+        pageLength: 10,
+        lengthMenu: [5, 10, 25, 50, 100],
+        order: [],
+        layout: {
+            topStart: 'info',
+            bottom: 'paging',
+            bottomStart: null,
+            bottomEnd: null
+        },
+        language: {
+            search: 'Cari:',
+            searchPlaceholder: 'Cari data...',
+            lengthMenu: 'Tampilkan _MENU_ data',
+            info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+            infoEmpty: 'Tidak ada data',
+            infoFiltered: '(difilter dari _MAX_ total data)',
+            zeroRecords: 'Data tidak ditemukan',
+            emptyTable: 'Belum ada data',
+            paginate: {
+                first: 'Pertama',
+                last: 'Terakhir',
+                next: 'Berikutnya',
+                previous: 'Sebelumnya'
+            }
+        }
+    });
+});
+</script>
 
 </body>
 </html>

@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 include "config/koneksi.php";
@@ -31,6 +30,96 @@ $query = mysqli_query($koneksi, "
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
           rel="stylesheet">
+
+    <!-- DataTables CSS -->
+    <link href="https://cdn.datatables.net/2.3.4/css/dataTables.dataTables.min.css"
+          rel="stylesheet">
+
+    <!-- Pengaturan Tampilan Cetak -->
+    <style>
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 15mm;
+            }
+
+            .sidebar {
+                display: none !important;
+            }
+
+            main {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .container-fluid,
+            .container-fluid .row {
+                display: block !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .card {
+                border: none !important;
+                box-shadow: none !important;
+            }
+
+            .card-header {
+                display: none !important;
+            }
+
+            .dt-layout-row {
+                display: none !important;
+            }
+
+            .table-responsive {
+                overflow: visible !important;
+            }
+
+            table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                font-size: 10pt !important;
+            }
+
+            thead {
+                display: table-header-group;
+            }
+
+            tr {
+                break-inside: avoid;
+            }
+
+            th,
+            td {
+                border: 1px solid #999 !important;
+                padding: 6px !important;
+                color: #000 !important;
+            }
+
+            body {
+                background: white !important;
+                color: #000 !important;
+                font-size: 11pt !important;
+            }
+
+            .bg-white {
+                background: white !important;
+            }
+
+            .shadow-sm {
+                box-shadow: none !important;
+            }
+
+            a {
+                text-decoration: none !important;
+                color: #000 !important;
+            }
+        }
+    </style>
 </head>
 
 <body class="bg-light">
@@ -39,7 +128,7 @@ $query = mysqli_query($koneksi, "
     <div class="row">
 
         <!-- SIDEBAR -->
-        <div class="col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto"
+        <div class="sidebar col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto"
              style="background-color: #172554;">
 
             <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
@@ -141,7 +230,7 @@ $query = mysqli_query($koneksi, "
             <!-- DAFTAR LAPORAN -->
             <div class="card shadow-sm border-0">
 
-                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center flex-wrap gap-2">
 
                     <h5 class="mb-0 fw-bold">Daftar Laporan Pelanggaran</h5>
 
@@ -150,7 +239,9 @@ $query = mysqli_query($koneksi, "
                             Kembali ke Dashboard
                         </a>
 
-                        <button onclick="window.print()" class="btn btn-primary">
+                        <button type="button"
+                                onclick="window.print()"
+                                class="btn btn-primary">
                             Cetak Laporan
                         </button>
                     </div>
@@ -161,7 +252,8 @@ $query = mysqli_query($koneksi, "
 
                     <div class="table-responsive">
 
-                        <table class="table table-bordered table-striped table-hover align-middle">
+                        <table id="tabelLaporan"
+                               class="table table-bordered table-striped table-hover align-middle w-100">
 
                             <thead class="table-primary">
                                 <tr>
@@ -179,7 +271,6 @@ $query = mysqli_query($koneksi, "
                                 $no = 1;
 
                                 if ($query && mysqli_num_rows($query) > 0) {
-
                                     while ($data = mysqli_fetch_assoc($query)) {
                                 ?>
 
@@ -205,17 +296,6 @@ $query = mysqli_query($koneksi, "
 
                                 <?php
                                     }
-
-                                } else {
-                                ?>
-
-                                <tr>
-                                    <td colspan="5" class="text-center">
-                                        Belum ada data laporan pelanggaran.
-                                    </td>
-                                </tr>
-
-                                <?php
                                 }
                                 ?>
 
@@ -225,7 +305,7 @@ $query = mysqli_query($koneksi, "
 
                     </div>
 
-                    <p class="mb-0">
+                    <p class="mb-0 mt-3">
                         Jumlah laporan:
                         <b><?= $query ? mysqli_num_rows($query) : 0; ?></b>
                     </p>
@@ -240,6 +320,42 @@ $query = mysqli_query($koneksi, "
 
 <!-- Bootstrap JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- DataTables JavaScript -->
+<script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
+
+<!-- Pengaturan DataTables -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    new DataTable('#tabelLaporan', {
+        pageLength: 10,
+
+        lengthMenu: [5, 10, 25, 50, 100],
+
+        order: [],
+
+        language: {
+            search: 'Cari:',
+            searchPlaceholder: 'Cari laporan...',
+            lengthMenu: 'Tampilkan _MENU_ data',
+            info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+            infoEmpty: 'Tidak ada data',
+            infoFiltered: '(difilter dari _MAX_ total data)',
+            zeroRecords: 'Data tidak ditemukan',
+            emptyTable: 'Belum ada data laporan pelanggaran',
+
+            paginate: {
+                first: 'Pertama',
+                last: 'Terakhir',
+                next: 'Berikutnya',
+                previous: 'Sebelumnya'
+            }
+        }
+    });
+
+});
+</script>
 
 </body>
 </html>

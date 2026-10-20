@@ -1,103 +1,200 @@
-<?php 
- 
-include "config/koneksi.php"; 
-include "includes/cek_session.php"; 
- 
-if ($_SESSION['role'] != 'admin') { 
-    echo "Anda tidak memiliki akses"; 
-    exit; 
-} 
- 
-$id = $_GET['id']; 
- 
-$query = mysqli_query($koneksi,  
-    "SELECT * FROM t_kelas WHERE id='$id'" 
-); 
- 
-$data = mysqli_fetch_assoc($query); 
-?> 
- 
+
+<?php
+include 'includes/cek_session.php';
+include 'config/koneksi.php';
+
+if (!isset($_SESSION['login'])) {
+    header("Location: login.php");
+    exit;
+}
+
+if ($_SESSION['role'] != 'admin') {
+    echo "Anda tidak memiliki akses";
+    exit;
+}
+
+$name = $_SESSION['name'];
+$halaman = basename($_SERVER['PHP_SELF']);
+
+$id = $_GET['id'] ?? '';
+
+if ($id == '' || !is_numeric($id)) {
+    echo "ID kelas tidak valid";
+    exit;
+}
+
+$id = (int) $id;
+
+$query = mysqli_query($koneksi, "SELECT * FROM t_kelas WHERE id = $id");
+$data = mysqli_fetch_assoc($query);
+
+if (!$data) {
+    echo "Data kelas tidak ditemukan";
+    exit;
+}
+?>
+
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <title>Edit Kelas</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Data Kelas</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
-<body>
+<body class="bg-light">
 
-<h2>Edit Data Kelas</h2>
+<div class="container-fluid">
+    <div class="row">
 
-<form action="proses_edit_kelas.php" method="POST">
+        <div class="col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto"
+             style="background-color: #172554;">
 
-    <input type="hidden" name="id" value="<?= $data['id']; ?>">
+            <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
 
-    <label>Nama Kelas</label><br>
-    <input type="text"
-           name="nama"
-           value="<?= $data['nama']; ?>"
-           required>
+            <ul class="nav nav-pills flex-column gap-1">
 
-    <br><br>
+                <li class="nav-item">
+                    <a href="dashboard.php" class="nav-link text-white">Dashboard</a>
+                </li>
 
-    <label>Tingkat</label><br>
+                <li class="nav-item">
+                    <a href="data_siswa.php" class="nav-link text-white">Data Siswa</a>
+                </li>
 
-    <select name="tingkat" required>
+                <li class="nav-item">
+                    <a href="data_guru.php" class="nav-link text-white">Data Guru</a>
+                </li>
 
-        <option value="X"
-            <?= $data['tingkat'] == 'X' ? 'selected' : ''; ?>>
-            X
-        </option>
+                <li class="nav-item">
+                    <a href="data_kelas.php"
+                       class="nav-link <?= $halaman == 'edit_kelas.php' ? 'active' : 'text-white'; ?>">
+                        Data Kelas
+                    </a>
+                </li>
 
-        <option value="XI"
-            <?= $data['tingkat'] == 'XI' ? 'selected' : ''; ?>>
-            XI
-        </option>
+                <li class="nav-item">
+                    <a href="data_tahun_ajaran.php" class="nav-link text-white">Tahun Ajaran</a>
+                </li>
 
-        <option value="XII"
-            <?= $data['tingkat'] == 'XII' ? 'selected' : ''; ?>>
-            XII
-        </option>
+                <li class="nav-item">
+                    <a href="data_penempatan_siswa.php" class="nav-link text-white">Penempatan Siswa</a>
+                </li>
 
-    </select>
+                <li class="nav-item">
+                    <a href="data_wali_kelas.php" class="nav-link text-white">Data Wali Kelas</a>
+                </li>
 
-    <br><br>
+                <li class="nav-item">
+                    <a href="data_kategori_pelanggaran.php" class="nav-link text-white">Kategori Pelanggaran</a>
+                </li>
 
-    <label>Jurusan</label><br>
+                <li class="nav-item">
+                    <a href="data_jenis_pelanggaran.php" class="nav-link text-white">Jenis Pelanggaran</a>
+                </li>
 
-    <input type="text"
-           name="jurusan"
-           value="<?= $data['jurusan']; ?>"
-           required>
+                <li class="nav-item">
+                    <a href="laporan.php" class="nav-link text-white">Laporan</a>
+                </li>
 
-    <br><br>
+                <li class="nav-item">
+                    <a href="about_me.php" class="nav-link text-white">About Me</a>
+                </li>
 
-    <label>Status</label><br>
+                <hr class="border-white">
 
-    <select name="status_aktif">
+                <li class="nav-item">
+                    <a href="logout.php" class="nav-link text-white">Logout</a>
+                </li>
 
-        <option value="1"
-            <?= $data['status_aktif'] == 1 ? 'selected' : ''; ?>>
-            Aktif
-        </option>
+            </ul>
+        </div>
 
-        <option value="0"
-            <?= $data['status_aktif'] == 0 ? 'selected' : ''; ?>>
-            Tidak Aktif
-        </option>
+        <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
 
-    </select>
+            <div class="bg-white rounded shadow-sm p-4 mb-4">
+                <h2 class="fw-bold mb-2">Edit Data Kelas</h2>
+                <p class="text-secondary mb-0">
+                    Ubah data kelas yang sudah tersimpan.
+                </p>
+            </div>
 
-    <br><br>
+            <div class="card shadow-sm border-0">
 
-    <button type="submit" name="update">
-        Update
-    </button>
+                <div class="card-header bg-white p-3">
+                    <h5 class="mb-0 fw-bold">Form Edit Kelas</h5>
+                </div>
 
-</form>
+                <div class="card-body p-4">
 
-<br>
+                    <form action="proses_edit_kelas.php" method="POST">
 
-<a href="data_kelas.php">Kembali</a>
+                        <input type="hidden" name="id"
+                               value="<?= htmlspecialchars($data['id']); ?>">
+
+                        <div class="mb-3">
+                            <label for="nama" class="form-label">Nama Kelas</label>
+                            <input type="text" id="nama" name="nama"
+                                   class="form-control"
+                                   value="<?= htmlspecialchars($data['nama']); ?>"
+                                   required>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="tingkat" class="form-label">Tingkat</label>
+                                <select id="tingkat" name="tingkat"
+                                        class="form-select" required>
+                                    <option value="X" <?= $data['tingkat'] == 'X' ? 'selected' : ''; ?>>X</option>
+                                    <option value="XI" <?= $data['tingkat'] == 'XI' ? 'selected' : ''; ?>>XI</option>
+                                    <option value="XII" <?= $data['tingkat'] == 'XII' ? 'selected' : ''; ?>>XII</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="jurusan" class="form-label">Jurusan</label>
+                                <input type="text" id="jurusan" name="jurusan"
+                                       class="form-control"
+                                       value="<?= htmlspecialchars($data['jurusan']); ?>"
+                                       required>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="status_aktif" class="form-label">Status Aktif</label>
+                            <select id="status_aktif" name="status_aktif"
+                                    class="form-select" required>
+                                <option value="1" <?= $data['status_aktif'] == 1 ? 'selected' : ''; ?>>Aktif</option>
+                                <option value="0" <?= $data['status_aktif'] == 0 ? 'selected' : ''; ?>>Tidak Aktif</option>
+                            </select>
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="data_kelas.php" class="btn btn-secondary">
+                                Kembali
+                            </a>
+
+                            <button type="submit" name="update" value="1"
+                                    class="btn btn-primary">
+                                Simpan Perubahan
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </main>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

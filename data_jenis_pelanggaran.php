@@ -1,4 +1,3 @@
-
 <?php
 // Memulai session
 session_start();
@@ -40,6 +39,10 @@ if (!$query) {
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
           rel="stylesheet">
+
+    <!-- DataTables CSS versi 3.1.4 -->
+    <link rel="stylesheet"
+          href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css">
 </head>
 
 <body class="bg-light">
@@ -151,7 +154,7 @@ if (!$query) {
             <div class="card shadow-sm border-0">
 
                 <!-- JUDUL TABEL DAN TOMBOL -->
-                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center flex-wrap gap-2">
 
                     <h5 class="mb-0 fw-bold">Daftar Jenis Pelanggaran</h5>
 
@@ -172,7 +175,8 @@ if (!$query) {
 
                     <div class="table-responsive">
 
-                        <table class="table table-bordered table-striped table-hover align-middle">
+                        <table id="tabelPelanggaran"
+                               class="table table-bordered table-striped table-hover align-middle">
 
                             <thead class="table-primary">
                                 <tr>
@@ -291,6 +295,57 @@ if (!$query) {
 
 <!-- Bootstrap JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- DataTables JavaScript versi 3.1.4 -->
+<script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
+
+<!-- Mengaktifkan DataTables -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    new DataTable('#tabelPelanggaran', {
+        pageLength: 10,
+
+        lengthMenu: [5, 10, 25, 50, 100],
+
+        order: [],
+
+        layout: {
+            topStart: 'info',
+            bottom: 'paging',
+            bottomStart: null,
+            bottomEnd: null
+        },
+
+        language: {
+            search: 'Cari:',
+            searchPlaceholder: 'Cari jenis pelanggaran...',
+            lengthMenu: 'Tampilkan _MENU_ data',
+            info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+            infoEmpty: 'Tidak ada data',
+            infoFiltered: '(difilter dari _MAX_ total data)',
+            zeroRecords: 'Data tidak ditemukan',
+            emptyTable: 'Belum ada data jenis pelanggaran',
+
+            paginate: {
+                first: 'Pertama',
+                last: 'Terakhir',
+                next: 'Berikutnya',
+                previous: 'Sebelumnya'
+            }
+        },
+
+        columnDefs: [
+            {
+                targets: 7,
+                orderable: false,
+                searchable: false
+            }
+        ]
+    });
+
+});
+</script>
 
 </body>
 </html>

@@ -1,4 +1,3 @@
-
 <?php
 // Memulai session
 session_start();
@@ -33,9 +32,9 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_guru ORDER BY id DESC");
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
           rel="stylesheet">
 
-    <!-- DataTables CSS -->
-    <link href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css"
-          rel="stylesheet">
+    <!-- DataTables CSS versi 3.1.4 -->
+    <link rel="stylesheet"
+          href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css">
 </head>
 
 <body class="bg-light">
@@ -146,21 +145,24 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_guru ORDER BY id DESC");
             <!-- CARD DATA GURU -->
             <div class="card shadow-sm border-0">
 
-                <div class="card-header bg-white d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div class="card-header bg-white">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
 
-                    <h5 class="mb-0 fw-bold">Daftar Data Guru</h5>
+                        <h5 class="mb-0 fw-bold">Daftar Data Guru</h5>
 
-                    <div>
-                        <a href="dashboard.php" class="btn btn-secondary">
-                            Kembali ke Dashboard
-                        </a>
+                        <div class="d-flex gap-2">
+                            <a href="dashboard.php" class="btn btn-secondary btn-sm">
+                                Kembali ke Dashboard
+                            </a>
 
-                        <a href="tambah_guru.php" class="btn btn-primary">
-                            Tambah Guru
-                        </a>
+                            <a href="tambah_guru.php" class="btn btn-primary btn-sm">
+                                Tambah Guru
+                            </a>
+                        </div>
+
                     </div>
-
                 </div>
+
 
                 <div class="card-body">
 
@@ -267,53 +269,53 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_guru ORDER BY id DESC");
 <!-- Bootstrap JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- DataTables JavaScript -->
-<script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/2.3.4/js/dataTables.bootstrap5.min.js"></script>
+<!-- DataTables JavaScript versi 3.1.4 -->
+<script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
 
 <!-- Mengaktifkan DataTables -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    const tabel = document.querySelector('#tabelGuru');
+    new DataTable('#tabelGuru', {
+        pageLength: 10,
 
-    if (tabel && typeof DataTable !== 'undefined') {
+        lengthMenu: [5, 10, 25, 50, 100],
 
-        new DataTable(tabel, {
-            pageLength: 10,
-            lengthMenu: [5, 10, 25, 50, 100],
-            order: [],
+        order: [],
 
-            language: {
-                search: 'Cari:',
-                searchPlaceholder: 'Cari data guru...',
-                lengthMenu: 'Tampilkan _MENU_ data',
-                info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
-                infoEmpty: 'Tidak ada data',
-                infoFiltered: '(difilter dari _MAX_ total data)',
-                zeroRecords: 'Data tidak ditemukan',
-                emptyTable: 'Belum ada data guru',
+        layout: {
+            topStart: 'info',
+            bottom: 'paging',
+            bottomStart: null,
+            bottomEnd: null
+        },
 
-                paginate: {
-                    first: 'Pertama',
-                    last: 'Terakhir',
-                    next: 'Berikutnya',
-                    previous: 'Sebelumnya'
-                }
-            },
+        language: {
+            search: 'Cari:',
+            searchPlaceholder: 'Cari data guru...',
+            lengthMenu: 'Tampilkan _MENU_ data',
+            info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+            infoEmpty: 'Tidak ada data',
+            infoFiltered: '(difilter dari _MAX_ total data)',
+            zeroRecords: 'Data tidak ditemukan',
+            emptyTable: 'Belum ada data guru',
 
-            columnDefs: [
-                {
-                    targets: 5,
-                    orderable: false,
-                    searchable: false
-                }
-            ]
-        });
+            paginate: {
+                first: 'Pertama',
+                last: 'Terakhir',
+                next: 'Berikutnya',
+                previous: 'Sebelumnya'
+            }
+        },
 
-    } else {
-        console.error('DataTables belum berhasil dimuat.');
-    }
+        columnDefs: [
+            {
+                targets: 5,
+                orderable: false,
+                searchable: false
+            }
+        ]
+    });
 
 });
 </script>

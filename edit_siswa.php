@@ -59,78 +59,67 @@ if (!$data) {
             <ul class="nav nav-pills flex-column gap-1">
 
                 <li class="nav-item">
-                    <a href="dashboard.php"
-                       class="nav-link <?= $halaman == 'dashboard.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
+                    <a href="dashboard.php" class="nav-link text-white">
                         Dashboard
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_siswa.php"
-                       class="nav-link <?= $halaman == 'data_siswa.php' || $halaman == 'edit_siswa.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
-                        Kelola Data Siswa
+                    <a href="data_siswa.php" class="nav-link active">
+                        Data Siswa
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_guru.php"
-                       class="nav-link <?= $halaman == 'data_guru.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
-                        Kelola Data Guru
+                    <a href="data_guru.php" class="nav-link text-white">
+                        Data Guru
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_kelas.php"
-                       class="nav-link <?= $halaman == 'data_kelas.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
-                        Kelola Data Kelas
+                    <a href="data_kelas.php" class="nav-link text-white">
+                        Data Kelas
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_tahun_ajaran.php"
-                       class="nav-link <?= $halaman == 'data_tahun_ajaran.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
-                        Kelola Tahun Ajaran
+                    <a href="data_tahun_ajaran.php" class="nav-link text-white">
+                        Tahun Ajaran
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_penempatan_siswa.php"
-                       class="nav-link <?= $halaman == 'data_penempatan_siswa.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
+                    <a href="data_penempatan_siswa.php" class="nav-link text-white">
                         Penempatan Siswa
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_wali_kelas.php"
-                       class="nav-link <?= $halaman == 'data_wali_kelas.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
-                        Kelola Data Wali Kelas
+                    <a href="data_wali_kelas.php" class="nav-link text-white">
+                        Data Wali Kelas
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_kategori_pelanggaran.php"
-                       class="nav-link <?= $halaman == 'data_kategori_pelanggaran.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
-                        Kelola Kategori Pelanggaran
+                    <a href="data_kategori_pelanggaran.php" class="nav-link text-white">
+                        Kategori Pelanggaran
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_jenis_pelanggaran.php"
-                       class="nav-link <?= $halaman == 'data_jenis_pelanggaran.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
-                        Kelola Jenis Pelanggaran
+                    <a href="data_jenis_pelanggaran.php" class="nav-link text-white">
+                        Jenis Pelanggaran
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="laporan.php"
-                       class="nav-link <?= $halaman == 'laporan.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
+                    <a href="laporan.php" class="nav-link text-white">
                         Laporan
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="about_me.php"
-                       class="nav-link <?= $halaman == 'about_me.php' ? 'active bg-white text-primary' : 'text-white'; ?>">
+                    <a href="about_me.php" class="nav-link text-white">
                         About Me
                     </a>
                 </li>
@@ -145,6 +134,7 @@ if (!$data) {
 
             </ul>
         </div>
+
 
         <!-- KONTEN UTAMA -->
         <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
@@ -342,11 +332,12 @@ if (!$data) {
                                 Kembali
                             </a>
 
-                            <button type="submit"
-                                    name="simpan"
-                                    class="btn btn-primary">
-                                Simpan Perubahan
-                            </button>
+                        <button type="submit"
+                            name="update"
+                            value="1"
+                            class="btn btn-primary">
+                            Simpan Perubahan
+                        </button>
 
                         </div>
 

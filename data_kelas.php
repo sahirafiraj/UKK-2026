@@ -17,6 +17,10 @@ $nama_login = $_SESSION['name'] ?? 'Admin';
 
 // Mengambil data kelas dari database
 $query = mysqli_query($koneksi, "SELECT * FROM t_kelas ORDER BY id DESC");
+
+if (!$query) {
+    die("Gagal mengambil data: " . mysqli_error($koneksi));
+}
 ?>
 
 <!DOCTYPE html>
@@ -31,6 +35,10 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_kelas ORDER BY id DESC");
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
           rel="stylesheet">
+
+    <!-- DataTables CSS versi 3.1.4 -->
+    <link rel="stylesheet"
+          href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css">
 </head>
 
 <body class="bg-light">
@@ -38,8 +46,8 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_kelas ORDER BY id DESC");
 <div class="container-fluid">
     <div class="row">
 
-        <!-- SIDEBAR ADMIN TETAP -->
-             <div class="col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto"
+        <!-- SIDEBAR ADMIN -->
+        <div class="col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto"
              style="background-color: #172554;">
 
             <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
@@ -47,78 +55,67 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_kelas ORDER BY id DESC");
             <ul class="nav nav-pills flex-column gap-1">
 
                 <li class="nav-item">
-                    <a href="dashboard.php"
-                       class="nav-link text-white">
+                    <a href="dashboard.php" class="nav-link text-white">
                         Dashboard
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_siswa.php"
-                       class="nav-link text-white">
+                    <a href="data_siswa.php" class="nav-link text-white">
                         Data Siswa
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_guru.php"
-                       class="nav-link text-white">
+                    <a href="data_guru.php" class="nav-link text-white">
                         Data Guru
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_kelas.php"
-                       class="nav-link active">
+                    <a href="data_kelas.php" class="nav-link active">
                         Data Kelas
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_tahun_ajaran.php"
-                       class="nav-link text-white">
+                    <a href="data_tahun_ajaran.php" class="nav-link text-white">
                         Tahun Ajaran
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_penempatan_siswa.php"
-                       class="nav-link text-white">
+                    <a href="data_penempatan_siswa.php" class="nav-link text-white">
                         Penempatan Siswa
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_wali_kelas.php"
-                       class="nav-link text-white">
+                    <a href="data_wali_kelas.php" class="nav-link text-white">
                         Data Wali Kelas
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_kategori_pelanggaran.php"
-                       class="nav-link text-white">
+                    <a href="data_kategori_pelanggaran.php" class="nav-link text-white">
                         Kategori Pelanggaran
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_jenis_pelanggaran.php"
-                       class="nav-link text-white">
+                    <a href="data_jenis_pelanggaran.php" class="nav-link text-white">
                         Jenis Pelanggaran
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="laporan.php"
-                       class="nav-link text-white">
+                    <a href="laporan.php" class="nav-link text-white">
                         Laporan
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="about_me.php"
-                       class="nav-link text-white">
+                    <a href="about_me.php" class="nav-link text-white">
                         About Me
                     </a>
                 </li>
@@ -133,7 +130,6 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_kelas ORDER BY id DESC");
 
             </ul>
         </div>
-
 
         <!-- KONTEN UTAMA -->
         <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
@@ -153,7 +149,7 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_kelas ORDER BY id DESC");
             <!-- DAFTAR DATA KELAS -->
             <div class="card shadow-sm border-0">
 
-                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center flex-wrap gap-2">
 
                     <h5 class="mb-0 fw-bold">Daftar Data Kelas</h5>
 
@@ -173,7 +169,8 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_kelas ORDER BY id DESC");
 
                     <div class="table-responsive">
 
-                        <table class="table table-bordered table-striped table-hover align-middle">
+                        <table id="tabelKelas"
+                               class="table table-bordered table-striped table-hover align-middle">
 
                             <thead class="table-primary">
                                 <tr>
@@ -193,7 +190,7 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_kelas ORDER BY id DESC");
                                 $no = 1;
 
                                 // Memeriksa ketersediaan data
-                                if ($query && mysqli_num_rows($query) > 0) {
+                                if (mysqli_num_rows($query) > 0) {
 
                                     // Mengambil data satu per satu
                                     while ($data = mysqli_fetch_assoc($query)) {
@@ -272,6 +269,59 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_kelas ORDER BY id DESC");
 
 <!-- Bootstrap JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- DataTables JavaScript versi 3.1.4 -->
+<script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
+
+<!-- Mengaktifkan DataTables -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    new DataTable('#tabelKelas', {
+
+        pageLength: 10,
+
+        lengthMenu: [5, 10, 25, 50, 100],
+
+        order: [],
+
+        layout: {
+            topStart: 'info',
+            bottom: 'paging',
+            bottomStart: null,
+            bottomEnd: null
+        },
+
+        language: {
+            search: 'Cari:',
+            searchPlaceholder: 'Cari data kelas...',
+            lengthMenu: 'Tampilkan _MENU_ data',
+            info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+            infoEmpty: 'Tidak ada data',
+            infoFiltered: '(difilter dari _MAX_ total data)',
+            zeroRecords: 'Data tidak ditemukan',
+            emptyTable: 'Belum ada data kelas',
+
+            paginate: {
+                first: 'Pertama',
+                last: 'Terakhir',
+                next: 'Berikutnya',
+                previous: 'Sebelumnya'
+            }
+        },
+
+        columnDefs: [
+            {
+                targets: 5,
+                orderable: false,
+                searchable: false
+            }
+        ]
+
+    });
+
+});
+</script>
 
 </body>
 </html>
