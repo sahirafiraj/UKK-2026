@@ -1,21 +1,19 @@
+
 <?php
-// Memulai session
 session_start();
 
-// Menghubungkan ke database
 include "config/koneksi.php";
 
-// Memeriksa login dan hak akses admin
+// Cek login dan hak akses admin
 if (!isset($_SESSION['login']) || $_SESSION['role'] != 'admin') {
     echo "Anda tidak memiliki akses";
     exit;
 }
 
-// Mengambil nama pengguna yang sedang login
-$halaman = basename($_SERVER['PHP_SELF']);
+// Nama pengguna
 $nama_login = $_SESSION['name'] ?? 'Admin';
 
-// Mengambil semua data jenis pelanggaran
+// Mengambil data jenis pelanggaran
 $query = mysqli_query($koneksi, "
     SELECT *
     FROM t_pelanggaran
@@ -29,7 +27,6 @@ if (!$query) {
 
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -40,9 +37,33 @@ if (!$query) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
           rel="stylesheet">
 
-    <!-- DataTables CSS versi 3.1.4 -->
+    <!-- DataTables CSS -->
     <link rel="stylesheet"
-          href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css">
+          href="https://cdn.datatables.net/2.3.4/css/dataTables.dataTables.min.css">
+
+    <!-- Mengatur kolom dan tombol aksi -->
+    <style>
+        #tabelPelanggaran {
+            width: 100%;
+        }
+
+        #tabelPelanggaran th:last-child,
+        #tabelPelanggaran td:last-child {
+            min-width: 125px;
+            white-space: nowrap;
+        }
+
+        #tabelPelanggaran .aksi {
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: center;
+            gap: 5px;
+        }
+
+        #tabelPelanggaran .aksi .btn {
+            flex-shrink: 0;
+        }
+    </style>
 </head>
 
 <body class="bg-light">
@@ -50,7 +71,7 @@ if (!$query) {
 <div class="container-fluid">
     <div class="row">
 
-        <!-- SIDEBAR ADMIN -->
+        <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto"
              style="background-color: #172554;">
 
@@ -138,7 +159,7 @@ if (!$query) {
         <!-- KONTEN UTAMA -->
         <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
 
-            <!-- HEADER HALAMAN -->
+            <!-- HEADER -->
             <div class="bg-white rounded shadow-sm p-4 mb-4">
 
                 <h2 class="fw-bold">Kelola Jenis Pelanggaran</h2>
@@ -150,33 +171,42 @@ if (!$query) {
 
             </div>
 
-            <!-- CARD DAFTAR JENIS PELANGGARAN -->
+            <!-- DAFTAR JENIS PELANGGARAN -->
             <div class="card shadow-sm border-0">
 
-                <!-- JUDUL TABEL DAN TOMBOL -->
-                <div class="card-header bg-white d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div class="card-header bg-white py-3">
 
-                    <h5 class="mb-0 fw-bold">Daftar Jenis Pelanggaran</h5>
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
 
-                    <div>
-                        <a href="dashboard.php" class="btn btn-secondary">
-                            Kembali ke Dashboard
-                        </a>
+                        <h5 class="mb-0 fw-bold">
+                            Daftar Jenis Pelanggaran
+                        </h5>
 
-                        <a href="tambah_jenis_pelanggaran.php" class="btn btn-primary">
-                            + Tambah Jenis Pelanggaran
-                        </a>
+                        <div class="d-flex gap-2">
+
+                            <a href="dashboard.php"
+                               class="btn btn-secondary btn-sm">
+                                Kembali ke Dashboard
+                            </a>
+
+                            <a href="tambah_jenis_pelanggaran.php"
+                               class="btn btn-primary btn-sm">
+                                Tambah Jenis Pelanggaran
+                            </a>
+
+                        </div>
+
                     </div>
 
                 </div>
 
-                <!-- ISI TABEL -->
+                <!-- TABEL -->
                 <div class="card-body">
 
                     <div class="table-responsive">
 
                         <table id="tabelPelanggaran"
-                               class="table table-bordered table-striped table-hover align-middle">
+                               class="table table-bordered table-striped table-hover align-middle w-100">
 
                             <thead class="table-primary">
                                 <tr>
@@ -194,17 +224,13 @@ if (!$query) {
                             <tbody>
 
                                 <?php
-                                // Nomor urut data
                                 $no = 1;
 
-                                // Memeriksa apakah data tersedia
-                                if (mysqli_num_rows($query) > 0) {
-
-                                    // Mengambil data satu per satu
-                                    while ($data = mysqli_fetch_assoc($query)) {
+                                while ($data = mysqli_fetch_assoc($query)) {
                                 ?>
 
                                 <tr>
+
                                     <td><?= $no++; ?></td>
 
                                     <td>
@@ -216,7 +242,9 @@ if (!$query) {
                                     </td>
 
                                     <td>
-                                        <?= htmlspecialchars($data['pelanggaran_kategori_id'] ?? ''); ?>
+                                        <?= htmlspecialchars(
+                                            $data['pelanggaran_kategori_id'] ?? ''
+                                        ); ?>
                                     </td>
 
                                     <td>
@@ -229,12 +257,10 @@ if (!$query) {
                                         <?= htmlspecialchars($data['deskripsi'] ?? ''); ?>
                                     </td>
 
-                                    <!-- STATUS AKTIF -->
+                                    <!-- STATUS -->
                                     <td>
                                         <?php
-                                        $status = (int) ($data['status_aktif'] ?? 0);
-
-                                        if ($status === 1) {
+                                        if (($data['status_aktif'] ?? 0) == 1) {
                                         ?>
                                             <span class="badge bg-success">
                                                 Aktif
@@ -252,33 +278,25 @@ if (!$query) {
 
                                     <!-- AKSI -->
                                     <td>
-                                        <a href="edit_jenis_pelanggaran.php?id=<?= urlencode($data['id']); ?>"
-                                           class="btn btn-warning btn-sm">
-                                            Edit
-                                        </a>
+                                        <div class="aksi">
 
-                                        <a href="hapus_jenis_pelanggaran.php?id=<?= urlencode($data['id']); ?>"
-                                           class="btn btn-danger btn-sm"
-                                           onclick="return confirm('Yakin ingin menghapus jenis pelanggaran ini?')">
-                                            Hapus
-                                        </a>
+                                            <a href="edit_jenis_pelanggaran.php?id=<?= (int) $data['id']; ?>"
+                                               class="btn btn-warning btn-sm">
+                                                Edit
+                                            </a>
+
+                                            <a href="hapus_jenis_pelanggaran.php?id=<?= (int) $data['id']; ?>"
+                                               class="btn btn-danger btn-sm"
+                                               onclick="return confirm('Yakin ingin menghapus jenis pelanggaran ini?')">
+                                                Hapus
+                                            </a>
+
+                                        </div>
                                     </td>
+
                                 </tr>
 
-                                <?php
-                                    }
-                                } else {
-                                ?>
-
-                                <tr>
-                                    <td colspan="8" class="text-center">
-                                        Belum ada data jenis pelanggaran.
-                                    </td>
-                                </tr>
-
-                                <?php
-                                }
-                                ?>
+                                <?php } ?>
 
                             </tbody>
 
@@ -296,27 +314,33 @@ if (!$query) {
 <!-- Bootstrap JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- DataTables JavaScript versi 3.1.4 -->
-<script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
+<!-- DataTables JavaScript -->
+<script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
 
 <!-- Mengaktifkan DataTables -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
     new DataTable('#tabelPelanggaran', {
+
+        // Jumlah data per halaman
         pageLength: 10,
 
+        // Pilihan jumlah data
         lengthMenu: [5, 10, 25, 50, 100],
 
+        // Urutan awal mengikuti query PHP
         order: [],
 
+        // Posisi pencarian, pilihan jumlah data, dan pagination
         layout: {
-            topStart: 'info',
-            bottom: 'paging',
-            bottomStart: null,
-            bottomEnd: null
+            topStart: 'pageLength',
+            topEnd: 'search',
+            bottomStart: 'info',
+            bottomEnd: 'paging'
         },
 
+        // Bahasa Indonesia
         language: {
             search: 'Cari:',
             searchPlaceholder: 'Cari jenis pelanggaran...',
@@ -335,6 +359,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
 
+        // Kolom Aksi tidak ikut pencarian dan pengurutan
         columnDefs: [
             {
                 targets: 7,
@@ -342,6 +367,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 searchable: false
             }
         ]
+
     });
 
 });

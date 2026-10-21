@@ -234,10 +234,10 @@ $query = mysqli_query($koneksi, "
 
                     <h5 class="mb-0 fw-bold">Daftar Laporan Pelanggaran</h5>
 
-                    <div>
-                        <a href="dashboard.php" class="btn btn-secondary">
-                            Kembali ke Dashboard
-                        </a>
+                    <div class="d-flex gap-2">
+                            <a href="dashboard.php" class="btn btn-secondary btn-sm">
+                                Kembali ke Dashboard
+                            </a>
 
                         <button type="button"
                                 onclick="window.print()"

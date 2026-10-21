@@ -160,17 +160,15 @@ if (!$data) {
                         Daftar Kategori Pelanggaran
                     </h5>
 
-                    <div>
-                        <a href="dashboard.php" class="btn btn-secondary">
-                            Kembali ke Dashboard
-                        </a>
+                    <div class="d-flex gap-2">
+                            <a href="dashboard.php" class="btn btn-secondary btn-sm">
+                                Kembali ke Dashboard
+                            </a>
 
-                        <a href="tambah_kategori_pelanggaran.php"
-                           class="btn btn-primary">
-                            Tambah Kategori Pelanggaran
-                        </a>
-                    </div>
-
+                            <a href="tambah_kategori_pelanggaran.php" class="btn btn-primary btn-sm">
+                                Tambah Kategori Pelanggaran
+                            </a>
+                        </div>
                 </div>
 
                 <!-- TABEL KATEGORI -->

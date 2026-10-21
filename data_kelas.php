@@ -153,15 +153,17 @@ if (!$query) {
 
                     <h5 class="mb-0 fw-bold">Daftar Data Kelas</h5>
 
-                    <div>
-                        <a href="dashboard.php" class="btn btn-secondary">
-                            Kembali ke Dashboard
-                        </a>
+                    
+<div class="d-flex gap-2">
+    <a href="dashboard.php" class="btn btn-secondary btn-sm">
+        Kembali ke Dashboard
+    </a>
 
-                        <a href="tambah_kelas.php" class="btn btn-primary">
-                            Tambah Kelas
-                        </a>
-                    </div>
+    <a href="tambah_kelas.php" class="btn btn-primary btn-sm">
+        Tambah Kelas
+    </a>
+</div>
+
 
                 </div>
 
