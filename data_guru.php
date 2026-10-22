@@ -1,38 +1,41 @@
+
 <?php
-// Memulai session
-session_start();
+include 'includes/cek_session.php';
+include 'config/koneksi.php';
 
-// Menghubungkan ke database
-include "config/koneksi.php";
+if (!isset($_SESSION['login'])) {
+    header("Location: login.php");
+    exit;
+}
 
-// Memeriksa login dan hak akses admin
-if (!isset($_SESSION['login']) || $_SESSION['role'] != 'admin') {
+if ($_SESSION['role'] != 'admin') {
     echo "Anda tidak memiliki akses";
     exit;
 }
 
-// Mengambil nama pengguna
+$name = $_SESSION['name'] ?? 'Admin';
 $halaman = basename($_SERVER['PHP_SELF']);
-$nama_login = $_SESSION['name'] ?? 'Admin';
 
 // Mengambil data guru
-$query = mysqli_query($koneksi, "SELECT * FROM t_guru ORDER BY id DESC");
+$query = mysqli_query(
+    $koneksi,
+    "SELECT * FROM t_guru ORDER BY id DESC"
+);
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Kelola Data Guru</title>
+    <title>Data Guru</title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
           rel="stylesheet">
 
-    <!-- DataTables CSS versi 3.1.4 -->
+    <!-- DataTables CSS -->
     <link rel="stylesheet"
           href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css">
 </head>
@@ -63,7 +66,8 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_guru ORDER BY id DESC");
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_guru.php" class="nav-link active">
+                    <a href="data_guru.php"
+                       class="nav-link <?= $halaman == 'data_guru.php' ? 'active' : 'text-white'; ?>">
                         Data Guru
                     </a>
                 </li>
@@ -127,22 +131,22 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_guru ORDER BY id DESC");
             </ul>
         </div>
 
-        <!-- KONTEN UTAMA -->
+        <!-- KONTEN DATA GURU -->
         <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
 
-            <!-- HEADER HALAMAN -->
+            <!-- HEADER -->
             <div class="bg-white rounded shadow-sm p-4 mb-4">
 
                 <h2 class="fw-bold">Kelola Data Guru</h2>
 
                 <p class="text-secondary mb-0">
                     Selamat datang,
-                    <b><?= htmlspecialchars($nama_login); ?></b>
+                    <b><?= htmlspecialchars($name); ?></b>
                 </p>
 
             </div>
 
-            <!-- CARD DATA GURU -->
+            <!-- TABEL DATA GURU -->
             <div class="card shadow-sm border-0">
 
                 <div class="card-header bg-white">
@@ -151,6 +155,7 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_guru ORDER BY id DESC");
                         <h5 class="mb-0 fw-bold">Daftar Data Guru</h5>
 
                         <div class="d-flex gap-2">
+
                             <a href="dashboard.php" class="btn btn-secondary btn-sm">
                                 Kembali ke Dashboard
                             </a>
@@ -158,11 +163,11 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_guru ORDER BY id DESC");
                             <a href="tambah_guru.php" class="btn btn-primary btn-sm">
                                 Tambah Guru
                             </a>
+
                         </div>
 
                     </div>
                 </div>
-
 
                 <div class="card-body">
 
@@ -174,7 +179,8 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_guru ORDER BY id DESC");
                             <thead class="table-primary">
                                 <tr>
                                     <th>No</th>
-                                    <th>Nama</th>
+                                    <th>NIP</th>
+                                    <th>Nama Guru</th>
                                     <th>Email</th>
                                     <th>Status</th>
                                     <th>User ID</th>
@@ -184,74 +190,70 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_guru ORDER BY id DESC");
 
                             <tbody>
 
-                                <?php
-                                $no = 1;
+                            <?php
+                            $no = 1;
 
-                                if ($query && mysqli_num_rows($query) > 0) {
-
-                                    while ($data = mysqli_fetch_assoc($query)) {
-                                ?>
+                            if ($query && mysqli_num_rows($query) > 0) {
+                                while ($data = mysqli_fetch_assoc($query)) {
+                            ?>
 
                                 <tr>
                                     <td><?= $no++; ?></td>
 
                                     <td>
-                                        <?= htmlspecialchars($data['nama'] ?? ''); ?>
+                                        <?= htmlspecialchars($data['nip'] ?? '-'); ?>
                                     </td>
 
                                     <td>
-                                        <?= htmlspecialchars($data['email'] ?? ''); ?>
+                                        <?= htmlspecialchars($data['nama'] ?? '-'); ?>
+                                    </td>
+
+                                    <td>
+                                        <?= htmlspecialchars($data['email'] ?? '-'); ?>
                                     </td>
 
                                     <td>
                                         <?php if (($data['status_aktif'] ?? 0) == 1) { ?>
-
-                                            <span class="badge bg-success">
-                                                Aktif
-                                            </span>
-
+                                            <span class="badge bg-success">Aktif</span>
                                         <?php } else { ?>
-
-                                            <span class="badge bg-secondary">
-                                                Tidak Aktif
-                                            </span>
-
+                                            <span class="badge bg-secondary">Tidak Aktif</span>
                                         <?php } ?>
                                     </td>
 
                                     <td>
-                                        <?= htmlspecialchars($data['id'] ?? ''); ?>
+                                        <?= htmlspecialchars((string)($data['user_id'] ?? '-')); ?>
                                     </td>
 
                                     <td>
-                                        <a href="edit_guru.php?id=<?= urlencode($data['id']); ?>"
-                                           class="btn btn-warning btn-sm">
-                                            Edit
-                                        </a>
+                                        <div class="d-flex gap-1">
 
-                                        <a href="hapus_guru.php?id=<?= urlencode($data['id']); ?>"
-                                           class="btn btn-danger btn-sm"
-                                           onclick="return confirm('Yakin ingin menghapus data guru ini?')">
-                                            Hapus
-                                        </a>
+                                            <a href="edit_guru.php?id=<?= urlencode($data['id']); ?>"
+                                               class="btn btn-warning btn-sm">
+                                                Edit
+                                            </a>
+
+                                            <a href="hapus_guru.php?id=<?= urlencode($data['id']); ?>"
+                                               class="btn btn-danger btn-sm"
+                                               onclick="return confirm('Yakin ingin menghapus data guru ini?')">
+                                                Hapus
+                                            </a>
+
+                                        </div>
                                     </td>
                                 </tr>
 
-                                <?php
-                                    }
-
-                                } else {
-                                ?>
+                            <?php
+                                }
+                            } else {
+                            ?>
 
                                 <tr>
-                                    <td colspan="6" class="text-center">
+                                    <td colspan="7" class="text-center">
                                         Belum ada data guru.
                                     </td>
                                 </tr>
 
-                                <?php
-                                }
-                                ?>
+                            <?php } ?>
 
                             </tbody>
 
@@ -269,18 +271,15 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_guru ORDER BY id DESC");
 <!-- Bootstrap JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- DataTables JavaScript versi 3.1.4 -->
+<!-- DataTables JavaScript -->
 <script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
 
-<!-- Mengaktifkan DataTables -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
     new DataTable('#tabelGuru', {
         pageLength: 10,
-
         lengthMenu: [5, 10, 25, 50, 100],
-
         order: [],
 
         layout: {
@@ -308,13 +307,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
 
-        columnDefs: [
-            {
-                targets: 5,
-                orderable: false,
-                searchable: false
-            }
-        ]
+        columnDefs: [{
+            targets: 6,
+            orderable: false,
+            searchable: false
+        }]
     });
 
 });

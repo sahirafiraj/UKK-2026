@@ -48,6 +48,7 @@ if (!$data) {
 <div class="container-fluid">
     <div class="row">
 
+        <!-- SIDEBAR ADMIN -->
         <div class="col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto"
              style="background-color: #172554;">
 
@@ -111,6 +112,7 @@ if (!$data) {
             </ul>
         </div>
 
+        <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
 
             <div class="bg-white rounded shadow-sm p-4 mb-4">
@@ -133,42 +135,65 @@ if (!$data) {
                         <input type="hidden" name="id"
                                value="<?= htmlspecialchars($data['id']); ?>">
 
+                        <!-- NIP -->
                         <div class="mb-3">
                             <label for="nip" class="form-label">NIP</label>
-                            <input type="text" id="nip" name="nip"
+                            <input type="text"
+                                   id="nip"
+                                   name="nip"
                                    class="form-control"
+                                   maxlength="18"
+                                   inputmode="numeric"
+                                   placeholder="Masukkan NIP guru"
                                    value="<?= htmlspecialchars($data['nip']); ?>"
                                    required>
                         </div>
 
+                        <!-- NAMA GURU -->
                         <div class="mb-3">
                             <label for="nama" class="form-label">Nama Guru</label>
-                            <input type="text" id="nama" name="nama"
+                            <input type="text"
+                                   id="nama"
+                                   name="nama"
                                    class="form-control"
                                    value="<?= htmlspecialchars($data['nama']); ?>"
                                    required>
                         </div>
 
+                        <!-- EMAIL -->
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" id="email" name="email"
+                            <input type="email"
+                                   id="email"
+                                   name="email"
                                    class="form-control"
                                    value="<?= htmlspecialchars($data['email']); ?>"
                                    required>
                         </div>
 
+                        <!-- STATUS AKTIF -->
                         <div class="mb-3">
                             <label for="status_aktif" class="form-label">Status Aktif</label>
-                            <select id="status_aktif" name="status_aktif"
-                                    class="form-select" required>
-                                <option value="1" <?= $data['status_aktif'] == 1 ? 'selected' : ''; ?>>Aktif</option>
-                                <option value="0" <?= $data['status_aktif'] == 0 ? 'selected' : ''; ?>>Tidak Aktif</option>
+                            <select id="status_aktif"
+                                    name="status_aktif"
+                                    class="form-select"
+                                    required>
+                                <option value="1" <?= $data['status_aktif'] == 1 ? 'selected' : ''; ?>>
+                                    Aktif
+                                </option>
+
+                                <option value="0" <?= $data['status_aktif'] == 0 ? 'selected' : ''; ?>>
+                                    Tidak Aktif
+                                </option>
                             </select>
                         </div>
 
+                        <!-- USER ID -->
                         <div class="mb-4">
                             <label for="user_id" class="form-label">User ID</label>
-                            <input type="number" id="user_id" name="user_id"
+                            <input type="number"
+                                   id="user_id"
+                                   name="user_id"
                                    class="form-control"
                                    value="<?= htmlspecialchars($data['user_id']); ?>"
                                    required>
@@ -181,7 +206,9 @@ if (!$data) {
                                 Kembali
                             </a>
 
-                            <button type="submit" name="update" value="1"
+                            <button type="submit"
+                                    name="update"
+                                    value="1"
                                     class="btn btn-primary">
                                 Simpan Perubahan
                             </button>

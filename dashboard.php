@@ -1,3 +1,4 @@
+
 <?php
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
@@ -29,7 +30,7 @@ $total_pelanggaran = mysqli_fetch_assoc($query_pelanggaran)['total'];
 $query_kategori = mysqli_query($koneksi, "SELECT COUNT(*) AS total FROM t_pelanggaran_kategori");
 $total_kategori = mysqli_fetch_assoc($query_kategori)['total'];
 
-// Total poin, jika kolom poin tersedia pada tabel tersebut
+// Total poin
 $total_poin = 0;
 $query_poin = mysqli_query($koneksi, "SELECT SUM(poin) AS total FROM t_pelanggaran_siswa");
 
@@ -38,10 +39,10 @@ if ($query_poin) {
     $total_poin = $data_poin['total'] ?? 0;
 }
 
-// Contoh sementara jumlah tindakan
+// Jumlah tindakan sementara
 $total_tindakan = 0;
 
-// Riwayat menggunakan jumlah seluruh catatan pelanggaran
+// Jumlah riwayat pelanggaran
 $total_riwayat = $total_pelanggaran;
 ?>
 
@@ -62,18 +63,17 @@ $total_riwayat = $total_pelanggaran;
 <div class="container-fluid">
     <div class="row">
 
-        <!-- SIDEBAR -->
+        <!-- SIDEBAR: DISESUAIKAN DENGAN DATA SISWA -->
         <div class="col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto"
-             style="background-color: #192952;">
+             style="background-color: #172554;">
 
-            <h4 class="text-white mb-4">
-                Sistem<br>Pelanggaran
-            </h4>
+            <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
 
             <ul class="nav nav-pills flex-column gap-1">
 
-                <!-- MENU ADMIN -->
                 <?php if ($role == 'admin') { ?>
+
+                    <!-- MENU ADMIN -->
 
                     <li class="nav-item">
                         <a href="dashboard.php"
@@ -139,6 +139,7 @@ $total_riwayat = $total_pelanggaran;
                 <?php } else { ?>
 
                     <!-- MENU GURU -->
+
                     <li class="nav-item">
                         <a href="dashboard.php"
                            class="nav-link <?= $halaman == 'dashboard.php' ? 'active' : 'text-white'; ?>">
@@ -173,6 +174,7 @@ $total_riwayat = $total_pelanggaran;
                 <?php } ?>
 
                 <!-- MENU BERSAMA -->
+
                 <li class="nav-item">
                     <a href="about_me.php" class="nav-link text-white">
                         About Me
@@ -190,32 +192,41 @@ $total_riwayat = $total_pelanggaran;
             </ul>
         </div>
 
-        <!-- KONTEN UTAMA -->
+        <!-- KONTEN UTAMA: TETAP SEPERTI SEMULA -->
         <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
 
-            <!-- HEADER -->
+            <!-- HEADER DASHBOARD -->
             <div class="bg-white rounded shadow-sm p-4 mb-4">
+
                 <h2 class="fw-bold">Dashboard</h2>
 
                 <p class="text-secondary mb-0">
                     Selamat datang,
                     <b><?= htmlspecialchars($nama_login); ?></b>
                 </p>
+
             </div>
 
             <?php if ($role == 'admin') { ?>
 
                 <!-- KARTU DASHBOARD ADMIN -->
+
                 <div class="row g-4">
 
                     <div class="col-12 col-sm-6 col-xl-3">
                         <div class="card border-0 shadow-sm">
                             <div class="card-body p-4">
+
                                 <p class="text-secondary mb-2">Total Siswa</p>
-                                <h2 class="fw-bold mb-3"><?= $total_siswa; ?></h2>
+
+                                <h2 class="fw-bold mb-3">
+                                    <?= $total_siswa; ?>
+                                </h2>
+
                                 <a href="data_siswa.php" class="btn btn-primary btn-sm">
                                     Lihat Data
                                 </a>
+
                             </div>
                         </div>
                     </div>
@@ -223,11 +234,17 @@ $total_riwayat = $total_pelanggaran;
                     <div class="col-12 col-sm-6 col-xl-3">
                         <div class="card border-0 shadow-sm">
                             <div class="card-body p-4">
+
                                 <p class="text-secondary mb-2">Total Guru</p>
-                                <h2 class="fw-bold mb-3"><?= $total_guru; ?></h2>
+
+                                <h2 class="fw-bold mb-3">
+                                    <?= $total_guru; ?>
+                                </h2>
+
                                 <a href="data_guru.php" class="btn btn-primary btn-sm">
                                     Lihat Data
                                 </a>
+
                             </div>
                         </div>
                     </div>
@@ -235,11 +252,17 @@ $total_riwayat = $total_pelanggaran;
                     <div class="col-12 col-sm-6 col-xl-3">
                         <div class="card border-0 shadow-sm">
                             <div class="card-body p-4">
+
                                 <p class="text-secondary mb-2">Data Pelanggaran</p>
-                                <h2 class="fw-bold mb-3"><?= $total_pelanggaran; ?></h2>
+
+                                <h2 class="fw-bold mb-3">
+                                    <?= $total_pelanggaran; ?>
+                                </h2>
+
                                 <a href="laporan.php" class="btn btn-primary btn-sm">
                                     Lihat Data
                                 </a>
+
                             </div>
                         </div>
                     </div>
@@ -247,12 +270,18 @@ $total_riwayat = $total_pelanggaran;
                     <div class="col-12 col-sm-6 col-xl-3">
                         <div class="card border-0 shadow-sm">
                             <div class="card-body p-4">
+
                                 <p class="text-secondary mb-2">Kategori Pelanggaran</p>
-                                <h2 class="fw-bold mb-3"><?= $total_kategori; ?></h2>
+
+                                <h2 class="fw-bold mb-3">
+                                    <?= $total_kategori; ?>
+                                </h2>
+
                                 <a href="data_kategori_pelanggaran.php"
                                    class="btn btn-primary btn-sm">
                                     Lihat Data
                                 </a>
+
                             </div>
                         </div>
                     </div>
@@ -262,17 +291,24 @@ $total_riwayat = $total_pelanggaran;
             <?php } else { ?>
 
                 <!-- KARTU DASHBOARD GURU -->
+
                 <div class="row g-4">
 
                     <div class="col-12 col-sm-6 col-xl-3">
                         <div class="card border-0 shadow-sm">
                             <div class="card-body p-4">
+
                                 <p class="text-secondary mb-2">Catat Pelanggaran</p>
-                                <h2 class="fw-bold mb-3"><?= $total_pelanggaran; ?></h2>
+
+                                <h2 class="fw-bold mb-3">
+                                    <?= $total_pelanggaran; ?>
+                                </h2>
+
                                 <a href="catat_pelanggaran.php"
                                    class="btn btn-primary btn-sm">
                                     Lihat Data
                                 </a>
+
                             </div>
                         </div>
                     </div>
@@ -280,11 +316,17 @@ $total_riwayat = $total_pelanggaran;
                     <div class="col-12 col-sm-6 col-xl-3">
                         <div class="card border-0 shadow-sm">
                             <div class="card-body p-4">
+
                                 <p class="text-secondary mb-2">Tindakan</p>
-                                <h2 class="fw-bold mb-3"><?= $total_tindakan; ?></h2>
+
+                                <h2 class="fw-bold mb-3">
+                                    <?= $total_tindakan; ?>
+                                </h2>
+
                                 <a href="tindakan.php" class="btn btn-primary btn-sm">
                                     Lihat Data
                                 </a>
+
                             </div>
                         </div>
                     </div>
@@ -292,11 +334,17 @@ $total_riwayat = $total_pelanggaran;
                     <div class="col-12 col-sm-6 col-xl-3">
                         <div class="card border-0 shadow-sm">
                             <div class="card-body p-4">
+
                                 <p class="text-secondary mb-2">Riwayat</p>
-                                <h2 class="fw-bold mb-3"><?= $total_riwayat; ?></h2>
+
+                                <h2 class="fw-bold mb-3">
+                                    <?= $total_riwayat; ?>
+                                </h2>
+
                                 <a href="riwayat.php" class="btn btn-primary btn-sm">
                                     Lihat Data
                                 </a>
+
                             </div>
                         </div>
                     </div>
@@ -304,11 +352,17 @@ $total_riwayat = $total_pelanggaran;
                     <div class="col-12 col-sm-6 col-xl-3">
                         <div class="card border-0 shadow-sm">
                             <div class="card-body p-4">
+
                                 <p class="text-secondary mb-2">Rekap Poin</p>
-                                <h2 class="fw-bold mb-3"><?= $total_poin; ?></h2>
+
+                                <h2 class="fw-bold mb-3">
+                                    <?= $total_poin; ?>
+                                </h2>
+
                                 <a href="rekap_poin.php" class="btn btn-primary btn-sm">
                                     Lihat Data
                                 </a>
+
                             </div>
                         </div>
                     </div>

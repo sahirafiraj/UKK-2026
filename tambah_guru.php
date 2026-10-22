@@ -135,15 +135,19 @@ $halaman = basename($_SERVER['PHP_SELF']);
 
                     <form action="proses_tambah_guru.php" method="POST">
 
-                        <div class="mb-3">
-                            <label for="nip" class="form-label">NIP</label>
-                            <input type="text"
-                                   name="nip"
-                                   id="nip"
-                                   class="form-control"
-                                   placeholder="Masukkan NIP guru"
-                                   required>
-                        </div>
+                        
+                <div class="mb-3">
+                    <label for="nip" class="form-label">NIP</label>
+                    <input type="text"
+                        name="nip"
+                        id="nip"
+                        class="form-control"
+                        maxlength="18"
+                        inputmode="numeric"
+                        placeholder="Masukkan NIP guru"
+                        required>
+                </div>
+
 
                         <div class="mb-3">
                             <label for="nama_guru" class="form-label">Nama Guru</label>
