@@ -1,15 +1,20 @@
-
 <?php
-session_start();
+include 'includes/cek_session.php';
+include 'config/koneksi.php';
 
-include "config/koneksi.php";
-
-if (!isset($_SESSION['login']) || $_SESSION['role'] != 'admin') {
-    echo "Anda tidak memiliki akses";
+if (!isset($_SESSION['login'])) {
+    header("Location: login.php");
     exit;
 }
 
-$nama_login = $_SESSION['name'] ?? 'Admin';
+$nama_login = $_SESSION['name'] ?? 'Pengguna';
+$role = strtolower(trim($_SESSION['role'] ?? ''));
+$halaman = basename($_SERVER['PHP_SELF']);
+
+if ($role != 'admin' && $role != 'guru') {
+    echo "Anda tidak memiliki akses";
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -17,7 +22,7 @@ $nama_login = $_SESSION['name'] ?? 'Admin';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Me</title>
+    <title>About Me - Sistem Pelanggaran</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -48,48 +53,83 @@ $nama_login = $_SESSION['name'] ?? 'Admin';
 
             <ul class="nav nav-pills flex-column gap-1">
 
-                <li class="nav-item">
-                    <a href="dashboard.php" class="nav-link text-white">Dashboard</a>
-                </li>
+                <?php if ($role == 'admin') { ?>
+
+                    <li class="nav-item">
+                        <a href="dashboard.php"
+                           class="nav-link <?= $halaman == 'dashboard.php' ? 'active' : 'text-white'; ?>">
+                            Dashboard
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="data_siswa.php" class="nav-link text-white">Data Siswa</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="data_guru.php" class="nav-link text-white">Data Guru</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="data_kelas.php" class="nav-link text-white">Data Kelas</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="data_tahun_ajaran.php" class="nav-link text-white">Tahun Ajaran</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="data_penempatan_siswa.php" class="nav-link text-white">Penempatan Siswa</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="data_wali_kelas.php" class="nav-link text-white">Data Wali Kelas</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="data_kategori_pelanggaran.php" class="nav-link text-white">Kategori Pelanggaran</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="data_jenis_pelanggaran.php" class="nav-link text-white">Jenis Pelanggaran</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="laporan.php" class="nav-link text-white">Laporan</a>
+                    </li>
+
+                <?php } else { ?>
+
+                    <li class="nav-item">
+                        <a href="dashboard.php"
+                           class="nav-link <?= $halaman == 'dashboard.php' ? 'active' : 'text-white'; ?>">
+                            Dashboard
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="catat_pelanggaran.php" class="nav-link text-white">Catat Pelanggaran</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="tindakan.php" class="nav-link text-white">Tindakan</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="riwayat.php" class="nav-link text-white">Riwayat</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="rekap_poin.php" class="nav-link text-white">Rekap Poin</a>
+                    </li>
+
+                <?php } ?>
 
                 <li class="nav-item">
-                    <a href="data_siswa.php" class="nav-link text-white">Data Siswa</a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="data_guru.php" class="nav-link text-white">Data Guru</a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="data_kelas.php" class="nav-link text-white">Data Kelas</a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="data_tahun_ajaran.php" class="nav-link text-white">Tahun Ajaran</a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="data_penempatan_siswa.php" class="nav-link text-white">Penempatan Siswa</a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="data_wali_kelas.php" class="nav-link text-white">Data Wali Kelas</a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="data_kategori_pelanggaran.php" class="nav-link text-white">Kategori Pelanggaran</a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="data_jenis_pelanggaran.php" class="nav-link text-white">Jenis Pelanggaran</a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="laporan.php" class="nav-link text-white">Laporan</a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="about_me.php" class="nav-link active">About Me</a>
+                    <a href="about_me.php"
+                       class="nav-link <?= $halaman == 'about_me.php' ? 'active' : 'text-white'; ?>">
+                        About Me
+                    </a>
                 </li>
 
                 <hr class="border-white">
