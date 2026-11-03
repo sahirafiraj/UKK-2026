@@ -76,8 +76,7 @@ $total_riwayat = $total_pelanggaran;
                     <!-- MENU ADMIN -->
 
                     <li class="nav-item">
-                        <a href="dashboard.php"
-                           class="nav-link <?= $halaman == 'dashboard.php' ? 'active' : 'text-white'; ?>">
+                        <a href="dashboard.php" class="nav-link active">
                             Dashboard
                         </a>
                     </li>
