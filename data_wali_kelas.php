@@ -1,3 +1,4 @@
+
 <?php
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
@@ -18,6 +19,7 @@ $query = mysqli_query($koneksi, "
     SELECT
         w.*,
         ta.nama AS tahun_ajaran,
+        ta.status_aktif AS status_tahun_ajaran,
         k.nama AS nama_kelas,
         g.nama AS nama_guru
     FROM t_wali_kelas w
@@ -45,7 +47,6 @@ $query = mysqli_query($koneksi, "
 <div class="container-fluid">
     <div class="row">
 
-        <!-- SIDEBAR ADMIN -->
         <div class="col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto"
              style="background-color: #172554;">
 
@@ -106,7 +107,6 @@ $query = mysqli_query($koneksi, "
             </ul>
         </div>
 
-        <!-- KONTEN UTAMA -->
         <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
 
             <div class="bg-white rounded shadow-sm p-4 mb-4">
@@ -118,7 +118,6 @@ $query = mysqli_query($koneksi, "
                 </p>
             </div>
 
-            <!-- TABEL DATA WALI KELAS -->
             <div class="card shadow-sm border-0">
 
                 <div class="card-header bg-white">
@@ -190,7 +189,7 @@ $query = mysqli_query($koneksi, "
                                     </td>
 
                                     <td>
-                                        <?php if (($data['status_aktif'] ?? 0) == 1) { ?>
+                                        <?php if (($data['status_tahun_ajaran'] ?? 0) == 1) { ?>
                                             <span class="badge bg-success">Aktif</span>
                                         <?php } else { ?>
                                             <span class="badge bg-secondary">Tidak Aktif</span>

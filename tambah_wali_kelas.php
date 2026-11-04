@@ -1,3 +1,4 @@
+
 <?php
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
@@ -12,9 +13,9 @@ if ($_SESSION['role'] != 'admin') {
     exit;
 }
 
-$tahun = mysqli_query($koneksi, "SELECT * FROM t_tahun_ajaran ORDER BY id DESC");
-$kelas = mysqli_query($koneksi, "SELECT * FROM t_kelas ORDER BY id DESC");
-$guru = mysqli_query($koneksi, "SELECT * FROM t_guru ORDER BY id DESC");
+$tahun = mysqli_query($koneksi, "SELECT * FROM t_tahun_ajaran WHERE status_aktif = 1 ORDER BY id DESC");
+$kelas = mysqli_query($koneksi, "SELECT * FROM t_kelas WHERE status_aktif = 1 ORDER BY id DESC");
+$guru = mysqli_query($koneksi, "SELECT * FROM t_guru WHERE status_aktif = 1 ORDER BY id DESC");
 ?>
 
 <!DOCTYPE html>

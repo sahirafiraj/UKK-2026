@@ -1,3 +1,4 @@
+
 <?php
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
@@ -27,9 +28,9 @@ if (!$data) {
     exit;
 }
 
-$tahun = mysqli_query($koneksi, "SELECT * FROM t_tahun_ajaran ORDER BY id DESC");
-$kelas = mysqli_query($koneksi, "SELECT * FROM t_kelas ORDER BY id DESC");
-$guru = mysqli_query($koneksi, "SELECT * FROM t_guru ORDER BY id DESC");
+$tahun = mysqli_query($koneksi, "SELECT * FROM t_tahun_ajaran WHERE status_aktif = 1 OR id = '{$data['tahun_ajaran_id']}' ORDER BY id DESC");
+$kelas = mysqli_query($koneksi, "SELECT * FROM t_kelas WHERE status_aktif = 1 OR id = '{$data['kelas_id']}' ORDER BY id DESC");
+$guru = mysqli_query($koneksi, "SELECT * FROM t_guru WHERE status_aktif = 1 OR id = '{$data['guru_id']}' ORDER BY id DESC");
 ?>
 
 <!DOCTYPE html>

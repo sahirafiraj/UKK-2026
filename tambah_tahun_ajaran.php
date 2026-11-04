@@ -121,29 +121,43 @@ if (isset($_POST['simpan'])) {
                         $tanggal_selesai
                     );
 
-                    // Menyimpan data hanya jika belum ada duplikat
-                    $simpan = mysqli_query(
-                        $koneksi,
-                        "INSERT INTO t_tahun_ajaran
-                        (nama, tanggal_mulai, tanggal_selesai, status_aktif)
-                        VALUES (
-                            '$nama_db',
-                            '$tanggal_mulai_db',
-                            '$tanggal_selesai_db',
-                            '$status_aktif'
-                        )"
-                    );
+                    // Memulai transaksi agar perubahan status dan insert konsisten
+                    mysqli_begin_transaction($koneksi);
+
+                    // Jika tahun ajaran baru Aktif, nonaktifkan semua data yang lain
+                    if ($status_aktif == 1) {
+                        $nonaktifkan = mysqli_query(
+                            $koneksi,
+                            "UPDATE t_tahun_ajaran SET status_aktif = 0"
+                        );
+                    } else {
+                        $nonaktifkan = true;
+                    }
+
+                    // Menyimpan data tahun ajaran baru
+                    if ($nonaktifkan) {
+                        $simpan = mysqli_query(
+                            $koneksi,
+                            "INSERT INTO t_tahun_ajaran
+                            (nama, tanggal_mulai, tanggal_selesai, status_aktif)
+                            VALUES (
+                                '$nama_db',
+                                '$tanggal_mulai_db',
+                                '$tanggal_selesai_db',
+                                '$status_aktif'
+                            )"
+                        );
+                    } else {
+                        $simpan = false;
+                    }
 
                     // Memeriksa hasil penyimpanan
                     if ($simpan) {
-
-                        // Jika berhasil, kembali ke daftar tahun ajaran
+                        mysqli_commit($koneksi);
                         header("Location: data_tahun_ajaran.php");
                         exit;
-
                     } else {
-
-                        // Menampilkan pesan jika penyimpanan gagal
+                        mysqli_rollback($koneksi);
                         $pesan = "Data tahun ajaran gagal disimpan: "
                                . mysqli_error($koneksi);
                     }

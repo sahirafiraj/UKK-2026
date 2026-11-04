@@ -67,7 +67,7 @@ $query = mysqli_query(
 
                 <li class="nav-item">
                     <a href="data_guru.php"
-                       class="nav-link <?= $halaman == 'data_guru.php' ? 'active' : 'text-white'; ?>">
+                       class="nav-link active">
                         Data Guru
                     </a>
                 </li>

@@ -31,17 +31,37 @@ if (isset($_POST['simpan'])) {
         exit;
     }
 
-    $query = mysqli_query($koneksi, "UPDATE t_tahun_ajaran SET
-        nama = '$nama',
-        tanggal_mulai = '$tanggal_mulai',
-        tanggal_selesai = '$tanggal_selesai',
-        status_aktif = '$status_aktif'
-        WHERE id = $id");
+    // Memulai transaksi agar status aktif tetap konsisten
+    mysqli_begin_transaction($koneksi);
+
+    // Jika data yang diedit diaktifkan, nonaktifkan semua tahun ajaran lain
+    if ($status_aktif == 1) {
+        $nonaktifkan = mysqli_query(
+            $koneksi,
+            "UPDATE t_tahun_ajaran SET status_aktif = 0 WHERE id != $id"
+        );
+    } else {
+        $nonaktifkan = true;
+    }
+
+    // Memperbarui data tahun ajaran yang dipilih
+    if ($nonaktifkan) {
+        $query = mysqli_query($koneksi, "UPDATE t_tahun_ajaran SET
+            nama = '$nama',
+            tanggal_mulai = '$tanggal_mulai',
+            tanggal_selesai = '$tanggal_selesai',
+            status_aktif = '$status_aktif'
+            WHERE id = $id");
+    } else {
+        $query = false;
+    }
 
     if ($query) {
+        mysqli_commit($koneksi);
         header("Location: data_tahun_ajaran.php");
         exit;
     } else {
+        mysqli_rollback($koneksi);
         echo "Gagal mengubah data: " . mysqli_error($koneksi);
         echo "<br><a href='edit_tahun_ajaran.php?id=$id'>Kembali</a>";
     }
