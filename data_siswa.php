@@ -1,3 +1,4 @@
+
 <?php
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
@@ -12,8 +13,7 @@ if ($_SESSION['role'] != 'admin') {
     exit;
 }
 
-$name = $_SESSION['name'];
-$halaman = basename($_SERVER['PHP_SELF']);
+$name = $_SESSION['name'] ?? 'Admin';
 
 $query = mysqli_query(
     $koneksi,
@@ -28,15 +28,16 @@ $query = mysqli_query(
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Data Siswa</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
           rel="stylesheet">
 
-    <link rel="stylesheet" href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css">
+    <link rel="stylesheet"
+          href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css">
 
     <link rel="stylesheet" href="style/style.css">
-
 </head>
 
 <body class="bg-light">
@@ -129,27 +130,31 @@ $query = mysqli_query(
         </div>
 
         <!-- KONTEN DATA SISWA -->
-        <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
+        <main class="content-main">
 
             <!-- HEADER -->
             <div class="bg-white rounded shadow-sm p-4 mb-4">
+
                 <h2 class="fw-bold">Kelola Data Siswa</h2>
 
                 <p class="text-secondary mb-0">
                     Selamat datang,
                     <b><?= htmlspecialchars($name); ?></b>
                 </p>
+
             </div>
 
             <!-- TABEL DATA SISWA -->
             <div class="card shadow-sm border-0">
 
                 <div class="card-header bg-white">
+
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
 
                         <h5 class="mb-0 fw-bold">Daftar Data Siswa</h5>
 
                         <div class="d-flex gap-2">
+
                             <a href="dashboard.php" class="btn btn-secondary btn-sm">
                                 Kembali ke Dashboard
                             </a>
@@ -157,6 +162,7 @@ $query = mysqli_query(
                             <a href="tambah_siswa.php" class="btn btn-primary btn-sm">
                                 Tambah Siswa
                             </a>
+
                         </div>
 
                     </div>
@@ -166,7 +172,8 @@ $query = mysqli_query(
 
                     <div class="table-responsive">
 
-                        <table id="tabelSiswa" class="table table-bordered table-striped table-hover align-middle">
+                        <table id="tabelSiswa"
+                               class="table table-bordered table-striped table-hover align-middle">
 
                             <thead class="table-primary">
                                 <tr>
@@ -184,12 +191,12 @@ $query = mysqli_query(
 
                             <tbody>
 
-                                <?php
-                                $no = 1;
+                            <?php
+                            $no = 1;
 
-                                if ($query && mysqli_num_rows($query) > 0) {
-                                    while ($data = mysqli_fetch_assoc($query)) {
-                                ?>
+                            if ($query && mysqli_num_rows($query) > 0) {
+                                while ($data = mysqli_fetch_assoc($query)) {
+                            ?>
 
                                 <tr>
                                     <td><?= $no++; ?></td>
@@ -236,6 +243,7 @@ $query = mysqli_query(
 
                                     <td>
                                         <div class="d-flex gap-1">
+
                                             <a href="edit_siswa.php?id=<?= urlencode($data['id']); ?>"
                                                class="btn btn-warning btn-sm">
                                                 Edit
@@ -246,14 +254,15 @@ $query = mysqli_query(
                                                onclick="return confirm('Yakin ingin menghapus data siswa ini?')">
                                                 Hapus
                                             </a>
+
                                         </div>
                                     </td>
                                 </tr>
 
-                                <?php
-                                    }
-                                } else {
-                                ?>
+                            <?php
+                                }
+                            } else {
+                            ?>
 
                                 <tr>
                                     <td colspan="9" class="text-center">
@@ -261,9 +270,10 @@ $query = mysqli_query(
                                     </td>
                                 </tr>
 
-                                <?php } ?>
+                            <?php } ?>
 
                             </tbody>
+
                         </table>
 
                     </div>
@@ -281,16 +291,19 @@ $query = mysqli_query(
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+
     new DataTable('#tabelSiswa', {
         pageLength: 10,
         lengthMenu: [5, 10, 25, 50, 100],
         order: [],
+
         layout: {
             topStart: 'info',
             bottom: 'paging',
             bottomStart: null,
             bottomEnd: null
         },
+
         language: {
             search: 'Cari:',
             searchPlaceholder: 'Cari data siswa...',
@@ -300,6 +313,7 @@ document.addEventListener('DOMContentLoaded', function () {
             infoFiltered: '(difilter dari _MAX_ total data)',
             zeroRecords: 'Data tidak ditemukan',
             emptyTable: 'Belum ada data siswa',
+
             paginate: {
                 first: 'Pertama',
                 last: 'Terakhir',
@@ -307,12 +321,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 previous: 'Sebelumnya'
             }
         },
+
         columnDefs: [{
             targets: 8,
             orderable: false,
             searchable: false
         }]
     });
+
 });
 </script>
 

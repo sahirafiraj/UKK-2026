@@ -1,3 +1,4 @@
+
 <?php
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
@@ -12,10 +13,13 @@ if ($_SESSION['role'] != 'admin') {
     exit;
 }
 
-$name = $_SESSION['name'];
+$name = $_SESSION['name'] ?? 'Admin';
 $halaman = basename($_SERVER['PHP_SELF']);
 
-$query = mysqli_query($koneksi, "SELECT * FROM t_tahun_ajaran ORDER BY id DESC");
+$query = mysqli_query(
+    $koneksi,
+    "SELECT * FROM t_tahun_ajaran ORDER BY id DESC"
+);
 ?>
 
 <!DOCTYPE html>
@@ -23,12 +27,14 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_tahun_ajaran ORDER BY id DESC")
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Data Tahun Ajaran</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
           rel="stylesheet">
 
-    <link rel="stylesheet" href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css">
+    <link rel="stylesheet"
+          href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css">
 
     <link rel="stylesheet" href="style/style.css">
 </head>
@@ -122,27 +128,32 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_tahun_ajaran ORDER BY id DESC")
             </ul>
         </div>
 
-        <!-- KONTEN UTAMA -->
-        <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
+        <!-- KONTEN DATA TAHUN AJARAN -->
+        <main class="content-main">
 
+            <!-- HEADER -->
             <div class="bg-white rounded shadow-sm p-4 mb-4">
+
                 <h2 class="fw-bold">Kelola Data Tahun Ajaran</h2>
 
                 <p class="text-secondary mb-0">
                     Selamat datang,
                     <b><?= htmlspecialchars($name); ?></b>
                 </p>
+
             </div>
 
-            <!-- TABEL DATA -->
+            <!-- TABEL DATA TAHUN AJARAN -->
             <div class="card shadow-sm border-0">
 
                 <div class="card-header bg-white">
+
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
 
                         <h5 class="mb-0 fw-bold">Daftar Data Tahun Ajaran</h5>
 
                         <div class="d-flex gap-2">
+
                             <a href="dashboard.php" class="btn btn-secondary btn-sm">
                                 Kembali ke Dashboard
                             </a>
@@ -150,6 +161,7 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_tahun_ajaran ORDER BY id DESC")
                             <a href="tambah_tahun_ajaran.php" class="btn btn-primary btn-sm">
                                 Tambah Tahun Ajaran
                             </a>
+
                         </div>
 
                     </div>
@@ -159,7 +171,8 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_tahun_ajaran ORDER BY id DESC")
 
                     <div class="table-responsive">
 
-                        <table id="tabelTahunAjaran" class="table table-bordered table-striped table-hover align-middle">
+                        <table id="tabelTahunAjaran"
+                               class="table table-bordered table-striped table-hover align-middle">
 
                             <thead class="table-primary">
                                 <tr>
@@ -173,12 +186,13 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_tahun_ajaran ORDER BY id DESC")
                             </thead>
 
                             <tbody>
-                                <?php
-                                $no = 1;
 
-                                if ($query && mysqli_num_rows($query) > 0) {
-                                    while ($data = mysqli_fetch_assoc($query)) {
-                                ?>
+                            <?php
+                            $no = 1;
+
+                            if ($query && mysqli_num_rows($query) > 0) {
+                                while ($data = mysqli_fetch_assoc($query)) {
+                            ?>
 
                                 <tr>
                                     <td><?= $no++; ?></td>
@@ -196,17 +210,16 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_tahun_ajaran ORDER BY id DESC")
                                     </td>
 
                                     <td>
-                                        <?php
-                                        if (($data['status_aktif'] ?? 0) == 1) {
-                                            echo '<span class="badge bg-success">Aktif</span>';
-                                        } else {
-                                            echo '<span class="badge bg-secondary">Tidak Aktif</span>';
-                                        }
-                                        ?>
+                                        <?php if (($data['status_aktif'] ?? 0) == 1) { ?>
+                                            <span class="badge bg-success">Aktif</span>
+                                        <?php } else { ?>
+                                            <span class="badge bg-secondary">Tidak Aktif</span>
+                                        <?php } ?>
                                     </td>
 
                                     <td>
                                         <div class="d-flex gap-1">
+
                                             <a href="edit_tahun_ajaran.php?id=<?= urlencode($data['id']); ?>"
                                                class="btn btn-warning btn-sm">
                                                 Edit
@@ -217,14 +230,15 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_tahun_ajaran ORDER BY id DESC")
                                                onclick="return confirm('Yakin ingin menghapus data tahun ajaran ini?')">
                                                 Hapus
                                             </a>
+
                                         </div>
                                     </td>
                                 </tr>
 
-                                <?php
-                                    }
-                                } else {
-                                ?>
+                            <?php
+                                }
+                            } else {
+                            ?>
 
                                 <tr>
                                     <td colspan="6" class="text-center">
@@ -232,15 +246,13 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_tahun_ajaran ORDER BY id DESC")
                                     </td>
                                 </tr>
 
-                                <?php
-                                }
-                                ?>
+                            <?php } ?>
+
                             </tbody>
 
                         </table>
 
                     </div>
-
                 </div>
             </div>
 
@@ -255,16 +267,22 @@ $query = mysqli_query($koneksi, "SELECT * FROM t_tahun_ajaran ORDER BY id DESC")
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+
     new DataTable('#tabelTahunAjaran', {
+
         pageLength: 10,
+
         lengthMenu: [5, 10, 25, 50, 100],
+
         order: [],
+
         layout: {
             topStart: 'info',
             bottom: 'paging',
             bottomStart: null,
             bottomEnd: null
         },
+
         language: {
             search: 'Cari:',
             searchPlaceholder: 'Cari tahun ajaran...',
@@ -274,6 +292,7 @@ document.addEventListener('DOMContentLoaded', function () {
             infoFiltered: '(difilter dari _MAX_ total data)',
             zeroRecords: 'Data tidak ditemukan',
             emptyTable: 'Belum ada data tahun ajaran',
+
             paginate: {
                 first: 'Pertama',
                 last: 'Terakhir',
@@ -281,12 +300,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 previous: 'Sebelumnya'
             }
         },
+
         columnDefs: [{
             targets: 5,
             orderable: false,
             searchable: false
         }]
+
     });
+
 });
 </script>
 

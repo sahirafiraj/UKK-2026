@@ -1,22 +1,26 @@
+
 <?php
-// Memulai session
-session_start();
+include 'includes/cek_session.php';
+include 'config/koneksi.php';
 
-// Menghubungkan ke database
-include "config/koneksi.php";
+if (!isset($_SESSION['login'])) {
+    header("Location: login.php");
+    exit;
+}
 
-// Memeriksa login dan hak akses admin
-if (!isset($_SESSION['login']) || $_SESSION['role'] != 'admin') {
+if ($_SESSION['role'] != 'admin') {
     echo "Anda tidak memiliki akses";
     exit;
 }
 
-// Mengambil informasi pengguna
+$name = $_SESSION['name'] ?? 'Admin';
 $halaman = basename($_SERVER['PHP_SELF']);
-$nama_login = $_SESSION['name'] ?? 'Admin';
 
-// Mengambil data kelas dari database
-$query = mysqli_query($koneksi, "SELECT * FROM t_kelas ORDER BY id DESC");
+// Mengambil data kelas
+$query = mysqli_query(
+    $koneksi,
+    "SELECT * FROM t_kelas ORDER BY id DESC"
+);
 
 if (!$query) {
     die("Gagal mengambil data: " . mysqli_error($koneksi));
@@ -25,18 +29,15 @@ if (!$query) {
 
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Kelola Data Kelas</title>
+    <title>Data Kelas</title>
 
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
           rel="stylesheet">
 
-    <!-- DataTables CSS versi 3.1.4 -->
     <link rel="stylesheet"
           href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css">
 
@@ -132,40 +133,43 @@ if (!$query) {
             </ul>
         </div>
 
-        <!-- KONTEN UTAMA -->
-        <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
+        <!-- KONTEN DATA KELAS -->
+        <main class="content-main">
 
-            <!-- HEADER HALAMAN -->
+            <!-- HEADER -->
             <div class="bg-white rounded shadow-sm p-4 mb-4">
 
                 <h2 class="fw-bold">Kelola Data Kelas</h2>
 
                 <p class="text-secondary mb-0">
                     Selamat datang,
-                    <b><?= htmlspecialchars($nama_login); ?></b>
+                    <b><?= htmlspecialchars($name); ?></b>
                 </p>
 
             </div>
 
-            <!-- DAFTAR DATA KELAS -->
+            <!-- TABEL DATA KELAS -->
             <div class="card shadow-sm border-0">
 
-                <div class="card-header bg-white d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div class="card-header bg-white">
 
-                    <h5 class="mb-0 fw-bold">Daftar Data Kelas</h5>
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
 
-                    
-<div class="d-flex gap-2">
-    <a href="dashboard.php" class="btn btn-secondary btn-sm">
-        Kembali ke Dashboard
-    </a>
+                        <h5 class="mb-0 fw-bold">Daftar Data Kelas</h5>
 
-    <a href="tambah_kelas.php" class="btn btn-primary btn-sm">
-        Tambah Kelas
-    </a>
-</div>
+                        <div class="d-flex gap-2">
 
+                            <a href="dashboard.php" class="btn btn-secondary btn-sm">
+                                Kembali ke Dashboard
+                            </a>
 
+                            <a href="tambah_kelas.php" class="btn btn-primary btn-sm">
+                                Tambah Kelas
+                            </a>
+
+                        </div>
+
+                    </div>
                 </div>
 
                 <div class="card-body">
@@ -188,16 +192,12 @@ if (!$query) {
 
                             <tbody>
 
-                                <?php
-                                // Nomor urut
-                                $no = 1;
+                            <?php
+                            $no = 1;
 
-                                // Memeriksa ketersediaan data
-                                if (mysqli_num_rows($query) > 0) {
-
-                                    // Mengambil data satu per satu
-                                    while ($data = mysqli_fetch_assoc($query)) {
-                                ?>
+                            if (mysqli_num_rows($query) > 0) {
+                                while ($data = mysqli_fetch_assoc($query)) {
+                            ?>
 
                                 <tr>
                                     <td><?= $no++; ?></td>
@@ -231,23 +231,27 @@ if (!$query) {
                                     </td>
 
                                     <td>
-                                        <a href="edit_kelas.php?id=<?= urlencode($data['id']); ?>"
-                                           class="btn btn-warning btn-sm">
-                                            Edit
-                                        </a>
+                                        <div class="d-flex gap-1">
 
-                                        <a href="hapus_kelas.php?id=<?= urlencode($data['id']); ?>"
-                                           class="btn btn-danger btn-sm"
-                                           onclick="return confirm('Yakin ingin menghapus data kelas ini?')">
-                                            Hapus
-                                        </a>
+                                            <a href="edit_kelas.php?id=<?= urlencode($data['id']); ?>"
+                                               class="btn btn-warning btn-sm">
+                                                Edit
+                                            </a>
+
+                                            <a href="hapus_kelas.php?id=<?= urlencode($data['id']); ?>"
+                                               class="btn btn-danger btn-sm"
+                                               onclick="return confirm('Yakin ingin menghapus data kelas ini?')">
+                                                Hapus
+                                            </a>
+
+                                        </div>
                                     </td>
                                 </tr>
 
-                                <?php
-                                    }
-                                } else {
-                                ?>
+                            <?php
+                                }
+                            } else {
+                            ?>
 
                                 <tr>
                                     <td colspan="6" class="text-center">
@@ -255,7 +259,7 @@ if (!$query) {
                                     </td>
                                 </tr>
 
-                                <?php } ?>
+                            <?php } ?>
 
                             </tbody>
 
@@ -270,13 +274,10 @@ if (!$query) {
     </div>
 </div>
 
-<!-- Bootstrap JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- DataTables JavaScript versi 3.1.4 -->
 <script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
 
-<!-- Mengaktifkan DataTables -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -313,13 +314,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
 
-        columnDefs: [
-            {
-                targets: 5,
-                orderable: false,
-                searchable: false
-            }
-        ]
+        columnDefs: [{
+            targets: 5,
+            orderable: false,
+            searchable: false
+        }]
 
     });
 

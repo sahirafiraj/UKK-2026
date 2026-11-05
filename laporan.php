@@ -82,8 +82,7 @@ if ($siswa_id > 0) {
     <div class="row">
 
         <!-- SIDEBAR ADMIN -->
-        <div class="col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto"
-             style="background-color: #172554;">
+        <div class="sidebar col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto">
 
             <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
 

@@ -13,7 +13,8 @@ if ($_SESSION['role'] != 'admin') {
     exit;
 }
 
-$name = $_SESSION['name'];
+$name = $_SESSION['name'] ?? 'Admin';
+$halaman = basename($_SERVER['PHP_SELF']);
 
 $query = mysqli_query($koneksi, "
     SELECT
@@ -35,6 +36,7 @@ $query = mysqli_query($koneksi, "
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Data Wali Kelas</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -42,7 +44,6 @@ $query = mysqli_query($koneksi, "
     <link rel="stylesheet" href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css">
 
     <link rel="stylesheet" href="style/style.css">
-
 </head>
 
 <body class="bg-light">
@@ -50,6 +51,7 @@ $query = mysqli_query($koneksi, "
 <div class="container-fluid">
     <div class="row">
 
+        <!-- SIDEBAR ADMIN -->
         <div class="sidebar col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto">
 
             <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
@@ -93,7 +95,8 @@ $query = mysqli_query($koneksi, "
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_wali_kelas.php" class="nav-link active">
+                    <a href="data_wali_kelas.php"
+                       class="nav-link <?= $halaman == 'data_wali_kelas.php' ? 'active' : 'text-white'; ?>">
                         Data Wali Kelas
                     </a>
                 </li>
@@ -132,132 +135,145 @@ $query = mysqli_query($koneksi, "
 
             </ul>
         </div>
-        <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
 
-            <div class="bg-white rounded shadow-sm p-4 mb-4">
-                <h2 class="fw-bold">Kelola Data Wali Kelas</h2>
+        <!-- KONTEN UTAMA -->
+        <main class="content-main">
+            <div class="page-content">
 
-                <p class="text-secondary mb-0">
-                    Selamat datang,
-                    <b><?= htmlspecialchars($name); ?></b>
-                </p>
-            </div>
+                <!-- HEADER -->
+                <div class="bg-white rounded shadow-sm p-4 mb-4">
 
-            <div class="card shadow-sm border-0">
+                    <h2 class="fw-bold">Kelola Data Wali Kelas</h2>
 
-                <div class="card-header bg-white">
-                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <p class="text-secondary mb-0">
+                        Selamat datang,
+                        <b><?= htmlspecialchars($name); ?></b>
+                    </p>
 
-                        <h5 class="mb-0 fw-bold">Daftar Data Wali Kelas</h5>
+                </div>
 
-                        <div class="d-flex gap-2">
-                            <a href="dashboard.php" class="btn btn-secondary btn-sm">
-                                Kembali ke Dashboard
-                            </a>
+                <!-- TABEL DATA WALI KELAS -->
+                <div class="card shadow-sm border-0">
 
-                            <a href="tambah_wali_kelas.php" class="btn btn-primary btn-sm">
-                                Tambah Wali Kelas
-                            </a>
+                    <div class="card-header bg-white">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+                            <h5 class="mb-0 fw-bold">Daftar Data Wali Kelas</h5>
+
+                            <div class="d-flex gap-2">
+
+                                <a href="dashboard.php" class="btn btn-secondary btn-sm">
+                                    Kembali ke Dashboard
+                                </a>
+
+                                <a href="tambah_wali_kelas.php" class="btn btn-primary btn-sm">
+                                    Tambah Wali Kelas
+                                </a>
+
+                            </div>
                         </div>
+                    </div>
 
+                    <div class="card-body">
+
+                        <div class="table-responsive">
+
+                            <table id="tabelWaliKelas"
+                                   class="table table-bordered table-striped table-hover align-middle">
+
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Tahun Ajaran</th>
+                                        <th>Kelas</th>
+                                        <th>Guru</th>
+                                        <th>Tanggal Mulai</th>
+                                        <th>Tanggal Selesai</th>
+                                        <th>Status</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+
+                                    <?php
+                                    $no = 1;
+
+                                    if ($query && mysqli_num_rows($query) > 0) {
+                                        while ($data = mysqli_fetch_assoc($query)) {
+                                    ?>
+
+                                    <tr>
+                                        <td><?= $no++; ?></td>
+
+                                        <td>
+                                            <?= htmlspecialchars($data['tahun_ajaran'] ?? '-'); ?>
+                                        </td>
+
+                                        <td>
+                                            <?= htmlspecialchars($data['nama_kelas'] ?? '-'); ?>
+                                        </td>
+
+                                        <td>
+                                            <?= htmlspecialchars($data['nama_guru'] ?? '-'); ?>
+                                        </td>
+
+                                        <td>
+                                            <?= htmlspecialchars($data['tanggal_mulai'] ?? '-'); ?>
+                                        </td>
+
+                                        <td>
+                                            <?= htmlspecialchars($data['tanggal_selesai'] ?? '-'); ?>
+                                        </td>
+
+                                        <td>
+                                            <?php if (($data['status_tahun_ajaran'] ?? 0) == 1) { ?>
+                                                <span class="badge bg-success">Aktif</span>
+                                            <?php } else { ?>
+                                                <span class="badge bg-secondary">Tidak Aktif</span>
+                                            <?php } ?>
+                                        </td>
+
+                                        <td>
+                                            <div class="d-flex gap-1">
+
+                                                <a href="edit_wali_kelas.php?id=<?= urlencode($data['id']); ?>"
+                                                   class="btn btn-warning btn-sm">
+                                                    Edit
+                                                </a>
+
+                                                <a href="hapus_wali_kelas.php?id=<?= urlencode($data['id']); ?>"
+                                                   class="btn btn-danger btn-sm"
+                                                   onclick="return confirm('Yakin ingin menghapus data wali kelas ini?')">
+                                                    Hapus
+                                                </a>
+
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <?php
+                                        }
+                                    } else {
+                                    ?>
+
+                                    <tr>
+                                        <td colspan="8" class="text-center">
+                                            Belum ada data wali kelas.
+                                        </td>
+                                    </tr>
+
+                                    <?php } ?>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
                     </div>
                 </div>
 
-                <div class="card-body">
-
-                    <div class="table-responsive">
-
-                        <table id="tabelWaliKelas" class="table table-bordered table-striped table-hover align-middle">
-
-                            <thead class="table-primary">
-                                <tr>
-                                    <th>No</th>
-                                    <th>Tahun Ajaran</th>
-                                    <th>Kelas</th>
-                                    <th>Guru</th>
-                                    <th>Tanggal Mulai</th>
-                                    <th>Tanggal Selesai</th>
-                                    <th>Status</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                <?php
-                                $no = 1;
-
-                                if ($query && mysqli_num_rows($query) > 0) {
-                                    while ($data = mysqli_fetch_assoc($query)) {
-                                ?>
-
-                                <tr>
-                                    <td><?= $no++; ?></td>
-
-                                    <td>
-                                        <?= htmlspecialchars($data['tahun_ajaran'] ?? '-'); ?>
-                                    </td>
-
-                                    <td>
-                                        <?= htmlspecialchars($data['nama_kelas'] ?? '-'); ?>
-                                    </td>
-
-                                    <td>
-                                        <?= htmlspecialchars($data['nama_guru'] ?? '-'); ?>
-                                    </td>
-
-                                    <td>
-                                        <?= htmlspecialchars($data['tanggal_mulai'] ?? '-'); ?>
-                                    </td>
-
-                                    <td>
-                                        <?= htmlspecialchars($data['tanggal_selesai'] ?? '-'); ?>
-                                    </td>
-
-                                    <td>
-                                        <?php if (($data['status_tahun_ajaran'] ?? 0) == 1) { ?>
-                                            <span class="badge bg-success">Aktif</span>
-                                        <?php } else { ?>
-                                            <span class="badge bg-secondary">Tidak Aktif</span>
-                                        <?php } ?>
-                                    </td>
-
-                                    <td>
-                                        <div class="d-flex gap-1">
-                                            <a href="edit_wali_kelas.php?id=<?= urlencode($data['id']); ?>"
-                                               class="btn btn-warning btn-sm">
-                                                Edit
-                                            </a>
-
-                                            <a href="hapus_wali_kelas.php?id=<?= urlencode($data['id']); ?>"
-                                               class="btn btn-danger btn-sm"
-                                               onclick="return confirm('Yakin ingin menghapus data wali kelas ini?')">
-                                                Hapus
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-
-                                <?php
-                                    }
-                                } else {
-                                ?>
-
-                                <tr>
-                                    <td colspan="8" class="text-center">
-                                        Belum ada data wali kelas.
-                                    </td>
-                                </tr>
-
-                                <?php } ?>
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
-                </div>
             </div>
-
         </main>
 
     </div>
@@ -269,16 +285,19 @@ $query = mysqli_query($koneksi, "
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+
     new DataTable('#tabelWaliKelas', {
         pageLength: 10,
         lengthMenu: [5, 10, 25, 50, 100],
         order: [],
+
         layout: {
             topStart: 'info',
             bottom: 'paging',
             bottomStart: null,
             bottomEnd: null
         },
+
         language: {
             search: 'Cari:',
             searchPlaceholder: 'Cari data wali kelas...',
@@ -288,6 +307,7 @@ document.addEventListener('DOMContentLoaded', function () {
             infoFiltered: '(difilter dari _MAX_ total data)',
             zeroRecords: 'Data tidak ditemukan',
             emptyTable: 'Belum ada data wali kelas',
+
             paginate: {
                 first: 'Pertama',
                 last: 'Terakhir',
@@ -295,12 +315,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 previous: 'Sebelumnya'
             }
         },
+
         columnDefs: [{
             targets: 7,
             orderable: false,
             searchable: false
         }]
     });
+
 });
 </script>
 

@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 
@@ -38,9 +37,9 @@ if (!$query) {
           rel="stylesheet">
 
     <!-- DataTables CSS -->
-    <link rel="stylesheet"
-          href="https://cdn.datatables.net/2.3.4/css/dataTables.dataTables.min.css">
-          
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.4/css/dataTables.dataTables.min.css">
+
+    <link rel="stylesheet" href="style/style.css">
 
     <!-- Mengatur kolom dan tombol aksi -->
     <style>
@@ -73,8 +72,7 @@ if (!$query) {
     <div class="row">
 
         <!-- SIDEBAR -->
-        <div class="col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto"
-             style="background-color: #172554;">
+        <div class="sidebar col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto">
 
             <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
 
@@ -315,33 +313,19 @@ if (!$query) {
 <!-- Bootstrap JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
 <!-- DataTables JavaScript -->
 <script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
 
-<!-- Mengaktifkan DataTables -->
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-
-    new DataTable('#tabelPelanggaran', {
-
-        // Jumlah data per halaman
+$(document).ready(function () {
+    $('#tabelPelanggaran').DataTable({
         pageLength: 10,
-
-        // Pilihan jumlah data
         lengthMenu: [5, 10, 25, 50, 100],
-
-        // Urutan awal mengikuti query PHP
         order: [],
 
-        // Posisi pencarian, pilihan jumlah data, dan pagination
-        layout: {
-            topStart: 'pageLength',
-            topEnd: 'search',
-            bottomStart: 'info',
-            bottomEnd: 'paging'
-        },
-
-        // Bahasa Indonesia
         language: {
             search: 'Cari:',
             searchPlaceholder: 'Cari jenis pelanggaran...',
@@ -350,7 +334,7 @@ document.addEventListener('DOMContentLoaded', function () {
             infoEmpty: 'Tidak ada data',
             infoFiltered: '(difilter dari _MAX_ total data)',
             zeroRecords: 'Data tidak ditemukan',
-            emptyTable: 'Belum ada data jenis pelanggaran',
+            emptyTable: 'Belum ada data pelanggaran',
 
             paginate: {
                 first: 'Pertama',
@@ -360,17 +344,12 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
 
-        // Kolom Aksi tidak ikut pencarian dan pengurutan
-        columnDefs: [
-            {
-                targets: 7,
-                orderable: false,
-                searchable: false
-            }
-        ]
-
+        columnDefs: [{
+            targets: 7,
+            orderable: false,
+            searchable: false
+        }]
     });
-
 });
 </script>
 

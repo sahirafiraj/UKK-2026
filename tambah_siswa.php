@@ -19,6 +19,8 @@ if (!isset($_SESSION['login']) || $_SESSION['role'] != 'admin') {
     <title>Tambah Siswa</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="style/style.css">
 </head>
 
 <body class="bg-light">
@@ -27,8 +29,7 @@ if (!isset($_SESSION['login']) || $_SESSION['role'] != 'admin') {
     <div class="row">
 
         <!-- SIDEBAR -->
-        <div class="col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto"
-             style="background-color: #172554;">
+        <div class="sidebar col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto">
 
             <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
 

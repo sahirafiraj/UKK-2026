@@ -26,19 +26,7 @@ if ($role != 'admin' && $role != 'guru') {
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <style>
-        .skill-badge {
-            background-color: #EEF2FF;
-            color: #3155A6;
-            border: 1px solid #DCE4FF;
-            transition: all 0.2s ease;
-        }
-
-        .skill-badge:hover {
-            background-color: #DCE6FF;
-            transform: translateY(-2px);
-        }
-    </style>
+    <link rel="stylesheet" href="style/style.css">
 </head>
 
 <body class="bg-light">
@@ -46,8 +34,7 @@ if ($role != 'admin' && $role != 'guru') {
 <div class="container-fluid">
     <div class="row">
 
-        <div class="col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto"
-             style="background-color: #172554;">
+        <div class="sidebar col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto">
 
             <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
 
