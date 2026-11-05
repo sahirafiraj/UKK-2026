@@ -17,7 +17,7 @@ if ($role != 'admin' && $role != 'guru') {
     exit;
 }
 
-// Data dashboard
+// DATA DASHBOARD
 $query_siswa = mysqli_query($koneksi, "SELECT COUNT(*) AS total FROM t_siswa");
 $total_siswa = mysqli_fetch_assoc($query_siswa)['total'];
 
@@ -30,7 +30,7 @@ $total_pelanggaran = mysqli_fetch_assoc($query_pelanggaran)['total'];
 $query_kategori = mysqli_query($koneksi, "SELECT COUNT(*) AS total FROM t_pelanggaran_kategori");
 $total_kategori = mysqli_fetch_assoc($query_kategori)['total'];
 
-// Total poin
+// TOTAL POIN
 $total_poin = 0;
 $query_poin = mysqli_query($koneksi, "SELECT SUM(poin) AS total FROM t_pelanggaran_siswa");
 
@@ -39,10 +39,8 @@ if ($query_poin) {
     $total_poin = $data_poin['total'] ?? 0;
 }
 
-// Jumlah tindakan sementara
+// JUMLAH TINDAKAN DAN RIWAYAT
 $total_tindakan = 0;
-
-// Jumlah riwayat pelanggaran
 $total_riwayat = $total_pelanggaran;
 ?>
 
@@ -54,8 +52,118 @@ $total_riwayat = $total_pelanggaran;
 
     <title>Dashboard - Sistem Pelanggaran</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-          rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style/style.css">
+
+    <style>
+        /* KONTEN UTAMA */
+        .content-main {
+            width: calc(100% - 260px);
+            margin-left: 260px;
+            min-height: 100vh;
+            padding: 100px 35px 40px;
+        }
+
+        /* PEMBUNGKUS DASHBOARD */
+        .dashboard-content {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* HEADER */
+        .dashboard-header {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 25px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .dashboard-header h2 {
+            color: #172f52;
+            font-size: 25px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .dashboard-header p {
+            color: #64748b;
+            margin: 0;
+        }
+
+        /* KARTU DASHBOARD */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 22px;
+            width: 100%;
+        }
+
+        .dashboard-card {
+            background: #ffffff;
+            border: 1px solid #e8edf4;
+            border-radius: 14px;
+            padding: 25px;
+            min-width: 0;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.04);
+            transition: 0.2s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 7px 20px rgba(23, 47, 82, 0.10);
+        }
+
+        .dashboard-card p {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .dashboard-card h2 {
+            color: #172f52;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-card .btn {
+            background: #244b7a;
+            border: none;
+            border-radius: 7px;
+            padding: 7px 15px;
+            font-size: 13px;
+        }
+
+        .dashboard-card .btn:hover {
+            background: #172f52;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1200px) {
+            .dashboard-cards {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 767px) {
+            .content-main {
+                width: 100%;
+                margin-left: 0;
+                padding: 30px 18px;
+            }
+
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .dashboard-header {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 
 <body class="bg-light">
@@ -63,17 +171,14 @@ $total_riwayat = $total_pelanggaran;
 <div class="container-fluid">
     <div class="row">
 
-        <!-- SIDEBAR: DISESUAIKAN DENGAN DATA SISWA -->
-        <div class="col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto"
-             style="background-color: #172554;">
+        <!-- SIDEBAR -->
+        <div class="sidebar col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto">
 
             <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
 
             <ul class="nav nav-pills flex-column gap-1">
 
                 <?php if ($role == 'admin') { ?>
-
-                    <!-- MENU ADMIN -->
 
                     <li class="nav-item">
                         <a href="dashboard.php" class="nav-link active">
@@ -137,8 +242,6 @@ $total_riwayat = $total_pelanggaran;
 
                 <?php } else { ?>
 
-                    <!-- MENU GURU -->
-
                     <li class="nav-item">
                         <a href="dashboard.php"
                            class="nav-link <?= $halaman == 'dashboard.php' ? 'active' : 'text-white'; ?>">
@@ -172,8 +275,6 @@ $total_riwayat = $total_pelanggaran;
 
                 <?php } ?>
 
-                <!-- MENU BERSAMA -->
-
                 <li class="nav-item">
                     <a href="about_me.php" class="nav-link text-white">
                         About Me
@@ -191,184 +292,102 @@ $total_riwayat = $total_pelanggaran;
             </ul>
         </div>
 
-        <!-- KONTEN UTAMA: TETAP SEPERTI SEMULA -->
-        <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
+        <!-- KONTEN UTAMA -->
+        <main class="content-main">
 
-            <!-- HEADER DASHBOARD -->
-            <div class="bg-white rounded shadow-sm p-4 mb-4">
+            <div class="dashboard-content">
 
-                <h2 class="fw-bold">Dashboard</h2>
+                <!-- HEADER -->
+                <div class="dashboard-header">
+                    <h2>Dashboard</h2>
 
-                <p class="text-secondary mb-0">
-                    Selamat datang,
-                    <b><?= htmlspecialchars($nama_login); ?></b>
-                </p>
+                    <p>
+                        Selamat datang,
+                        <b><?= htmlspecialchars($nama_login); ?></b>
+                    </p>
+                </div>
+
+                <?php if ($role == 'admin') { ?>
+
+                    <!-- KARTU ADMIN -->
+                    <div class="dashboard-cards">
+
+                        <div class="dashboard-card">
+                            <p>Total Siswa</p>
+                            <h2><?= $total_siswa; ?></h2>
+                            <a href="data_siswa.php" class="btn btn-primary btn-sm text-white">
+                                Lihat Data
+                            </a>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <p>Total Guru</p>
+                            <h2><?= $total_guru; ?></h2>
+                            <a href="data_guru.php" class="btn btn-primary btn-sm text-white">
+                                Lihat Data
+                            </a>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <p>Data Pelanggaran</p>
+                            <h2><?= $total_pelanggaran; ?></h2>
+                            <a href="laporan.php" class="btn btn-primary btn-sm text-white">
+                                Lihat Data
+                            </a>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <p>Kategori Pelanggaran</p>
+                            <h2><?= $total_kategori; ?></h2>
+                            <a href="data_kategori_pelanggaran.php" class="btn btn-primary btn-sm text-white">
+                                Lihat Data
+                            </a>
+                        </div>
+
+                    </div>
+
+                <?php } else { ?>
+
+                    <!-- KARTU GURU -->
+                    <div class="dashboard-cards">
+
+                        <div class="dashboard-card">
+                            <p>Catat Pelanggaran</p>
+                            <h2><?= $total_pelanggaran; ?></h2>
+                            <a href="catat_pelanggaran.php" class="btn btn-primary btn-sm text-white">
+                                Lihat Data
+                            </a>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <p>Tindakan</p>
+                            <h2><?= $total_tindakan; ?></h2>
+                            <a href="tindakan.php" class="btn btn-primary btn-sm text-white">
+                                Lihat Data
+                            </a>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <p>Riwayat</p>
+                            <h2><?= $total_riwayat; ?></h2>
+                            <a href="riwayat.php" class="btn btn-primary btn-sm text-white">
+                                Lihat Data
+                            </a>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <p>Rekap Poin</p>
+                            <h2><?= $total_poin; ?></h2>
+                            <a href="rekap_poin.php" class="btn btn-primary btn-sm text-white">
+                                Lihat Data
+                            </a>
+                        </div>
+
+                    </div>
+
+                <?php } ?>
 
             </div>
-
-            <?php if ($role == 'admin') { ?>
-
-                <!-- KARTU DASHBOARD ADMIN -->
-
-                <div class="row g-4">
-
-                    <div class="col-12 col-sm-6 col-xl-3">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-body p-4">
-
-                                <p class="text-secondary mb-2">Total Siswa</p>
-
-                                <h2 class="fw-bold mb-3">
-                                    <?= $total_siswa; ?>
-                                </h2>
-
-                                <a href="data_siswa.php" class="btn btn-primary btn-sm">
-                                    Lihat Data
-                                </a>
-
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-12 col-sm-6 col-xl-3">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-body p-4">
-
-                                <p class="text-secondary mb-2">Total Guru</p>
-
-                                <h2 class="fw-bold mb-3">
-                                    <?= $total_guru; ?>
-                                </h2>
-
-                                <a href="data_guru.php" class="btn btn-primary btn-sm">
-                                    Lihat Data
-                                </a>
-
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-12 col-sm-6 col-xl-3">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-body p-4">
-
-                                <p class="text-secondary mb-2">Data Pelanggaran</p>
-
-                                <h2 class="fw-bold mb-3">
-                                    <?= $total_pelanggaran; ?>
-                                </h2>
-
-                                <a href="laporan.php" class="btn btn-primary btn-sm">
-                                    Lihat Data
-                                </a>
-
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-12 col-sm-6 col-xl-3">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-body p-4">
-
-                                <p class="text-secondary mb-2">Kategori Pelanggaran</p>
-
-                                <h2 class="fw-bold mb-3">
-                                    <?= $total_kategori; ?>
-                                </h2>
-
-                                <a href="data_kategori_pelanggaran.php"
-                                   class="btn btn-primary btn-sm">
-                                    Lihat Data
-                                </a>
-
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
-            <?php } else { ?>
-
-                <!-- KARTU DASHBOARD GURU -->
-
-                <div class="row g-4">
-
-                    <div class="col-12 col-sm-6 col-xl-3">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-body p-4">
-
-                                <p class="text-secondary mb-2">Catat Pelanggaran</p>
-
-                                <h2 class="fw-bold mb-3">
-                                    <?= $total_pelanggaran; ?>
-                                </h2>
-
-                                <a href="catat_pelanggaran.php"
-                                   class="btn btn-primary btn-sm">
-                                    Lihat Data
-                                </a>
-
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-12 col-sm-6 col-xl-3">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-body p-4">
-
-                                <p class="text-secondary mb-2">Tindakan</p>
-
-                                <h2 class="fw-bold mb-3">
-                                    <?= $total_tindakan; ?>
-                                </h2>
-
-                                <a href="tindakan.php" class="btn btn-primary btn-sm">
-                                    Lihat Data
-                                </a>
-
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-12 col-sm-6 col-xl-3">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-body p-4">
-
-                                <p class="text-secondary mb-2">Riwayat</p>
-
-                                <h2 class="fw-bold mb-3">
-                                    <?= $total_riwayat; ?>
-                                </h2>
-
-                                <a href="riwayat.php" class="btn btn-primary btn-sm">
-                                    Lihat Data
-                                </a>
-
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-12 col-sm-6 col-xl-3">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-body p-4">
-
-                                <p class="text-secondary mb-2">Rekap Poin</p>
-
-                                <h2 class="fw-bold mb-3">
-                                    <?= $total_poin; ?>
-                                </h2>
-
-                                <a href="rekap_poin.php" class="btn btn-primary btn-sm">
-                                    Lihat Data
-                                </a>
-
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
-            <?php } ?>
 
         </main>
 

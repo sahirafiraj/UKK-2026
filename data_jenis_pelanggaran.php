@@ -40,6 +40,7 @@ if (!$query) {
     <!-- DataTables CSS -->
     <link rel="stylesheet"
           href="https://cdn.datatables.net/2.3.4/css/dataTables.dataTables.min.css">
+          
 
     <!-- Mengatur kolom dan tombol aksi -->
     <style>

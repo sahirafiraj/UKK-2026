@@ -1,70 +1,55 @@
-
 <?php
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
 
-// Memeriksa apakah pengguna sudah login
 if (!isset($_SESSION['login'])) {
     header("Location: login.php");
     exit;
 }
 
-// Memeriksa hak akses admin
 if ($_SESSION['role'] != 'admin') {
     echo "Anda tidak memiliki akses";
     exit;
 }
 
-// Mengambil nama pengguna
 $name = $_SESSION['name'];
 
-// Menyiapkan pesan dan nilai awal form
 $pesan = "";
 $nama = "";
 $tanggal_mulai = "";
 $tanggal_selesai = "";
 $status_aktif = 1;
 
-// Memproses data ketika tombol Simpan ditekan
 if (isset($_POST['simpan'])) {
 
-    // Mengambil data dari form
     $nama = trim($_POST['nama']);
     $tanggal_mulai = $_POST['tanggal_mulai'];
     $tanggal_selesai = $_POST['tanggal_selesai'];
     $status_aktif = (int) $_POST['status_aktif'];
 
-    // Memastikan semua data wajib diisi
     if ($nama == "" || $tanggal_mulai == "" || $tanggal_selesai == "") {
 
         $pesan = "Semua data harus diisi!";
 
-    // Memeriksa tanggal mulai dan tanggal selesai
     } elseif ($tanggal_selesai < $tanggal_mulai) {
 
         $pesan = "Tanggal selesai tidak boleh sebelum tanggal mulai!";
 
     } else {
 
-        // Membersihkan nama tahun ajaran yang dimasukkan
-        // Contoh: 2026/2027 menjadi 20262027
-        // Tanda garis miring, strip, dan spasi akan diabaikan
         $nama_cek = preg_replace('/[^0-9]/', '', $nama);
 
-        // Memastikan nama berisi angka tahun ajaran
         if ($nama_cek == "") {
 
             $pesan = "Nama tahun ajaran tidak valid!";
 
         } else {
 
-            // Mengambil semua nama tahun ajaran yang sudah tersimpan
             $query_cek = mysqli_query(
                 $koneksi,
                 "SELECT nama FROM t_tahun_ajaran"
             );
 
-            // Memastikan query pengecekan berhasil
             if (!$query_cek) {
 
                 $pesan = "Gagal memeriksa tahun ajaran: "
@@ -72,70 +57,62 @@ if (isset($_POST['simpan'])) {
 
             } else {
 
-                // Nilai awal: belum ditemukan data yang sama
                 $duplikat = false;
 
-                // Memeriksa setiap tahun ajaran yang sudah tersimpan
                 while ($data_cek = mysqli_fetch_assoc($query_cek)) {
 
-                    // Mengubah nama lama menjadi angka saja
                     $nama_lama = preg_replace(
                         '/[^0-9]/',
                         '',
                         trim($data_cek['nama'])
                     );
 
-                    // Membandingkan nama yang dimasukkan dengan data lama
                     if ($nama_cek == $nama_lama) {
-
-                        // Menandai bahwa tahun ajaran sudah ada
                         $duplikat = true;
-
-                        // Menghentikan pemeriksaan
                         break;
                     }
                 }
 
-                // Jika ditemukan nama yang sama, batalkan penyimpanan
-                if ($duplikat == true) {
+                if ($duplikat) {
 
                     $pesan = "Tahun ajaran tersebut sudah terdaftar!";
 
                 } else {
 
-                    // Mengamankan nama sebelum digunakan dalam SQL
                     $nama_db = mysqli_real_escape_string(
                         $koneksi,
                         $nama
                     );
 
-                    // Mengamankan tanggal mulai
                     $tanggal_mulai_db = mysqli_real_escape_string(
                         $koneksi,
                         $tanggal_mulai
                     );
 
-                    // Mengamankan tanggal selesai
                     $tanggal_selesai_db = mysqli_real_escape_string(
                         $koneksi,
                         $tanggal_selesai
                     );
 
-                    // Memulai transaksi agar perubahan status dan insert konsisten
                     mysqli_begin_transaction($koneksi);
 
-                    // Jika tahun ajaran baru Aktif, nonaktifkan semua data yang lain
+                    // Jika tahun ajaran baru Aktif
                     if ($status_aktif == 1) {
+
+                        // Menonaktifkan semua tahun ajaran lainnya
                         $nonaktifkan = mysqli_query(
                             $koneksi,
-                            "UPDATE t_tahun_ajaran SET status_aktif = 0"
+                            "UPDATE t_tahun_ajaran
+                             SET status_aktif = 0"
                         );
+
                     } else {
                         $nonaktifkan = true;
                     }
 
-                    // Menyimpan data tahun ajaran baru
+                    // Menyimpan tahun ajaran baru
                     if ($nonaktifkan) {
+
                         $simpan = mysqli_query(
                             $koneksi,
                             "INSERT INTO t_tahun_ajaran
@@ -147,17 +124,22 @@ if (isset($_POST['simpan'])) {
                                 '$status_aktif'
                             )"
                         );
+
                     } else {
                         $simpan = false;
                     }
 
-                    // Memeriksa hasil penyimpanan
                     if ($simpan) {
+
                         mysqli_commit($koneksi);
+
                         header("Location: data_tahun_ajaran.php");
                         exit;
+
                     } else {
+
                         mysqli_rollback($koneksi);
+
                         $pesan = "Data tahun ajaran gagal disimpan: "
                                . mysqli_error($koneksi);
                     }
@@ -170,14 +152,11 @@ if (isset($_POST['simpan'])) {
 
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Tambah Tahun Ajaran</title>
 
-    <!-- Bootstrap 5.3.8 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
           rel="stylesheet">
 </head>
@@ -219,7 +198,6 @@ if (isset($_POST['simpan'])) {
                     </a>
                 </li>
 
-                <!-- Menu tahun ajaran yang sedang dibuka -->
                 <li class="nav-item">
                     <a href="data_tahun_ajaran.php" class="nav-link active">
                         Tahun Ajaran
@@ -276,7 +254,6 @@ if (isset($_POST['simpan'])) {
         <!-- KONTEN UTAMA -->
         <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
 
-            <!-- Header halaman -->
             <div class="bg-white rounded shadow-sm p-4 mb-4">
 
                 <h2 class="fw-bold">Tambah Tahun Ajaran</h2>
@@ -288,7 +265,7 @@ if (isset($_POST['simpan'])) {
 
             </div>
 
-            <!-- Kartu form -->
+            <!-- KARTU FORM -->
             <div class="card shadow-sm border-0">
 
                 <div class="card-header bg-white py-3">
@@ -299,7 +276,6 @@ if (isset($_POST['simpan'])) {
 
                 <div class="card-body">
 
-                    <!-- Menampilkan pesan kesalahan -->
                     <?php if ($pesan != "") { ?>
 
                         <div class="alert alert-danger">
@@ -310,7 +286,6 @@ if (isset($_POST['simpan'])) {
 
                     <form method="POST">
 
-                        <!-- Nama tahun ajaran -->
                         <div class="mb-3">
 
                             <label class="form-label">
@@ -331,7 +306,6 @@ if (isset($_POST['simpan'])) {
 
                         </div>
 
-                        <!-- Tanggal mulai -->
                         <div class="mb-3">
 
                             <label class="form-label">
@@ -346,7 +320,6 @@ if (isset($_POST['simpan'])) {
 
                         </div>
 
-                        <!-- Tanggal selesai -->
                         <div class="mb-3">
 
                             <label class="form-label">
@@ -361,7 +334,6 @@ if (isset($_POST['simpan'])) {
 
                         </div>
 
-                        <!-- Status tahun ajaran -->
                         <div class="mb-4">
 
                             <label class="form-label">
@@ -386,7 +358,6 @@ if (isset($_POST['simpan'])) {
 
                         </div>
 
-                        <!-- Tombol simpan dan kembali -->
                         <div class="d-flex gap-2">
 
                             <button type="submit"
@@ -412,7 +383,6 @@ if (isset($_POST['simpan'])) {
     </div>
 </div>
 
-<!-- JavaScript Bootstrap -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>

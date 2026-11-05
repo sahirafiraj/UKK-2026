@@ -40,6 +40,9 @@ $query = mysqli_query($koneksi, "
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <link rel="stylesheet" href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css">
+
+    <link rel="stylesheet" href="style/style.css">
+
 </head>
 
 <body class="bg-light">
@@ -47,66 +50,88 @@ $query = mysqli_query($koneksi, "
 <div class="container-fluid">
     <div class="row">
 
-        <div class="col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto"
-             style="background-color: #172554;">
+        <div class="sidebar col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto">
 
             <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
 
             <ul class="nav nav-pills flex-column gap-1">
 
                 <li class="nav-item">
-                    <a href="dashboard.php" class="nav-link text-white">Dashboard</a>
+                    <a href="dashboard.php" class="nav-link text-white">
+                        Dashboard
+                    </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_siswa.php" class="nav-link text-white">Data Siswa</a>
+                    <a href="data_siswa.php" class="nav-link text-white">
+                        Data Siswa
+                    </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_guru.php" class="nav-link text-white">Data Guru</a>
+                    <a href="data_guru.php" class="nav-link text-white">
+                        Data Guru
+                    </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_kelas.php" class="nav-link text-white">Data Kelas</a>
+                    <a href="data_kelas.php" class="nav-link text-white">
+                        Data Kelas
+                    </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_tahun_ajaran.php" class="nav-link text-white">Tahun Ajaran</a>
+                    <a href="data_tahun_ajaran.php" class="nav-link text-white">
+                        Tahun Ajaran
+                    </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_penempatan_siswa.php" class="nav-link text-white">Penempatan Siswa</a>
+                    <a href="data_penempatan_siswa.php" class="nav-link text-white">
+                        Penempatan Siswa
+                    </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_wali_kelas.php" class="nav-link active">Data Wali Kelas</a>
+                    <a href="data_wali_kelas.php" class="nav-link active">
+                        Data Wali Kelas
+                    </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_kategori_pelanggaran.php" class="nav-link text-white">Kategori Pelanggaran</a>
+                    <a href="data_kategori_pelanggaran.php" class="nav-link text-white">
+                        Kategori Pelanggaran
+                    </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_jenis_pelanggaran.php" class="nav-link text-white">Jenis Pelanggaran</a>
+                    <a href="data_jenis_pelanggaran.php" class="nav-link text-white">
+                        Jenis Pelanggaran
+                    </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="laporan.php" class="nav-link text-white">Laporan</a>
+                    <a href="laporan.php" class="nav-link text-white">
+                        Laporan
+                    </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="about_me.php" class="nav-link text-white">About Me</a>
+                    <a href="about_me.php" class="nav-link text-white">
+                        About Me
+                    </a>
                 </li>
 
                 <hr class="border-white">
 
                 <li class="nav-item">
-                    <a href="logout.php" class="nav-link text-white">Logout</a>
+                    <a href="logout.php" class="nav-link text-white">
+                        Logout
+                    </a>
                 </li>
 
             </ul>
         </div>
-
         <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
 
             <div class="bg-white rounded shadow-sm p-4 mb-4">

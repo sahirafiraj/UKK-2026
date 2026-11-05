@@ -302,6 +302,8 @@ $query_terbaru = mysqli_query($koneksi, "
     <link href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css"
           rel="stylesheet">
 
+    <link rel="stylesheet" href="style/style.css">
+
 </head>
 
 <body class="bg-light">

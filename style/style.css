@@ -1,487 +1,723 @@
 
-/* =====================================
-   STYLE SISTEM PELANGGARAN
-===================================== */
+/* =========================================
+   1. PENGATURAN DASAR
+========================================= */
 
 * {
     box-sizing: border-box;
 }
 
-body {
-    background-color: #f4f6f9;
-    color: #263238;
-    font-family: Arial, sans-serif;
+html {
+    width: 100%;
+    min-height: 100%;
+    overflow-x: hidden;
 }
 
-/* =====================================
-   SIDEBAR
-===================================== */
+body {
+    width: 100%;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #edf4fd;
+    color: #334155;
+    overflow-x: hidden;
+}
+
+a {
+    text-decoration: none;
+}
+
+
+/* =========================================
+   2. SIDEBAR
+========================================= */
 
 .sidebar {
-    background-color: #172554;
-    color: white;
-    min-height: 100vh;
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 260px !important;
+    max-width: 260px !important;
+    height: 100vh;
+    padding: 24px 15px;
+    background-color: #172f52 !important;
+    z-index: 1001;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: none !important;
 }
 
 .sidebar h4 {
+    color: #ffffff;
     font-size: 21px;
-    font-weight: bold;
-    padding: 5px;
+    font-weight: 700;
+    margin: 0 0 38px;
+    padding: 0 10px;
+    line-height: 1.4;
+}
+
+.sidebar .nav {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.sidebar .nav-item {
+    width: 100%;
 }
 
 .sidebar .nav-link {
-    color: white;
-    padding: 11px 14px;
-    border-radius: 6px;
+    display: block;
+    width: 100%;
+    padding: 13px 16px;
+    border-radius: 9px;
+    color: #e2eaf6;
     font-size: 14px;
-    transition: 0.3s;
+    font-weight: 500;
+    transition: all 0.2s ease;
 }
 
 .sidebar .nav-link:hover {
-    background-color: #263e75;
-    color: white;
+    background-color: #29466e;
+    color: #ffffff;
 }
 
 .sidebar .nav-link.active {
-    background-color: #1671f9;
-    color: white;
+    background-color: #ffffff !important;
+    color: #172f52 !important;
+    font-weight: 700;
 }
 
-/* =====================================
-   KONTEN UTAMA
-===================================== */
+.sidebar .sidebar-divider {
+    list-style: none;
+    margin: 10px 5px;
+}
 
-main {
+.sidebar .sidebar-divider hr {
+    border: 0;
+    border-top: 1px solid rgba(255,255,255,0.25);
+    opacity: 1;
+    margin: 0;
+}
+
+
+/* =========================================
+   3. HEADER ATAS
+========================================= */
+
+.topbar {
+    position: fixed;
+    top: 0;
+    left: 260px;
+    right: 0;
+    width: auto;
+    height: 75px;
+    padding: 0 32px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #dce6f3;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    z-index: 1000;
+}
+
+.user-info {
+    color: #172f52;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.user-info strong {
+    color: #172f52;
+    font-weight: 700;
+}
+
+
+/* =========================================
+   4. KONTEN UTAMA
+========================================= */
+
+.content-main {
+    display: block !important;
+    position: relative;
+
+    width: calc(100% - 260px) !important;
+    max-width: none !important;
+
     min-height: 100vh;
-    background-color: #f4f6f9;
+
+    margin-left: 260px !important;
+    margin-right: 0 !important;
+
+    padding: 75px 32px 35px !important;
+
+    background-color: #edf4fd;
+    overflow-x: hidden;
 }
 
-main > .bg-white {
-    border-radius: 9px;
-    border: none;
+/* Mengatasi offset Bootstrap */
+.content-main.offset-md-3,
+.content-main.offset-lg-2 {
+    margin-left: 260px !important;
 }
 
-main h2 {
-    color: #172554;
-    font-size: 27px;
+
+/* =========================================
+   5. JUDUL HALAMAN
+========================================= */
+
+.header-halaman {
+    display: block;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto 25px !important;
+    padding: 0;
 }
 
-/* =====================================
-   CARD
-===================================== */
+.header-halaman h3 {
+    color: #172f52;
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 8px;
+    line-height: 1.3;
+}
 
-.card {
-    border-radius: 9px;
+.header-halaman p {
+    color: #64748b;
+    font-size: 14px;
+    margin: 0;
+    line-height: 1.5;
+}
+
+
+/* =========================================
+   6. CARD DATA - POSISI TENGAH
+========================================= */
+
+.card-data {
+    display: block !important;
+    position: relative;
+
+    width: 100% !important;
+    max-width: 1100px !important;
+    min-width: 0;
+
+    margin: 0 auto 25px !important;
+
+    float: none !important;
+
+    background-color: #ffffff;
+    border: 1px solid #dce6f3;
+    border-radius: 14px;
+
     overflow: hidden;
+
+    box-shadow: 0 4px 18px rgba(23,47,82,0.07);
 }
 
-.card-header {
-    background-color: white;
-    border-bottom: 1px solid #edf0f5;
+/* Memastikan card berada di tengah */
+.content-main > .card-data,
+.content-main > .row > .card-data,
+.content-main .card-data {
+    margin-left: auto !important;
+    margin-right: auto !important;
 }
 
-.card-header h5 {
-    color: #172554;
-    font-weight: 600;
+
+/* =========================================
+   7. HEADER CARD
+========================================= */
+
+.card-data .card-header {
+    width: 100%;
+    padding: 21px 24px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e3ebf5;
 }
 
-.card-body {
-    padding: 22px;
+.card-header-content {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
-/* =====================================
-   FORM PILIH SISWA
-===================================== */
-
-.form-label {
-    font-weight: 600;
-    color: #344054;
+.card-title {
+    min-width: 0;
 }
 
-.form-select {
-    border: 1px solid #d5dce5;
-    border-radius: 6px;
-    padding: 10px;
+.card-title h5 {
+    color: #172f52;
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 7px;
 }
 
-.form-select:focus {
-    border-color: #1671f9;
-    box-shadow: 0 0 0 0.2rem rgba(22, 113, 249, 0.15);
+.card-title p {
+    color: #64748b;
+    font-size: 13px;
+    margin: 0;
 }
 
-/* =====================================
-   TOMBOL
-===================================== */
+.card-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+
+/* =========================================
+   8. BODY CARD
+========================================= */
+
+.card-data .card-body {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    padding: 24px;
+    background-color: #ffffff;
+}
+
+
+/* =========================================
+   9. TOMBOL
+========================================= */
 
 .btn {
-    border-radius: 5px;
-    padding: 8px 15px;
-    font-size: 14px;
-    transition: 0.3s;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 7px;
+    padding: 9px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
 }
 
 .btn-primary {
-    background-color: #0866f5;
-    border-color: #0866f5;
+    background-color: #193b65;
+    border-color: #193b65;
+    color: #ffffff;
 }
 
 .btn-primary:hover {
-    background-color: #004fc4;
-    border-color: #004fc4;
+    background-color: #294f7e;
+    border-color: #294f7e;
+    color: #ffffff;
 }
 
 .btn-secondary {
     background-color: #64748b;
     border-color: #64748b;
+    color: #ffffff;
 }
 
 .btn-secondary:hover {
     background-color: #475569;
     border-color: #475569;
+    color: #ffffff;
 }
 
-/* =====================================
-   TABEL WEBSITE
-===================================== */
+.btn-warning {
+    background-color: #e9a52c;
+    border-color: #e9a52c;
+    color: #ffffff;
+}
 
-.tabel-website table {
-    font-size: 13px;
-    background-color: white;
+.btn-warning:hover {
+    background-color: #d28e17;
+    border-color: #d28e17;
+    color: #ffffff;
+}
+
+.btn-danger {
+    background-color: #dc4c4c;
+    border-color: #dc4c4c;
+    color: #ffffff;
+}
+
+.btn-danger:hover {
+    background-color: #c73737;
+    border-color: #c73737;
+    color: #ffffff;
+}
+
+
+/* =========================================
+   10. TABEL UMUM
+========================================= */
+
+.table-responsive {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.card-data table {
+    width: 100%;
     margin-bottom: 0;
+    border-collapse: collapse;
+    border-color: #dce6f3;
 }
 
-.tabel-website thead th {
-    background-color: #e8eef8;
-    color: #172554;
-    font-weight: 600;
+.card-data table thead th {
+    background-color: #e4edf8;
+    color: #172f52;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 13px 12px;
     white-space: nowrap;
-    padding: 12px 10px;
-}
-
-.tabel-website tbody td {
-    padding: 11px 10px;
     vertical-align: middle;
 }
 
-.tabel-website tbody tr:hover {
-    background-color: #f1f5ff;
-}
-
-.tabel-website tfoot th {
-    background-color: #f1f5f9;
+.card-data table tbody td {
+    background-color: #ffffff;
+    color: #334155;
+    font-size: 13px;
     padding: 12px;
+    vertical-align: middle;
 }
 
-/* =====================================
-   AREA CETAK - TAMPILAN WEBSITE
-===================================== */
-
-.judul-cetak,
-.identitas-cetak,
-.tabel-cetak,
-.tanda-tangan {
-    display: none;
+.card-data table tbody tr:hover td {
+    background-color: #f3f7fc;
 }
 
-/* =====================================
-   RESPONSIVE
-===================================== */
 
-@media (max-width: 768px) {
-    main {
-        padding: 15px !important;
+/* =========================================
+   11. AKSI TABEL
+========================================= */
+
+.aksi {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.aksi .btn {
+    flex-shrink: 0;
+    padding: 7px 12px;
+    font-size: 12px;
+}
+
+
+/* =========================================
+   12. BADGE
+========================================= */
+
+.badge {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+
+/* =========================================
+   13. DATATABLES
+========================================= */
+
+.dt-container {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    color: #475569;
+    font-size: 13px;
+}
+
+.dt-container .dt-layout-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 12px;
+    margin: 0 0 15px;
+}
+
+.dt-container .dt-layout-row:last-child {
+    margin-top: 15px;
+    margin-bottom: 0;
+}
+
+.dt-container .dt-layout-cell {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.dt-container .dt-length,
+.dt-container .dt-search {
+    color: #475569;
+    font-size: 13px;
+}
+
+.dt-container .dt-length select,
+.dt-container .dt-search input {
+    padding: 8px 11px;
+    border: 1px solid #d5e0ee;
+    border-radius: 7px;
+    outline: none;
+    color: #334155;
+    background-color: #ffffff;
+}
+
+.dt-container .dt-search input {
+    margin-left: 6px;
+    max-width: 190px;
+}
+
+.dt-container .dt-length select:focus,
+.dt-container .dt-search input:focus {
+    border-color: #416b9c;
+    box-shadow: 0 0 0 3px rgba(65,107,156,0.12);
+}
+
+.dt-container .dt-info {
+    color: #64748b;
+    font-size: 12px;
+    padding-top: 8px;
+}
+
+.dt-container .dt-paging {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 4px;
+}
+
+.dt-container .dt-paging .dt-paging-button {
+    min-width: 32px;
+    padding: 7px 10px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    color: #193b65 !important;
+    background: transparent;
+    font-size: 12px;
+}
+
+.dt-container .dt-paging .dt-paging-button.current {
+    background: #193b65 !important;
+    border-color: #193b65 !important;
+    color: #ffffff !important;
+}
+
+.dt-container .dt-paging .dt-paging-button:hover:not(.disabled) {
+    background: #e4edf8 !important;
+    border-color: #dce6f3 !important;
+    color: #172f52 !important;
+}
+
+.dt-container .dt-paging .dt-paging-button.disabled {
+    opacity: 0.4;
+}
+
+
+/* =========================================
+   14. FORM
+========================================= */
+
+.form-label {
+    color: #172f52;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.form-control,
+.form-select {
+    padding: 10px 13px;
+    border: 1px solid #d5e0ee;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #416b9c;
+    box-shadow: 0 0 0 3px rgba(65,107,156,0.12);
+}
+
+
+/* =========================================
+   15. RESPONSIVE TABLET
+========================================= */
+
+@media (max-width: 1100px) and (min-width: 768px) {
+
+    .sidebar {
+        width: 230px !important;
+        max-width: 230px !important;
     }
 
-    main h2 {
-        font-size: 22px;
+    .topbar {
+        left: 230px;
     }
 
-    .card-body {
-        padding: 15px;
+    .content-main {
+        width: calc(100% - 230px) !important;
+        margin-left: 230px !important;
+        padding: 75px 22px 35px !important;
+    }
+
+}
+
+
+/* =========================================
+   16. RESPONSIVE HP
+========================================= */
+
+@media (max-width: 767px) {
+
+    .sidebar {
+        position: relative !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto;
+        max-height: none;
+        padding: 20px 15px;
     }
 
     .sidebar h4 {
-        font-size: 17px;
+        font-size: 20px;
+        margin-bottom: 20px;
     }
+
+    .sidebar .nav-link {
+        padding: 11px 14px;
+    }
+
+    .topbar {
+        position: relative;
+        left: 0;
+        right: auto;
+        width: 100%;
+        height: 65px;
+        padding: 0 18px;
+    }
+
+    .content-main {
+        display: block !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+        padding: 25px 15px !important;
+    }
+
+    .content-main > * {
+        max-width: 100%;
+    }
+
+    .header-halaman h3 {
+        font-size: 25px;
+    }
+
+    .card-data {
+        width: 100% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    .card-data .card-header,
+    .card-data .card-body {
+        padding: 16px;
+    }
+
+    .card-header-content {
+        align-items: flex-start;
+    }
+
+    .card-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .dt-container .dt-layout-row {
+        align-items: flex-start;
+    }
+
+    .dt-container .dt-search input {
+        max-width: 150px;
+    }
+
+    .dt-container .dt-paging {
+        justify-content: flex-start;
+    }
+
 }
 
-/* =====================================
-   PENGATURAN KERTAS CETAK
-===================================== */
+
+/* =========================================
+   17. PENGATURAN CETAK
+========================================= */
 
 @page {
     size: A4 landscape;
     margin: 12mm;
 }
 
-/* =====================================
-   MODE PRINT
-===================================== */
-
 @media print {
 
-    html,
     body {
+        background: #ffffff !important;
+        color: #000000 !important;
+    }
+
+    .sidebar,
+    .topbar,
+    .header-halaman,
+    .card-header,
+    .btn,
+    .dt-container .dt-layout-row {
+        display: none !important;
+    }
+
+    .content-main {
+        display: block !important;
         width: 100% !important;
-        min-height: 0 !important;
         margin: 0 !important;
         padding: 0 !important;
-        background: white !important;
-        color: black !important;
-        font-family: Arial, sans-serif !important;
-        font-size: 12px !important;
+        background: #ffffff !important;
     }
 
-    /* Sembunyikan seluruh website */
-
-    body * {
-        visibility: hidden !important;
-    }
-
-    /* Tampilkan area laporan */
-
-    #area-cetak,
-    #area-cetak * {
-        visibility: visible !important;
-    }
-
-    #area-cetak {
-        display: block !important;
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
+    .card-data {
         width: 100% !important;
         max-width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
         border: none !important;
-        border-radius: 0 !important;
         box-shadow: none !important;
-        background: white !important;
+    }
+
+    .card-data .card-body {
+        padding: 0 !important;
+    }
+
+    .table-responsive {
         overflow: visible !important;
     }
 
-    #area-cetak .card-header {
-        display: none !important;
-    }
-
-    #area-cetak .card-body {
-        display: block !important;
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        background: white !important;
-        border: none !important;
-    }
-
-    /* JUDUL LAPORAN */
-
-    #area-cetak .judul-cetak {
-        display: block !important;
-        width: 100% !important;
-        margin: 0 0 28px 0 !important;
-        text-align: center !important;
-        color: black !important;
-    }
-
-    .judul-cetak h2 {
-        margin: 0 0 8px 0 !important;
-        font-size: 17px !important;
-        font-weight: bold !important;
-        color: black !important;
-    }
-
-    .judul-cetak p {
-        margin: 0 !important;
-        font-size: 12px !important;
-        color: black !important;
-    }
-
-    .garis-judul {
-        display: block !important;
-        width: 100% !important;
-        margin-top: 15px !important;
-        border-top: 2px solid #333 !important;
-    }
-
-    /* IDENTITAS SISWA */
-
-    #area-cetak .identitas-cetak {
-        display: block !important;
-        margin-bottom: 17px !important;
-        color: black !important;
-    }
-
-    .identitas-cetak h5 {
-        margin: 0 0 10px 0 !important;
-        font-size: 14px !important;
-        font-weight: normal !important;
-        color: black !important;
-    }
-
-    .identitas-cetak table {
-        width: auto !important;
-        margin: 0 !important;
-        border-collapse: collapse !important;
-        border: none !important;
-        font-size: 12px !important;
-    }
-
-    .identitas-cetak td {
-        padding: 4px 8px 4px 0 !important;
-        border: none !important;
-        background: white !important;
-        color: black !important;
-    }
-
-    .identitas-cetak td:first-child {
-        width: 105px !important;
-    }
-
-    /* TABEL WEBSITE DISEMBUNYIKAN */
-
-    .tabel-website {
-        display: none !important;
-    }
-
-    /* TABEL KHUSUS CETAK */
-
-    #area-cetak .tabel-cetak {
-        display: block !important;
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-
-    .tabel-cetak table {
-        display: table !important;
-        width: 100% !important;
-        margin: 0 !important;
-        border: 1px solid #ddd !important;
-        border-collapse: separate !important;
-        border-spacing: 0 !important;
-        table-layout: fixed !important;
-        border-radius: 6px !important;
-        font-size: 11px !important;
-        color: black !important;
-    }
-
-    .tabel-cetak thead {
-        display: table-header-group !important;
-    }
-
-    .tabel-cetak tbody {
-        display: table-row-group !important;
-    }
-
-    .tabel-cetak tfoot {
-        display: table-row-group !important;
-    }
-
-    .tabel-cetak th,
-    .tabel-cetak td {
-        padding: 10px 8px !important;
-        border: none !important;
-        border-bottom: 1px solid #ccc !important;
-        color: black !important;
-        background: white !important;
-        overflow-wrap: anywhere !important;
-    }
-
-    .tabel-cetak thead th {
-        background: #e8eef8 !important;
-        font-weight: bold !important;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-    }
-
-    /* UKURAN KOLOM */
-
-    .tabel-cetak th:nth-child(1),
-    .tabel-cetak td:nth-child(1) {
-        width: 45% !important;
-        text-align: left !important;
-    }
-
-    .tabel-cetak th:nth-child(2),
-    .tabel-cetak td:nth-child(2) {
-        width: 40% !important;
-        text-align: left !important;
-    }
-
-    .tabel-cetak th:nth-child(3),
-    .tabel-cetak td:nth-child(3) {
-        width: 15% !important;
-        text-align: right !important;
-    }
-
-    /* TOTAL POIN */
-
-    .tabel-cetak tfoot td {
-        height: 45px !important;
-        vertical-align: middle !important;
-        text-align: right !important;
-        font-weight: bold !important;
-        border-bottom: none !important;
-    }
-
-    .tabel-cetak tr {
-        page-break-inside: avoid !important;
-        break-inside: avoid !important;
-    }
-
-    /* TANDA TANGAN */
-
-    #area-cetak .tanda-tangan {
-        display: block !important;
-        width: 100% !important;
-        margin: 18px 0 0 0 !important;
-        padding: 0 !important;
-        color: black !important;
-        page-break-inside: avoid !important;
-        break-inside: avoid !important;
-    }
-
-    .tabel-tanda-tangan {
-        display: table !important;
-        width: 100% !important;
-        table-layout: fixed !important;
-        border-collapse: collapse !important;
-    }
-
-    .tabel-tanda-tangan tr {
-        display: table-row !important;
-    }
-
-    .tabel-tanda-tangan td {
-        display: table-cell !important;
-        width: 33.33% !important;
-        padding: 0 8px !important;
-        border: none !important;
-        background: white !important;
-        color: black !important;
-        text-align: center !important;
-        vertical-align: top !important;
-        font-size: 12px !important;
-    }
-
-    .ruang-tanda-tangan {
-        display: block !important;
-        height: 70px !important;
+    .card-data table {
         width: 100% !important;
     }
 
-    .garis-tanda-tangan {
-        display: block !important;
-        width: 90% !important;
-        height: 1px !important;
-        margin: 0 auto 12px auto !important;
-        border-bottom: 1px solid #555 !important;
-    }
+}
 
-    .nama-tanda-tangan {
-        display: block !important;
-        font-size: 11px !important;
-        color: black !important;
+
+/* =========================================
+   18. PERBAIKAN JARAK ATAS
+========================================= */
+
+@media (min-width: 768px) {
+    .content-main {
+        padding-top: 75px !important;
     }
 }
