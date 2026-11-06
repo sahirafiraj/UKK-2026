@@ -1,3 +1,4 @@
+
 <?php
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
@@ -19,13 +20,13 @@ if ($role != 'admin' && $role != 'guru') {
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Me - Sistem Pelanggaran</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <link rel="stylesheet" href="style/style.css">
 </head>
 
@@ -43,78 +44,101 @@ if ($role != 'admin' && $role != 'guru') {
                 <?php if ($role == 'admin') { ?>
 
                     <li class="nav-item">
-                        <a href="dashboard.php"
-                           class="nav-link <?= $halaman == 'dashboard.php' ? 'active' : 'text-white'; ?>">
+                        <a href="dashboard.php" class="nav-link <?= $halaman == 'dashboard.php' ? 'active' : 'text-white'; ?>">
                             Dashboard
                         </a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="data_siswa.php" class="nav-link text-white">Data Siswa</a>
+                        <a href="data_siswa.php" class="nav-link <?= $halaman == 'data_siswa.php' ? 'active' : 'text-white'; ?>">
+                            Data Siswa
+                        </a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="data_guru.php" class="nav-link text-white">Data Guru</a>
+                        <a href="data_guru.php" class="nav-link <?= $halaman == 'data_guru.php' ? 'active' : 'text-white'; ?>">
+                            Data Guru
+                        </a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="data_kelas.php" class="nav-link text-white">Data Kelas</a>
+                        <a href="data_kelas.php" class="nav-link <?= $halaman == 'data_kelas.php' ? 'active' : 'text-white'; ?>">
+                            Data Kelas
+                        </a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="data_tahun_ajaran.php" class="nav-link text-white">Tahun Ajaran</a>
+                        <a href="data_tahun_ajaran.php" class="nav-link <?= $halaman == 'data_tahun_ajaran.php' ? 'active' : 'text-white'; ?>">
+                            Tahun Ajaran
+                        </a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="data_penempatan_siswa.php" class="nav-link text-white">Penempatan Siswa</a>
+                        <a href="data_penempatan_siswa.php" class="nav-link <?= $halaman == 'data_penempatan_siswa.php' ? 'active' : 'text-white'; ?>">
+                            Penempatan Siswa
+                        </a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="data_wali_kelas.php" class="nav-link text-white">Data Wali Kelas</a>
+                        <a href="data_wali_kelas.php" class="nav-link <?= $halaman == 'data_wali_kelas.php' ? 'active' : 'text-white'; ?>">
+                            Data Wali Kelas
+                        </a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="data_kategori_pelanggaran.php" class="nav-link text-white">Kategori Pelanggaran</a>
+                        <a href="data_kategori_pelanggaran.php" class="nav-link <?= $halaman == 'data_kategori_pelanggaran.php' ? 'active' : 'text-white'; ?>">
+                            Kategori Pelanggaran
+                        </a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="data_jenis_pelanggaran.php" class="nav-link text-white">Jenis Pelanggaran</a>
+                        <a href="data_jenis_pelanggaran.php" class="nav-link <?= $halaman == 'data_jenis_pelanggaran.php' ? 'active' : 'text-white'; ?>">
+                            Jenis Pelanggaran
+                        </a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="laporan.php" class="nav-link text-white">Laporan</a>
+                        <a href="laporan.php" class="nav-link <?= $halaman == 'laporan.php' ? 'active' : 'text-white'; ?>">
+                            Laporan
+                        </a>
                     </li>
 
                 <?php } else { ?>
 
                     <li class="nav-item">
-                        <a href="dashboard.php"
-                           class="nav-link <?= $halaman == 'dashboard.php' ? 'active' : 'text-white'; ?>">
+                        <a href="dashboard.php" class="nav-link <?= $halaman == 'dashboard.php' ? 'active' : 'text-white'; ?>">
                             Dashboard
                         </a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="catat_pelanggaran.php" class="nav-link text-white">Catat Pelanggaran</a>
+                        <a href="catat_pelanggaran.php" class="nav-link <?= $halaman == 'catat_pelanggaran.php' ? 'active' : 'text-white'; ?>">
+                            Catat Pelanggaran
+                        </a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="tindakan.php" class="nav-link text-white">Tindakan</a>
+                        <a href="tindakan.php" class="nav-link <?= $halaman == 'tindakan.php' ? 'active' : 'text-white'; ?>">
+                            Tindakan
+                        </a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="riwayat.php" class="nav-link text-white">Riwayat</a>
+                        <a href="riwayat.php" class="nav-link <?= $halaman == 'riwayat.php' ? 'active' : 'text-white'; ?>">
+                            Riwayat
+                        </a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="rekap_poin.php" class="nav-link text-white">Rekap Poin</a>
+                        <a href="rekap_poin.php" class="nav-link <?= $halaman == 'rekap_poin.php' ? 'active' : 'text-white'; ?>">
+                            Rekap Poin
+                        </a>
                     </li>
 
                 <?php } ?>
 
                 <li class="nav-item">
-                    <a href="about_me.php"
-                       class="nav-link <?= $halaman == 'about_me.php' ? 'active' : 'text-white'; ?>">
+                    <a href="about_me.php" class="nav-link <?= $halaman == 'about_me.php' ? 'active' : 'text-white'; ?>">
                         About Me
                     </a>
                 </li>
@@ -122,130 +146,136 @@ if ($role != 'admin' && $role != 'guru') {
                 <hr class="border-white">
 
                 <li class="nav-item">
-                    <a href="logout.php" class="nav-link text-white">Logout</a>
+                    <a href="logout.php" class="nav-link text-white">
+                        Logout
+                    </a>
                 </li>
 
             </ul>
         </div>
 
-        <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
+        <main class="content-main">
+            <div class="page-content">
 
-            <div class="bg-white rounded shadow-sm p-4 mb-4">
-                <h2 class="fw-bold mb-2">Tentang Saya</h2>
-                <p class="text-secondary mb-0">
-                    Selamat datang, <b><?= htmlspecialchars($nama_login); ?></b>
-                </p>
-            </div>
+                <div class="bg-white rounded shadow-sm p-4 mb-4">
+                    <h2 class="fw-bold mb-2">Tentang Saya</h2>
 
-            <div class="card border-0 shadow-sm mb-4 text-center rounded-4">
-                <div class="card-body p-4 p-md-5">
-
-                    <img src="img/foto_saya.jpg"
-                         alt="Foto Profil"
-                         class="rounded-circle border border-3 border-light shadow-sm mb-3"
-                         width="120"
-                         height="120"
-                         style="object-fit: cover;">
-
-                    <h3 class="fw-bold mb-2">Sahira Firaj</h3>
-
-                    <p class="text-secondary mb-3">
-                        Siswa Rekayasa Perangkat Lunak
+                    <p class="text-secondary mb-0">
+                        Selamat datang,
+                        <b><?= htmlspecialchars($nama_login); ?></b>
                     </p>
-
-                    <span class="badge rounded-pill px-3 py-2 text-white mb-3"
-                          style="background-color: #172554;">
-                        SMK Muhammadiyah Kota Tasikmalaya
-                    </span>
-
-                    <p class="text-secondary mx-auto mb-0"
-                       style="max-width: 650px; line-height: 1.8;">
-                        Saya adalah siswa jurusan Rekayasa Perangkat Lunak
-                        yang sedang mempelajari pembuatan website dan
-                        pengelolaan database. Saya ingin terus menambah
-                        pengetahuan dan pengalaman di bidang teknologi,
-                        serta meningkatkan kemampuan melalui tugas dan
-                        proyek sekolah.
-                    </p>
-
                 </div>
-            </div>
 
-            <div class="card border-0 shadow-sm mb-4 rounded-4"
-                 style="background-color: #DCE6F7;">
+                <div class="card border-0 shadow-sm mb-4 text-center rounded-4">
+                    <div class="card-body p-4 p-md-5">
 
-                <div class="card-body p-4">
+                        <img src="img/foto_saya.jpg"
+                             alt="Foto Profil"
+                             class="rounded-circle border border-3 border-light shadow-sm mb-3"
+                             width="120"
+                             height="120"
+                             style="object-fit: cover;">
 
-                    <h4 class="fw-bold mb-4" style="color: #172554;">
-                        Informasi Personal
-                    </h4>
+                        <h3 class="fw-bold mb-2">Sahira Firaj</h3>
 
-                    <div class="row g-4">
+                        <p class="text-secondary mb-3">
+                            Siswa Rekayasa Perangkat Lunak
+                        </p>
 
-                        <div class="col-md-6">
-                            <small style="color: #475569;">Nama Lengkap</small>
-                            <h6 class="fw-bold mt-1 mb-0" style="color: #172554;">
-                                Sahira Firaj
-                            </h6>
-                        </div>
+                        <span class="badge rounded-pill px-3 py-2 text-white mb-3"
+                              style="background-color: #172554;">
+                            SMK Muhammadiyah Kota Tasikmalaya
+                        </span>
 
-                        <div class="col-md-6">
-                            <small style="color: #475569;">Kelas</small>
-                            <h6 class="fw-bold mt-1 mb-0" style="color: #172554;">
-                                XII RPL 2
-                            </h6>
-                        </div>
-
-                        <div class="col-md-6">
-                            <small style="color: #475569;">Jurusan</small>
-                            <h6 class="fw-bold mt-1 mb-0" style="color: #172554;">
-                                Rekayasa Perangkat Lunak
-                            </h6>
-                        </div>
-
-                        <div class="col-md-6">
-                            <small style="color: #475569;">Tahun Ajaran</small>
-                            <h6 class="fw-bold mt-1 mb-0" style="color: #172554;">
-                                2026–2027
-                            </h6>
-                        </div>
+                        <p class="text-secondary mx-auto mb-0"
+                           style="max-width: 650px; line-height: 1.8;">
+                            Saya adalah siswa jurusan Rekayasa Perangkat Lunak
+                            yang sedang mempelajari pembuatan website dan
+                            pengelolaan database. Saya ingin terus menambah
+                            pengetahuan dan pengalaman di bidang teknologi,
+                            serta meningkatkan kemampuan melalui tugas dan
+                            proyek sekolah.
+                        </p>
 
                     </div>
                 </div>
-            </div>
 
-            <div class="card border rounded-4 shadow-sm mb-4"
-                 style="background-color: #FFFFFF; border-color: #DCE4FF !important;">
+                <div class="card border-0 shadow-sm mb-4 rounded-4"
+                     style="background-color: #DCE6F7;">
 
-                <div class="card-body p-4">
+                    <div class="card-body p-4">
 
-                    <h5 class="fw-bold mb-3" style="color: #172554;">
-                        Bidang yang Dipelajari
-                    </h5>
+                        <h4 class="fw-bold mb-4" style="color: #172554;">
+                            Informasi Personal
+                        </h4>
 
-                    <div class="d-flex flex-wrap gap-2 mb-4">
-                        <span class="skill-badge px-3 py-2 rounded-3">HTML</span>
-                        <span class="skill-badge px-3 py-2 rounded-3">CSS</span>
-                        <span class="skill-badge px-3 py-2 rounded-3">PHP</span>
-                        <span class="skill-badge px-3 py-2 rounded-3">Bootstrap</span>
-                        <span class="skill-badge px-3 py-2 rounded-3">MySQL</span>
-                        <span class="skill-badge px-3 py-2 rounded-3">Web Development</span>
+                        <div class="row g-4">
+
+                            <div class="col-md-6">
+                                <small style="color: #475569;">Nama Lengkap</small>
+                                <h6 class="fw-bold mt-1 mb-0" style="color: #172554;">
+                                    Sahira Firaj
+                                </h6>
+                            </div>
+
+                            <div class="col-md-6">
+                                <small style="color: #475569;">Kelas</small>
+                                <h6 class="fw-bold mt-1 mb-0" style="color: #172554;">
+                                    XII RPL 2
+                                </h6>
+                            </div>
+
+                            <div class="col-md-6">
+                                <small style="color: #475569;">Jurusan</small>
+                                <h6 class="fw-bold mt-1 mb-0" style="color: #172554;">
+                                    Rekayasa Perangkat Lunak
+                                </h6>
+                            </div>
+
+                            <div class="col-md-6">
+                                <small style="color: #475569;">Tahun Ajaran</small>
+                                <h6 class="fw-bold mt-1 mb-0" style="color: #172554;">
+                                    2026–2027
+                                </h6>
+                            </div>
+
+                        </div>
                     </div>
-
-                    <hr style="border-color: #E5E7EB;">
-
-                    <p class="text-secondary mb-0 mt-3" style="line-height: 1.8;">
-                        Berfokus pada pengembangan website dengan struktur yang rapi,
-                        desain yang konsisten, dan pengalaman pengguna yang baik.
-                    </p>
-
                 </div>
-            </div>
 
-            <div class="text-center text-secondary py-3">
-                <small>© 2026 Sistem Pelanggaran Siswa</small>
-            </div>
+                <div class="card border rounded-4 shadow-sm mb-4"
+                     style="background-color: #FFFFFF; border-color: #DCE4FF !important;">
 
+                    <div class="card-body p-4">
+
+                        <h5 class="fw-bold mb-3" style="color: #172554;">
+                            Bidang yang Dipelajari
+                        </h5>
+
+                        <div class="d-flex flex-wrap gap-2 mb-4">
+                            <span class="skill-badge px-3 py-2 rounded-3">HTML</span>
+                            <span class="skill-badge px-3 py-2 rounded-3">CSS</span>
+                            <span class="skill-badge px-3 py-2 rounded-3">PHP</span>
+                            <span class="skill-badge px-3 py-2 rounded-3">Bootstrap</span>
+                            <span class="skill-badge px-3 py-2 rounded-3">MySQL</span>
+                            <span class="skill-badge px-3 py-2 rounded-3">Web Development</span>
+                        </div>
+
+                        <hr style="border-color: #E5E7EB;">
+
+                        <p class="text-secondary mb-0 mt-3" style="line-height: 1.8;">
+                            Berfokus pada pengembangan website dengan struktur yang rapi,
+                            desain yang konsisten, dan pengalaman pengguna yang baik.
+                        </p>
+
+                    </div>
+                </div>
+
+                <div class="text-center text-secondary py-3">
+                    <small>© 2026 Sistem Pelanggaran Siswa</small>
+                </div>
+
+            </div>
         </main>
 
     </div>

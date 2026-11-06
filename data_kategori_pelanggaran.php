@@ -1,23 +1,21 @@
+
 <?php
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
 
-// Memeriksa login
 if (!isset($_SESSION['login'])) {
     header("Location: login.php");
     exit;
 }
 
-// Memeriksa hak akses admin
 if ($_SESSION['role'] != 'admin') {
     echo "Anda tidak memiliki akses";
     exit;
 }
 
-// Mengambil nama pengguna
 $nama_login = $_SESSION['name'] ?? 'Admin';
+$halaman = basename($_SERVER['PHP_SELF']);
 
-// Mengambil data kategori pelanggaran
 $data = mysqli_query(
     $koneksi,
     "SELECT * FROM t_pelanggaran_kategori ORDER BY id DESC"
@@ -37,13 +35,12 @@ if (!$data) {
 
     <title>Data Kategori Pelanggaran</title>
 
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
           rel="stylesheet">
 
-    <!-- DataTables CSS versi 3.1.4 -->
     <link rel="stylesheet"
           href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css">
+
     <link rel="stylesheet" href="style/style.css">
 </head>
 
@@ -102,7 +99,8 @@ if (!$data) {
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_kategori_pelanggaran.php" class="nav-link active">
+                    <a href="data_kategori_pelanggaran.php"
+                       class="nav-link <?= $halaman == 'data_kategori_pelanggaran.php' ? 'active' : 'text-white'; ?>">
                         Kategori Pelanggaran
                     </a>
                 </li>
@@ -137,30 +135,32 @@ if (!$data) {
         </div>
 
         <!-- KONTEN UTAMA -->
-        <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
+        <main class="content-main">
+            <div class="page-content">
 
-            <!-- HEADER HALAMAN -->
-            <div class="bg-white rounded shadow-sm p-4 mb-4">
+                <!-- HEADER -->
+                <div class="bg-white rounded shadow-sm p-4 mb-4">
 
-                <h2 class="fw-bold">Data Kategori Pelanggaran</h2>
+                    <h2 class="fw-bold">Data Kategori Pelanggaran</h2>
 
-                <p class="text-secondary mb-0">
-                    Selamat datang,
-                    <b><?= htmlspecialchars($nama_login); ?></b>
-                </p>
+                    <p class="text-secondary mb-0">
+                        Selamat datang,
+                        <b><?= htmlspecialchars($nama_login); ?></b>
+                    </p>
 
-            </div>
+                </div>
 
-            <!-- CARD DATA KATEGORI -->
-            <div class="card shadow-sm border-0">
+                <!-- CARD DATA KATEGORI -->
+                <div class="card shadow-sm border-0">
 
-                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
 
-                    <h5 class="mb-0 fw-bold">
-                        Daftar Kategori Pelanggaran
-                    </h5>
+                        <h5 class="mb-0 fw-bold">
+                            Daftar Kategori Pelanggaran
+                        </h5>
 
-                    <div class="d-flex gap-2">
+                        <div class="d-flex gap-2">
+
                             <a href="dashboard.php" class="btn btn-secondary btn-sm">
                                 Kembali ke Dashboard
                             </a>
@@ -168,113 +168,113 @@ if (!$data) {
                             <a href="tambah_kategori_pelanggaran.php" class="btn btn-primary btn-sm">
                                 Tambah Kategori Pelanggaran
                             </a>
+
                         </div>
-                </div>
+                    </div>
 
-                <!-- TABEL KATEGORI -->
-                <div class="card-body">
+                    <!-- TABEL KATEGORI -->
+                    <div class="card-body">
 
-                    <div class="table-responsive">
+                        <div class="table-responsive">
 
-                        <table id="tabelKategori"
-                               class="table table-bordered table-striped table-hover align-middle">
+                            <table id="tabelKategori"
+                                   class="table table-bordered table-striped table-hover align-middle">
 
-                            <thead class="table-primary">
-                                <tr>
-                                    <th>No</th>
-                                    <th>Nama Kategori</th>
-                                    <th>Deskripsi</th>
-                                    <th>Status</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Nama Kategori</th>
+                                        <th>Deskripsi</th>
+                                        <th>Status</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
 
-                            <tbody>
+                                <tbody>
 
-                                <?php
-                                $no = 1;
+                                    <?php
+                                    $no = 1;
 
-                                if (mysqli_num_rows($data) > 0) {
+                                    if (mysqli_num_rows($data) > 0) {
+                                        while ($d = mysqli_fetch_assoc($data)) {
+                                    ?>
 
-                                    while ($d = mysqli_fetch_assoc($data)) {
-                                ?>
+                                    <tr>
+                                        <td><?= $no++; ?></td>
 
-                                <tr>
-                                    <td><?= $no++; ?></td>
+                                        <td>
+                                            <?= htmlspecialchars($d['nama'] ?? ''); ?>
+                                        </td>
 
-                                    <td>
-                                        <?= htmlspecialchars($d['nama'] ?? ''); ?>
-                                    </td>
+                                        <td>
+                                            <?= htmlspecialchars($d['deskripsi'] ?? ''); ?>
+                                        </td>
 
-                                    <td>
-                                        <?= htmlspecialchars($d['deskripsi'] ?? ''); ?>
-                                    </td>
+                                        <td>
+                                            <?php if (($d['status_aktif'] ?? 0) == 1) { ?>
 
-                                    <td>
-                                        <?php if (($d['status_aktif'] ?? 0) == 1) { ?>
+                                                <span class="badge bg-success">
+                                                    Aktif
+                                                </span>
 
-                                            <span class="badge bg-success">
-                                                Aktif
-                                            </span>
+                                            <?php } else { ?>
 
-                                        <?php } else { ?>
+                                                <span class="badge bg-secondary">
+                                                    Tidak Aktif
+                                                </span>
 
-                                            <span class="badge bg-secondary">
-                                                Tidak Aktif
-                                            </span>
+                                            <?php } ?>
+                                        </td>
 
-                                        <?php } ?>
-                                    </td>
+                                        <td>
+                                            <div class="d-flex gap-1">
 
-                                    <td>
-                                        <a href="edit_kategori_pelanggaran.php?id=<?= urlencode($d['id']); ?>"
-                                           class="btn btn-warning btn-sm">
-                                            Edit
-                                        </a>
+                                                <a href="edit_kategori_pelanggaran.php?id=<?= urlencode($d['id']); ?>"
+                                                   class="btn btn-warning btn-sm">
+                                                    Edit
+                                                </a>
 
-                                        <a href="hapus_kategori_pelanggaran.php?id=<?= urlencode($d['id']); ?>"
-                                           class="btn btn-danger btn-sm"
-                                           onclick="return confirm('Yakin ingin menghapus kategori ini?')">
-                                            Hapus
-                                        </a>
-                                    </td>
-                                </tr>
+                                                <a href="hapus_kategori_pelanggaran.php?id=<?= urlencode($d['id']); ?>"
+                                                   class="btn btn-danger btn-sm"
+                                                   onclick="return confirm('Yakin ingin menghapus kategori ini?')">
+                                                    Hapus
+                                                </a>
 
-                                <?php
-                                    }
-                                } else {
-                                ?>
+                                            </div>
+                                        </td>
+                                    </tr>
 
-                                <tr>
-                                    <td colspan="5" class="text-center text-secondary">
-                                        Belum ada data kategori pelanggaran.
-                                    </td>
-                                </tr>
+                                    <?php
+                                        }
+                                    } else {
+                                    ?>
 
-                                <?php
-                                }
-                                ?>
+                                    <tr>
+                                        <td colspan="5" class="text-center text-secondary">
+                                            Belum ada data kategori pelanggaran.
+                                        </td>
+                                    </tr>
 
-                            </tbody>
+                                    <?php } ?>
 
-                        </table>
+                                </tbody>
 
+                            </table>
+
+                        </div>
                     </div>
                 </div>
-            </div>
 
+            </div>
         </main>
 
     </div>
 </div>
 
-<!-- Bootstrap JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- DataTables JavaScript versi 3.1.4 -->
 <script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
 
-<!-- Mengaktifkan DataTables -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -311,13 +311,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
 
-        columnDefs: [
-            {
-                targets: 4,
-                orderable: false,
-                searchable: false
-            }
-        ]
+        columnDefs: [{
+            targets: 4,
+            orderable: false,
+            searchable: false
+        }]
 
     });
 

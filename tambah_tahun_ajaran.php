@@ -1,3 +1,4 @@
+
 <?php
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
@@ -12,7 +13,8 @@ if ($_SESSION['role'] != 'admin') {
     exit;
 }
 
-$name = $_SESSION['name'];
+$name = $_SESSION['name'] ?? 'Admin';
+$halaman = basename($_SERVER['PHP_SELF']);
 
 $pesan = "";
 $nama = "";
@@ -96,10 +98,8 @@ if (isset($_POST['simpan'])) {
 
                     mysqli_begin_transaction($koneksi);
 
-                    // Jika tahun ajaran baru Aktif
                     if ($status_aktif == 1) {
 
-                        // Menonaktifkan semua tahun ajaran lainnya
                         $nonaktifkan = mysqli_query(
                             $koneksi,
                             "UPDATE t_tahun_ajaran
@@ -110,7 +110,6 @@ if (isset($_POST['simpan'])) {
                         $nonaktifkan = true;
                     }
 
-                    // Menyimpan tahun ajaran baru
                     if ($nonaktifkan) {
 
                         $simpan = mysqli_query(
@@ -157,9 +156,7 @@ if (isset($_POST['simpan'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tambah Tahun Ajaran</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-          rel="stylesheet">
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style/style.css">
 </head>
 
@@ -168,7 +165,6 @@ if (isset($_POST['simpan'])) {
 <div class="container-fluid">
     <div class="row">
 
-        <!-- SIDEBAR ADMIN -->
         <div class="sidebar col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto">
 
             <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
@@ -200,7 +196,7 @@ if (isset($_POST['simpan'])) {
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_tahun_ajaran.php" class="nav-link active">
+                    <a href="data_tahun_ajaran.php" class="nav-link <?= $halaman == 'tambah_tahun_ajaran.php' ? 'active' : 'text-white'; ?>">
                         Tahun Ajaran
                     </a>
                 </li>
@@ -252,133 +248,133 @@ if (isset($_POST['simpan'])) {
             </ul>
         </div>
 
-        <!-- KONTEN UTAMA -->
-        <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
+        <main class="content-main">
+            <div class="page-content">
 
-            <div class="bg-white rounded shadow-sm p-4 mb-4">
+                <div class="bg-white rounded shadow-sm p-4 mb-4">
 
-                <h2 class="fw-bold">Tambah Tahun Ajaran</h2>
+                    <h2 class="fw-bold">Tambah Tahun Ajaran</h2>
 
-                <p class="text-secondary mb-0">
-                    Selamat datang,
-                    <b><?= htmlspecialchars($name); ?></b>
-                </p>
-
-            </div>
-
-            <!-- KARTU FORM -->
-            <div class="card shadow-sm border-0">
-
-                <div class="card-header bg-white py-3">
-                    <h5 class="fw-bold mb-0">
-                        Form Tambah Tahun Ajaran
-                    </h5>
-                </div>
-
-                <div class="card-body">
-
-                    <?php if ($pesan != "") { ?>
-
-                        <div class="alert alert-danger">
-                            <?= htmlspecialchars($pesan); ?>
-                        </div>
-
-                    <?php } ?>
-
-                    <form method="POST">
-
-                        <div class="mb-3">
-
-                            <label class="form-label">
-                                Nama Tahun Ajaran
-                            </label>
-
-                            <input type="text"
-                                   name="nama"
-                                   class="form-control"
-                                   placeholder="Contoh: 2026/2027"
-                                   value="<?= htmlspecialchars($nama); ?>"
-                                   required>
-
-                            <small class="text-secondary">
-                                Tahun ajaran yang sudah terdaftar
-                                tidak dapat ditambahkan kembali.
-                            </small>
-
-                        </div>
-
-                        <div class="mb-3">
-
-                            <label class="form-label">
-                                Tanggal Mulai
-                            </label>
-
-                            <input type="date"
-                                   name="tanggal_mulai"
-                                   class="form-control"
-                                   value="<?= htmlspecialchars($tanggal_mulai); ?>"
-                                   required>
-
-                        </div>
-
-                        <div class="mb-3">
-
-                            <label class="form-label">
-                                Tanggal Selesai
-                            </label>
-
-                            <input type="date"
-                                   name="tanggal_selesai"
-                                   class="form-control"
-                                   value="<?= htmlspecialchars($tanggal_selesai); ?>"
-                                   required>
-
-                        </div>
-
-                        <div class="mb-4">
-
-                            <label class="form-label">
-                                Status Tahun Ajaran
-                            </label>
-
-                            <select name="status_aktif"
-                                    class="form-select"
-                                    required>
-
-                                <option value="1"
-                                    <?= $status_aktif == 1 ? 'selected' : ''; ?>>
-                                    Aktif
-                                </option>
-
-                                <option value="0"
-                                    <?= $status_aktif == 0 ? 'selected' : ''; ?>>
-                                    Tidak Aktif
-                                </option>
-
-                            </select>
-
-                        </div>
-
-                        <div class="d-flex gap-2">
-
-                            <button type="submit"
-                                    name="simpan"
-                                    class="btn btn-primary">
-                                Simpan Data
-                            </button>
-
-                            <a href="data_tahun_ajaran.php"
-                               class="btn btn-secondary">
-                                Kembali
-                            </a>
-
-                        </div>
-
-                    </form>
+                    <p class="text-secondary mb-0">
+                        Selamat datang,
+                        <b><?= htmlspecialchars($name); ?></b>
+                    </p>
 
                 </div>
-            </div>
 
+                <div class="card shadow-sm border-0">
+
+                    <div class="card-header bg-white py-3">
+                        <h5 class="fw-bold mb-0">
+                            Form Tambah Tahun Ajaran
+                        </h5>
+                    </div>
+
+                    <div class="card-body">
+
+                        <?php if ($pesan != "") { ?>
+
+                            <div class="alert alert-danger">
+                                <?= htmlspecialchars($pesan); ?>
+                            </div>
+
+                        <?php } ?>
+
+                        <form method="POST">
+
+                            <div class="mb-3">
+
+                                <label class="form-label">
+                                    Nama Tahun Ajaran
+                                </label>
+
+                                <input type="text"
+                                       name="nama"
+                                       class="form-control"
+                                       placeholder="Contoh: 2026/2027"
+                                       value="<?= htmlspecialchars($nama); ?>"
+                                       required>
+
+                                <small class="text-secondary">
+                                    Tahun ajaran yang sudah terdaftar
+                                    tidak dapat ditambahkan kembali.
+                                </small>
+
+                            </div>
+
+                            <div class="mb-3">
+
+                                <label class="form-label">
+                                    Tanggal Mulai
+                                </label>
+
+                                <input type="date"
+                                       name="tanggal_mulai"
+                                       class="form-control"
+                                       value="<?= htmlspecialchars($tanggal_mulai); ?>"
+                                       required>
+
+                            </div>
+
+                            <div class="mb-3">
+
+                                <label class="form-label">
+                                    Tanggal Selesai
+                                </label>
+
+                                <input type="date"
+                                       name="tanggal_selesai"
+                                       class="form-control"
+                                       value="<?= htmlspecialchars($tanggal_selesai); ?>"
+                                       required>
+
+                            </div>
+
+                            <div class="mb-4">
+
+                                <label class="form-label">
+                                    Status Tahun Ajaran
+                                </label>
+
+                                <select name="status_aktif"
+                                        class="form-select"
+                                        required>
+
+                                    <option value="1"
+                                        <?= $status_aktif == 1 ? 'selected' : ''; ?>>
+                                        Aktif
+                                    </option>
+
+                                    <option value="0"
+                                        <?= $status_aktif == 0 ? 'selected' : ''; ?>>
+                                        Tidak Aktif
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                            <div class="d-flex gap-2">
+
+                                <button type="submit"
+                                        name="simpan"
+                                        class="btn btn-primary">
+                                    Simpan Data
+                                </button>
+
+                                <a href="data_tahun_ajaran.php"
+                                   class="btn btn-secondary">
+                                    Kembali
+                                </a>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
         </main>
 
     </div>

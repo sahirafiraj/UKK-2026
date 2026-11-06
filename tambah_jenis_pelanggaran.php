@@ -3,22 +3,20 @@
 session_start();
 include "config/koneksi.php";
 
-// Cek login
 if (!isset($_SESSION['login'])) {
     header("Location: login.php");
     exit;
 }
 
-// Cek hak akses
 if ($_SESSION['role'] != 'admin') {
     echo "Anda tidak memiliki akses";
     exit;
 }
 
 $nama_login = $_SESSION['name'] ?? 'Admin';
+$halaman = basename($_SERVER['PHP_SELF']);
 $pesan = "";
 
-// Proses tambah data
 if (isset($_POST['simpan'])) {
     $kode = mysqli_real_escape_string($koneksi, $_POST['kode']);
     $nama = mysqli_real_escape_string($koneksi, $_POST['nama']);
@@ -55,7 +53,6 @@ if (isset($_POST['simpan'])) {
           rel="stylesheet">
 
     <link rel="stylesheet" href="style/style.css">
-    
 </head>
 
 <body class="bg-light">
@@ -63,7 +60,6 @@ if (isset($_POST['simpan'])) {
 <div class="container-fluid">
     <div class="row">
 
-        <!-- SIDEBAR -->
         <div class="sidebar col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto">
 
             <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
@@ -123,122 +119,126 @@ if (isset($_POST['simpan'])) {
             </ul>
         </div>
 
-        <!-- KONTEN UTAMA -->
-        <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
+        <main class="content-main">
+            <div class="page-content">
 
-            <!-- HEADER -->
-            <div class="bg-white rounded shadow-sm p-4 mb-4">
-                <h2 class="fw-bold">Tambah Jenis Pelanggaran</h2>
+                <div class="bg-white rounded shadow-sm p-4 mb-4">
+                    <h2 class="fw-bold">Tambah Jenis Pelanggaran</h2>
 
-                <p class="text-secondary mb-0">
-                    Selamat datang,
-                    <b><?= htmlspecialchars($nama_login); ?></b>
-                </p>
-            </div>
-
-            <!-- FORM TAMBAH -->
-            <div class="card shadow-sm border-0">
-
-                <div class="card-header bg-white">
-                    <h5 class="fw-bold mb-0">Form Jenis Pelanggaran</h5>
+                    <p class="text-secondary mb-0">
+                        Selamat datang,
+                        <b><?= htmlspecialchars($nama_login); ?></b>
+                    </p>
                 </div>
 
-                <div class="card-body">
+                <div class="card shadow-sm border-0">
 
-                    <?php if ($pesan != "") { ?>
-                        <div class="alert alert-danger">
-                            <?= htmlspecialchars($pesan); ?>
-                        </div>
-                    <?php } ?>
+                    <div class="card-header bg-white py-3">
+                        <h5 class="fw-bold mb-0">Form Jenis Pelanggaran</h5>
+                    </div>
 
-                    <form method="POST">
+                    <div class="card-body p-4">
 
-                        <div class="mb-3">
-                            <label class="form-label">Kode Pelanggaran</label>
-                            <input type="text" name="kode"
-                                   class="form-control"
-                                   placeholder="Contoh: PLG-051"
-                                   required>
-                        </div>
+                        <?php if ($pesan != "") { ?>
+                            <div class="alert alert-danger">
+                                <?= htmlspecialchars($pesan); ?>
+                            </div>
+                        <?php } ?>
 
-                        <div class="mb-3">
-                            <label class="form-label">Nama Pelanggaran</label>
-                            <input type="text" name="nama"
-                                   class="form-control"
-                                   placeholder="Contoh: Tidak membawa buku"
-                                   required>
-                        </div>
+                        <form method="POST">
 
-                        <div class="mb-3">
-                            <label class="form-label">Kategori Pelanggaran</label>
+                            <div class="mb-3">
+                                <label class="form-label">Kode Pelanggaran</label>
+                                <input type="text" name="kode"
+                                       class="form-control"
+                                       placeholder="Contoh: PLG-051"
+                                       required>
+                            </div>
 
-                            <select name="kategori" class="form-select" required>
-                                <option value="">-- Pilih Kategori --</option>
+                            <div class="mb-3">
+                                <label class="form-label">Nama Pelanggaran</label>
+                                <input type="text" name="nama"
+                                       class="form-control"
+                                       placeholder="Contoh: Tidak membawa buku"
+                                       required>
+                            </div>
 
-                                <?php
-                                $kategori_query = mysqli_query(
-                                    $koneksi,
-                                    "SELECT * FROM t_pelanggaran_kategori ORDER BY id DESC"
-                                );
+                            <div class="mb-3">
+                                <label class="form-label">Kategori Pelanggaran</label>
 
-                                if ($kategori_query) {
-                                    while ($kat = mysqli_fetch_assoc($kategori_query)) {
-                                        $nama_kategori = $kat['nama']
-                                            ?? $kat['kategori']
-                                            ?? $kat['nama_kategori']
-                                            ?? 'Kategori ' . $kat['id'];
-                                ?>
-                                    <option value="<?= $kat['id']; ?>">
-                                        <?= htmlspecialchars($nama_kategori); ?>
-                                    </option>
-                                <?php
+                                <select name="kategori" class="form-select" required>
+                                    <option value="">-- Pilih Kategori --</option>
+
+                                    <?php
+                                    $kategori_query = mysqli_query(
+                                        $koneksi,
+                                        "SELECT * FROM t_pelanggaran_kategori ORDER BY id DESC"
+                                    );
+
+                                    if ($kategori_query) {
+                                        while ($kat = mysqli_fetch_assoc($kategori_query)) {
+                                            $nama_kategori = $kat['nama']
+                                                ?? $kat['kategori']
+                                                ?? $kat['nama_kategori']
+                                                ?? 'Kategori ' . $kat['id'];
+                                    ?>
+                                        <option value="<?= $kat['id']; ?>">
+                                            <?= htmlspecialchars($nama_kategori); ?>
+                                        </option>
+                                    <?php
+                                        }
                                     }
-                                }
-                                ?>
-                            </select>
-                        </div>
+                                    ?>
+                                </select>
+                            </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Poin Pelanggaran</label>
-                            <input type="number" name="poin"
-                                   class="form-control"
-                                   min="0" required>
-                        </div>
+                            <div class="mb-3">
+                                <label class="form-label">Poin Pelanggaran</label>
+                                <input type="number" name="poin"
+                                       class="form-control"
+                                       min="0" required>
+                            </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Deskripsi</label>
-                            <textarea name="deskripsi"
-                                      class="form-control"
-                                      rows="3"
-                                      placeholder="Masukkan deskripsi pelanggaran"
-                                      required></textarea>
-                        </div>
+                            <div class="mb-3">
+                                <label class="form-label">Deskripsi</label>
+                                <textarea name="deskripsi"
+                                          class="form-control"
+                                          rows="3"
+                                          placeholder="Masukkan deskripsi pelanggaran"
+                                          required></textarea>
+                            </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Status</label>
+                            <div class="mb-3">
+                                <label class="form-label">Status</label>
 
-                            <select name="status" class="form-select" required>
-                                <option value="1">Aktif</option>
-                                <option value="0">Tidak Aktif</option>
-                            </select>
-                        </div>
+                                <select name="status" class="form-select" required>
+                                    <option value="1">Aktif</option>
+                                    <option value="0">Tidak Aktif</option>
+                                </select>
+                            </div>
 
-                        <button type="submit" name="simpan"
-                                class="btn btn-primary">
-                            Simpan
-                        </button>
+                            <hr>
 
-                        <a href="data_jenis_pelanggaran.php"
-                           class="btn btn-secondary">
-                            Kembali
-                        </a>
+                            <div class="d-flex justify-content-between">
+                                <a href="data_jenis_pelanggaran.php"
+                                   class="btn btn-secondary">
+                                    Kembali
+                                </a>
 
-                    </form>
+                                <button type="submit" name="simpan"
+                                        class="btn btn-primary">
+                                    Simpan
+                                </button>
+                            </div>
 
+                        </form>
+
+                    </div>
                 </div>
-            </div>
 
+            </div>
         </main>
+
     </div>
 </div>
 

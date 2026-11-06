@@ -13,7 +13,7 @@ if ($_SESSION['role'] != 'admin') {
     exit;
 }
 
-$name = $_SESSION['name'];
+$name = $_SESSION['name'] ?? 'Admin';
 $halaman = basename($_SERVER['PHP_SELF']);
 
 $id = $_GET['id'] ?? '';
@@ -112,83 +112,85 @@ if (!$data) {
             </ul>
         </div>
 
-        <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
+        <main class="content-main">
+            <div class="page-content">
 
-            <div class="bg-white rounded shadow-sm p-4 mb-4">
-                <h2 class="fw-bold mb-2">Edit Data Kelas</h2>
-                <p class="text-secondary mb-0">
-                    Ubah data kelas yang sudah tersimpan.
-                </p>
-            </div>
-
-            <div class="card shadow-sm border-0">
-
-                <div class="card-header bg-white p-3">
-                    <h5 class="mb-0 fw-bold">Form Edit Kelas</h5>
+                <div class="bg-white rounded shadow-sm p-4 mb-4">
+                    <h2 class="fw-bold mb-2">Edit Data Kelas</h2>
+                    <p class="text-secondary mb-0">
+                        Ubah data kelas yang sudah tersimpan.
+                    </p>
                 </div>
 
-                <div class="card-body p-4">
+                <div class="card shadow-sm border-0">
 
-                    <form action="proses_edit_kelas.php" method="POST">
+                    <div class="card-header bg-white p-3">
+                        <h5 class="mb-0 fw-bold">Form Edit Kelas</h5>
+                    </div>
 
-                        <input type="hidden" name="id"
-                               value="<?= htmlspecialchars($data['id']); ?>">
+                    <div class="card-body p-4">
 
-                        <div class="mb-3">
-                            <label for="nama" class="form-label">Nama Kelas</label>
-                            <input type="text" id="nama" name="nama"
-                                   class="form-control"
-                                   value="<?= htmlspecialchars($data['nama']); ?>"
-                                   required>
-                        </div>
+                        <form action="proses_edit_kelas.php" method="POST">
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="tingkat" class="form-label">Tingkat</label>
-                                <select id="tingkat" name="tingkat"
+                            <input type="hidden" name="id"
+                                   value="<?= htmlspecialchars($data['id']); ?>">
+
+                            <div class="mb-3">
+                                <label for="nama" class="form-label">Nama Kelas</label>
+                                <input type="text" id="nama" name="nama"
+                                       class="form-control"
+                                       value="<?= htmlspecialchars($data['nama']); ?>"
+                                       required>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="tingkat" class="form-label">Tingkat</label>
+                                    <select id="tingkat" name="tingkat"
+                                            class="form-select" required>
+                                        <option value="X" <?= $data['tingkat'] == 'X' ? 'selected' : ''; ?>>X</option>
+                                        <option value="XI" <?= $data['tingkat'] == 'XI' ? 'selected' : ''; ?>>XI</option>
+                                        <option value="XII" <?= $data['tingkat'] == 'XII' ? 'selected' : ''; ?>>XII</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="jurusan" class="form-label">Jurusan</label>
+                                    <input type="text" id="jurusan" name="jurusan"
+                                           class="form-control"
+                                           value="<?= htmlspecialchars($data['jurusan']); ?>"
+                                           required>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="status_aktif" class="form-label">Status Aktif</label>
+                                <select id="status_aktif" name="status_aktif"
                                         class="form-select" required>
-                                    <option value="X" <?= $data['tingkat'] == 'X' ? 'selected' : ''; ?>>X</option>
-                                    <option value="XI" <?= $data['tingkat'] == 'XI' ? 'selected' : ''; ?>>XI</option>
-                                    <option value="XII" <?= $data['tingkat'] == 'XII' ? 'selected' : ''; ?>>XII</option>
+                                    <option value="1" <?= $data['status_aktif'] == 1 ? 'selected' : ''; ?>>Aktif</option>
+                                    <option value="0" <?= $data['status_aktif'] == 0 ? 'selected' : ''; ?>>Tidak Aktif</option>
                                 </select>
                             </div>
 
-                            <div class="col-md-6 mb-3">
-                                <label for="jurusan" class="form-label">Jurusan</label>
-                                <input type="text" id="jurusan" name="jurusan"
-                                       class="form-control"
-                                       value="<?= htmlspecialchars($data['jurusan']); ?>"
-                                       required>
+                            <hr>
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="data_kelas.php" class="btn btn-secondary">
+                                    Kembali
+                                </a>
+
+                                <button type="submit" name="update" value="1"
+                                        class="btn btn-primary">
+                                    Simpan Perubahan
+                                </button>
                             </div>
-                        </div>
 
-                        <div class="mb-4">
-                            <label for="status_aktif" class="form-label">Status Aktif</label>
-                            <select id="status_aktif" name="status_aktif"
-                                    class="form-select" required>
-                                <option value="1" <?= $data['status_aktif'] == 1 ? 'selected' : ''; ?>>Aktif</option>
-                                <option value="0" <?= $data['status_aktif'] == 0 ? 'selected' : ''; ?>>Tidak Aktif</option>
-                            </select>
-                        </div>
+                        </form>
 
-                        <hr>
-
-                        <div class="d-flex justify-content-between align-items-center">
-                            <a href="data_kelas.php" class="btn btn-secondary">
-                                Kembali
-                            </a>
-
-                            <button type="submit" name="update" value="1"
-                                    class="btn btn-primary">
-                                Simpan Perubahan
-                            </button>
-                        </div>
-
-                    </form>
-
+                    </div>
                 </div>
-            </div>
 
+            </div>
         </main>
 
     </div>

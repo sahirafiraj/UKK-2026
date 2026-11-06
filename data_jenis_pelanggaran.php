@@ -1,18 +1,21 @@
+
 <?php
-session_start();
+include 'includes/cek_session.php';
+include 'config/koneksi.php';
 
-include "config/koneksi.php";
+if (!isset($_SESSION['login'])) {
+    header("Location: login.php");
+    exit;
+}
 
-// Cek login dan hak akses admin
-if (!isset($_SESSION['login']) || $_SESSION['role'] != 'admin') {
+if ($_SESSION['role'] != 'admin') {
     echo "Anda tidak memiliki akses";
     exit;
 }
 
-// Nama pengguna
 $nama_login = $_SESSION['name'] ?? 'Admin';
+$halaman = basename($_SERVER['PHP_SELF']);
 
-// Mengambil data jenis pelanggaran
 $query = mysqli_query($koneksi, "
     SELECT *
     FROM t_pelanggaran
@@ -32,16 +35,14 @@ if (!$query) {
 
     <title>Kelola Jenis Pelanggaran</title>
 
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
           rel="stylesheet">
 
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.4/css/dataTables.dataTables.min.css">
+    <link rel="stylesheet"
+          href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css">
 
     <link rel="stylesheet" href="style/style.css">
 
-    <!-- Mengatur kolom dan tombol aksi -->
     <style>
         #tabelPelanggaran {
             width: 100%;
@@ -71,7 +72,7 @@ if (!$query) {
 <div class="container-fluid">
     <div class="row">
 
-        <!-- SIDEBAR -->
+        <!-- SIDEBAR ADMIN -->
         <div class="sidebar col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto">
 
             <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
@@ -127,7 +128,8 @@ if (!$query) {
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_jenis_pelanggaran.php" class="nav-link active">
+                    <a href="data_jenis_pelanggaran.php"
+                       class="nav-link <?= $halaman == 'data_jenis_pelanggaran.php' ? 'active' : 'text-white'; ?>">
                         Jenis Pelanggaran
                     </a>
                 </li>
@@ -156,175 +158,177 @@ if (!$query) {
         </div>
 
         <!-- KONTEN UTAMA -->
-        <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
+        <main class="content-main">
+            <div class="page-content">
 
-            <!-- HEADER -->
-            <div class="bg-white rounded shadow-sm p-4 mb-4">
+                <!-- HEADER -->
+                <div class="bg-white rounded shadow-sm p-4 mb-4">
 
-                <h2 class="fw-bold">Kelola Jenis Pelanggaran</h2>
+                    <h2 class="fw-bold">Kelola Jenis Pelanggaran</h2>
 
-                <p class="text-secondary mb-0">
-                    Selamat datang,
-                    <b><?= htmlspecialchars($nama_login); ?></b>
-                </p>
+                    <p class="text-secondary mb-0">
+                        Selamat datang,
+                        <b><?= htmlspecialchars($nama_login); ?></b>
+                    </p>
 
-            </div>
+                </div>
 
-            <!-- DAFTAR JENIS PELANGGARAN -->
-            <div class="card shadow-sm border-0">
+                <!-- DAFTAR JENIS PELANGGARAN -->
+                <div class="card shadow-sm border-0">
 
-                <div class="card-header bg-white py-3">
+                    <div class="card-header bg-white py-3">
 
-                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
 
-                        <h5 class="mb-0 fw-bold">
-                            Daftar Jenis Pelanggaran
-                        </h5>
+                            <h5 class="mb-0 fw-bold">
+                                Daftar Jenis Pelanggaran
+                            </h5>
 
-                        <div class="d-flex gap-2">
+                            <div class="d-flex gap-2">
 
-                            <a href="dashboard.php"
-                               class="btn btn-secondary btn-sm">
-                                Kembali ke Dashboard
-                            </a>
+                                <a href="dashboard.php"
+                                   class="btn btn-secondary btn-sm">
+                                    Kembali ke Dashboard
+                                </a>
 
-                            <a href="tambah_jenis_pelanggaran.php"
-                               class="btn btn-primary btn-sm">
-                                Tambah Jenis Pelanggaran
-                            </a>
+                                <a href="tambah_jenis_pelanggaran.php"
+                                   class="btn btn-primary btn-sm">
+                                    Tambah Jenis Pelanggaran
+                                </a>
+
+                            </div>
 
                         </div>
 
                     </div>
 
-                </div>
+                    <!-- TABEL -->
+                    <div class="card-body">
 
-                <!-- TABEL -->
-                <div class="card-body">
+                        <div class="table-responsive">
 
-                    <div class="table-responsive">
+                            <table id="tabelPelanggaran"
+                                   class="table table-bordered table-striped table-hover align-middle w-100">
 
-                        <table id="tabelPelanggaran"
-                               class="table table-bordered table-striped table-hover align-middle w-100">
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Kode</th>
+                                        <th>Nama Pelanggaran</th>
+                                        <th>Kategori</th>
+                                        <th>Poin</th>
+                                        <th>Deskripsi</th>
+                                        <th>Status</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
 
-                            <thead class="table-primary">
-                                <tr>
-                                    <th>No</th>
-                                    <th>Kode</th>
-                                    <th>Nama Pelanggaran</th>
-                                    <th>Kategori</th>
-                                    <th>Poin</th>
-                                    <th>Deskripsi</th>
-                                    <th>Status</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
+                                <tbody>
 
-                            <tbody>
+                                    <?php
+                                    $no = 1;
 
-                                <?php
-                                $no = 1;
+                                    while ($data = mysqli_fetch_assoc($query)) {
+                                    ?>
 
-                                while ($data = mysqli_fetch_assoc($query)) {
-                                ?>
+                                    <tr>
 
-                                <tr>
+                                        <td><?= $no++; ?></td>
 
-                                    <td><?= $no++; ?></td>
+                                        <td>
+                                            <?= htmlspecialchars($data['kode'] ?? ''); ?>
+                                        </td>
 
-                                    <td>
-                                        <?= htmlspecialchars($data['kode'] ?? ''); ?>
-                                    </td>
+                                        <td>
+                                            <?= htmlspecialchars($data['nama'] ?? ''); ?>
+                                        </td>
 
-                                    <td>
-                                        <?= htmlspecialchars($data['nama'] ?? ''); ?>
-                                    </td>
+                                        <td>
+                                            <?= htmlspecialchars($data['pelanggaran_kategori_id'] ?? ''); ?>
+                                        </td>
 
-                                    <td>
-                                        <?= htmlspecialchars(
-                                            $data['pelanggaran_kategori_id'] ?? ''
-                                        ); ?>
-                                    </td>
-
-                                    <td>
-                                        <span class="badge bg-info text-dark">
-                                            <?= htmlspecialchars($data['poin'] ?? '0'); ?>
-                                        </span>
-                                    </td>
-
-                                    <td>
-                                        <?= htmlspecialchars($data['deskripsi'] ?? ''); ?>
-                                    </td>
-
-                                    <!-- STATUS -->
-                                    <td>
-                                        <?php
-                                        if (($data['status_aktif'] ?? 0) == 1) {
-                                        ?>
-                                            <span class="badge bg-success">
-                                                Aktif
+                                        <td>
+                                            <span class="badge bg-info text-dark">
+                                                <?= htmlspecialchars($data['poin'] ?? '0'); ?>
                                             </span>
-                                        <?php
-                                        } else {
-                                        ?>
-                                            <span class="badge bg-secondary">
-                                                Tidak Aktif
-                                            </span>
-                                        <?php
-                                        }
-                                        ?>
-                                    </td>
+                                        </td>
 
-                                    <!-- AKSI -->
-                                    <td>
-                                        <div class="aksi">
+                                        <td>
+                                            <?= htmlspecialchars($data['deskripsi'] ?? ''); ?>
+                                        </td>
 
-                                            <a href="edit_jenis_pelanggaran.php?id=<?= (int) $data['id']; ?>"
-                                               class="btn btn-warning btn-sm">
-                                                Edit
-                                            </a>
+                                        <td>
+                                            <?php if (($data['status_aktif'] ?? 0) == 1) { ?>
 
-                                            <a href="hapus_jenis_pelanggaran.php?id=<?= (int) $data['id']; ?>"
-                                               class="btn btn-danger btn-sm"
-                                               onclick="return confirm('Yakin ingin menghapus jenis pelanggaran ini?')">
-                                                Hapus
-                                            </a>
+                                                <span class="badge bg-success">
+                                                    Aktif
+                                                </span>
 
-                                        </div>
-                                    </td>
+                                            <?php } else { ?>
 
-                                </tr>
+                                                <span class="badge bg-secondary">
+                                                    Tidak Aktif
+                                                </span>
 
-                                <?php } ?>
+                                            <?php } ?>
+                                        </td>
 
-                            </tbody>
+                                        <td>
+                                            <div class="aksi">
 
-                        </table>
+                                                <a href="edit_jenis_pelanggaran.php?id=<?= (int) $data['id']; ?>"
+                                                   class="btn btn-warning btn-sm">
+                                                    Edit
+                                                </a>
 
+                                                <a href="hapus_jenis_pelanggaran.php?id=<?= (int) $data['id']; ?>"
+                                                   class="btn btn-danger btn-sm"
+                                                   onclick="return confirm('Yakin ingin menghapus jenis pelanggaran ini?')">
+                                                    Hapus
+                                                </a>
+
+                                            </div>
+                                        </td>
+
+                                    </tr>
+
+                                    <?php } ?>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
                     </div>
                 </div>
-            </div>
 
+            </div>
         </main>
 
     </div>
 </div>
 
-<!-- Bootstrap JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-
-<!-- DataTables JavaScript -->
-<script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
 
 <script>
-$(document).ready(function () {
-    $('#tabelPelanggaran').DataTable({
+document.addEventListener('DOMContentLoaded', function () {
+
+    new DataTable('#tabelPelanggaran', {
+
         pageLength: 10,
+
         lengthMenu: [5, 10, 25, 50, 100],
+
         order: [],
+
+        layout: {
+            topStart: 'info',
+            bottom: 'paging',
+            bottomStart: null,
+            bottomEnd: null
+        },
 
         language: {
             search: 'Cari:',
@@ -349,7 +353,9 @@ $(document).ready(function () {
             orderable: false,
             searchable: false
         }]
+
     });
+
 });
 </script>
 

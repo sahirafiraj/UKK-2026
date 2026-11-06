@@ -13,6 +13,9 @@ if ($_SESSION['role'] != 'admin') {
     exit;
 }
 
+$name = $_SESSION['name'] ?? 'Admin';
+$halaman = basename($_SERVER['PHP_SELF']);
+
 $id = $_GET['id'];
 
 $data = mysqli_query($koneksi, "SELECT * FROM t_pelanggaran_kategori WHERE id='$id'");
@@ -49,7 +52,7 @@ if (!$d) {
             <li class="nav-item"><a href="data_tahun_ajaran.php" class="nav-link text-white">Tahun Ajaran</a></li>
             <li class="nav-item"><a href="data_penempatan_siswa.php" class="nav-link text-white">Penempatan Siswa</a></li>
             <li class="nav-item"><a href="data_wali_kelas.php" class="nav-link text-white">Data Wali Kelas</a></li>
-            <li class="nav-item"><a href="data_kategori_pelanggaran.php" class="nav-link active">Kategori Pelanggaran</a></li>
+            <li class="nav-item"><a href="data_kategori_pelanggaran.php" class="nav-link <?= $halaman == 'edit_kategori_pelanggaran.php' ? 'active' : 'text-white'; ?>">Kategori Pelanggaran</a></li>
             <li class="nav-item"><a href="data_jenis_pelanggaran.php" class="nav-link text-white">Jenis Pelanggaran</a></li>
             <li class="nav-item"><a href="laporan.php" class="nav-link text-white">Laporan</a></li>
             <li class="nav-item"><a href="about_me.php" class="nav-link text-white">About Me</a></li>
@@ -58,56 +61,62 @@ if (!$d) {
         </ul>
     </div>
 
-    <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
+    <main class="content-main">
+        <div class="page-content">
 
-        <div class="bg-white rounded shadow-sm p-4 mb-4">
-            <h2 class="fw-bold">Edit Kategori Pelanggaran</h2>
-            <p class="text-secondary mb-0">Ubah informasi kategori pelanggaran.</p>
-        </div>
-
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-white py-3">
-                <h5 class="mb-0 fw-bold">Form Edit Kategori Pelanggaran</h5>
+            <div class="bg-white rounded shadow-sm p-4 mb-4">
+                <h2 class="fw-bold">Edit Kategori Pelanggaran</h2>
+                <p class="text-secondary mb-0">
+                    Selamat datang,
+                    <b><?= htmlspecialchars($name); ?></b>
+                </p>
             </div>
 
-            <div class="card-body p-4">
-                <form action="proses_edit_kategori_pelanggaran.php" method="POST">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold">Form Edit Kategori Pelanggaran</h5>
+                </div>
 
-                    <input type="hidden" name="id" value="<?= $d['id']; ?>">
+                <div class="card-body p-4">
+                    <form action="proses_edit_kategori_pelanggaran.php" method="POST">
 
-                    <div class="mb-3">
-                        <label class="form-label">Nama Kategori</label>
-                        <input type="text" name="nama" class="form-control"
-                               value="<?= htmlspecialchars($d['nama']); ?>" required>
-                    </div>
+                        <input type="hidden" name="id" value="<?= $d['id']; ?>">
 
-                    <div class="mb-3">
-                        <label class="form-label">Deskripsi</label>
-                        <textarea name="deskripsi" class="form-control" rows="4" required><?= htmlspecialchars($d['deskripsi']); ?></textarea>
-                    </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nama Kategori</label>
+                            <input type="text" name="nama" class="form-control"
+                                   value="<?= htmlspecialchars($d['nama']); ?>" required>
+                        </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Status Aktif</label>
-                        <select name="status_aktif" class="form-select" required>
-                            <option value="1" <?= $d['status_aktif'] == 1 ? 'selected' : ''; ?>>Aktif</option>
-                            <option value="0" <?= $d['status_aktif'] == 0 ? 'selected' : ''; ?>>Tidak Aktif</option>
-                        </select>
-                    </div>
+                        <div class="mb-3">
+                            <label class="form-label">Deskripsi</label>
+                            <textarea name="deskripsi" class="form-control" rows="4" required><?= htmlspecialchars($d['deskripsi']); ?></textarea>
+                        </div>
 
-                    <hr>
+                        <div class="mb-3">
+                            <label class="form-label">Status Aktif</label>
+                            <select name="status_aktif" class="form-select" required>
+                                <option value="1" <?= $d['status_aktif'] == 1 ? 'selected' : ''; ?>>Aktif</option>
+                                <option value="0" <?= $d['status_aktif'] == 0 ? 'selected' : ''; ?>>Tidak Aktif</option>
+                            </select>
+                        </div>
 
-                    <div class="d-flex justify-content-between">
-                        <a href="data_kategori_pelanggaran.php" class="btn btn-secondary">Kembali</a>
-                        <button type="submit" name="ubah" class="btn btn-primary">
-                            Simpan Perubahan
-                        </button>
-                    </div>
+                        <hr>
 
-                </form>
+                        <div class="d-flex justify-content-between">
+                            <a href="data_kategori_pelanggaran.php" class="btn btn-secondary">Kembali</a>
+                            <button type="submit" name="ubah" class="btn btn-primary">
+                                Simpan Perubahan
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
             </div>
-        </div>
 
+        </div>
     </main>
+
 </div>
 </div>
 </body>

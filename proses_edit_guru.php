@@ -1,9 +1,12 @@
+```php
 <?php
-
-session_start();
-
 include "config/koneksi.php";
 include "includes/cek_session.php";
+
+if (!isset($_SESSION['login'])) {
+    header("Location: login.php");
+    exit;
+}
 
 if ($_SESSION['role'] != 'admin') {
     echo "Anda tidak memiliki akses";
@@ -12,23 +15,29 @@ if ($_SESSION['role'] != 'admin') {
 
 if (isset($_POST['update'])) {
 
-    $id = $_POST['id'];
-    $nip = $_POST['nip'];
-    $nama = $_POST['nama'];
-    $email = $_POST['email'];
-    $status = $_POST['status_aktif'];
-    $user_id = $_POST['user_id'];
+    $id = (int) $_POST['id'];
+    $nip = mysqli_real_escape_string($koneksi, $_POST['nip']);
+    $nama = mysqli_real_escape_string($koneksi, $_POST['nama']);
+    $email = mysqli_real_escape_string($koneksi, $_POST['email']);
+    $status = (int) $_POST['status_aktif'];
 
-    mysqli_query($koneksi, "
+    $query = mysqli_query($koneksi, "
         UPDATE t_guru SET
             nip='$nip',
             nama='$nama',
             email='$email',
-            status_aktif='$status',
-            user_id='$user_id'
+            status_aktif='$status'
         WHERE id='$id'
     ");
 
+    if ($query) {
+        header("Location: data_guru.php");
+        exit;
+    } else {
+        echo "Gagal mengubah data guru: " . mysqli_error($koneksi);
+    }
+
+} else {
     header("Location: data_guru.php");
     exit;
 }

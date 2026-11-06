@@ -12,6 +12,9 @@ if ($_SESSION['role'] != 'admin') {
     echo "Anda tidak memiliki akses";
     exit;
 }
+
+$name = $_SESSION['name'] ?? 'Admin';
+$halaman = basename($_SERVER['PHP_SELF']);
 ?>
 
 <!DOCTYPE html>
@@ -22,7 +25,6 @@ if ($_SESSION['role'] != 'admin') {
     <title>Tambah Kategori Pelanggaran</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style/style.css">
-    
 </head>
 
 <body class="bg-light">
@@ -50,55 +52,61 @@ if ($_SESSION['role'] != 'admin') {
         </ul>
     </div>
 
-    <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
+    <main class="content-main">
+        <div class="page-content">
 
-        <div class="bg-white rounded shadow-sm p-4 mb-4">
-            <h2 class="fw-bold">Tambah Kategori Pelanggaran</h2>
-            <p class="text-secondary mb-0">Tambahkan kategori pelanggaran baru ke dalam sistem.</p>
-        </div>
-
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-white py-3">
-                <h5 class="mb-0 fw-bold">Form Tambah Kategori Pelanggaran</h5>
+            <div class="bg-white rounded shadow-sm p-4 mb-4">
+                <h2 class="fw-bold">Tambah Kategori Pelanggaran</h2>
+                <p class="text-secondary mb-0">
+                    Selamat datang,
+                    <b><?= htmlspecialchars($name); ?></b>
+                </p>
             </div>
 
-            <div class="card-body p-4">
-                <form action="proses_tambah_kategori_pelanggaran.php" method="POST">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold">Form Tambah Kategori Pelanggaran</h5>
+                </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Nama Kategori</label>
-                        <input type="text" name="nama" class="form-control"
-                               placeholder="Masukkan nama kategori" required>
-                    </div>
+                <div class="card-body p-4">
+                    <form action="proses_tambah_kategori_pelanggaran.php" method="POST">
 
-                    <div class="mb-3">
-                        <label class="form-label">Deskripsi</label>
-                        <textarea name="deskripsi" class="form-control" rows="4"
-                                  placeholder="Masukkan deskripsi kategori" required></textarea>
-                    </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nama Kategori</label>
+                            <input type="text" name="nama" class="form-control"
+                                   placeholder="Masukkan nama kategori" required>
+                        </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Status Aktif</label>
-                        <select name="status_aktif" class="form-select" required>
-                            <option value="1">Aktif</option>
-                            <option value="0">Tidak Aktif</option>
-                        </select>
-                    </div>
+                        <div class="mb-3">
+                            <label class="form-label">Deskripsi</label>
+                            <textarea name="deskripsi" class="form-control" rows="4"
+                                      placeholder="Masukkan deskripsi kategori" required></textarea>
+                        </div>
 
-                    <hr>
+                        <div class="mb-3">
+                            <label class="form-label">Status Aktif</label>
+                            <select name="status_aktif" class="form-select" required>
+                                <option value="1">Aktif</option>
+                                <option value="0">Tidak Aktif</option>
+                            </select>
+                        </div>
 
-                    <div class="d-flex justify-content-between">
-                        <a href="data_kategori_pelanggaran.php" class="btn btn-secondary">Kembali</a>
-                        <button type="submit" name="simpan" class="btn btn-primary">
-                            Simpan Kategori
-                        </button>
-                    </div>
+                        <hr>
 
-                </form>
+                        <div class="d-flex justify-content-between">
+                            <a href="data_kategori_pelanggaran.php" class="btn btn-secondary">Kembali</a>
+                            <button type="submit" name="simpan" class="btn btn-primary">
+                                Simpan Kategori
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
             </div>
-        </div>
 
+        </div>
     </main>
+
 </div>
 </div>
 </body>

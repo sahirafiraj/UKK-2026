@@ -1,3 +1,4 @@
+
 <?php
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
@@ -35,11 +36,9 @@ if (!$query) {
 
     <title>Tindakan - Sistem Pelanggaran</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-          rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <link rel="stylesheet"
-          href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css">
 
     <link rel="stylesheet" href="style/style.css">
 </head>
@@ -168,126 +167,132 @@ if (!$query) {
             </ul>
         </div>
 
-        <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
+        <main class="content-main">
+            <div class="page-content">
 
-            <div class="bg-white rounded shadow-sm p-4 mb-4">
-                <h2 class="fw-bold">Tindakan</h2>
-                <p class="text-secondary mb-0">
-                    Daftar pelanggaran siswa yang perlu ditindaklanjuti.
-                </p>
-            </div>
+                <div class="bg-white rounded shadow-sm p-4 mb-4">
 
-            <div class="card shadow-sm border-0">
+                    <h2 class="fw-bold">Tindakan</h2>
 
-                <div class="card-header bg-white">
-                    <h5 class="mb-0 fw-bold">Daftar Pelanggaran</h5>
+                    <p class="text-secondary mb-0">
+                        Selamat datang,
+                        <b><?= htmlspecialchars($nama_login); ?></b>
+                    </p>
+
                 </div>
 
-                <div class="card-body">
+                <div class="card shadow-sm border-0">
 
-                    <div class="table-responsive">
-
-                        <table id="tabelTindakan"
-                               class="table table-bordered table-striped table-hover align-middle">
-
-                            <thead class="table-primary">
-                                <tr>
-                                    <th>No</th>
-                                    <th>Tanggal</th>
-                                    <th>Nama Siswa</th>
-                                    <th>Kelas</th>
-                                    <th>Pelanggaran</th>
-                                    <th>Poin</th>
-                                    <th>Keterangan</th>
-                                    <th>Tindakan</th>
-                                    <th>Status</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                <?php
-                                $no = 1;
-
-                                if (mysqli_num_rows($query) > 0) {
-                                    while ($data = mysqli_fetch_assoc($query)) {
-                                ?>
-
-                                <tr>
-                                    <td><?= $no++; ?></td>
-
-                                    <td>
-                                        <?= htmlspecialchars($data['tanggal'] ?? '-'); ?>
-                                    </td>
-
-                                    <td>
-                                        <?= htmlspecialchars($data['nama_siswa'] ?? '-'); ?>
-                                    </td>
-
-                                    <td>
-                                        <?= htmlspecialchars($data['nama_kelas'] ?? '-'); ?>
-                                    </td>
-
-                                    <td>
-                                        <?= htmlspecialchars($data['nama_pelanggaran'] ?? '-'); ?>
-                                    </td>
-
-                                    <td>
-                                        <?= htmlspecialchars($data['poin'] ?? '0'); ?>
-                                    </td>
-
-                                    <td>
-                                        <?= htmlspecialchars($data['keterangan'] ?? '-'); ?>
-                                    </td>
-
-                                    <td>
-                                        <?= htmlspecialchars($data['tindakan'] ?? '-'); ?>
-                                    </td>
-
-                                    <td>
-                                        <?php if (($data['status'] ?? '') == 'Selesai') { ?>
-
-                                            <span class="badge bg-success">Selesai</span>
-
-                                        <?php } elseif (($data['status'] ?? '') == 'Diproses') { ?>
-
-                                            <span class="badge bg-warning text-dark">Diproses</span>
-
-                                        <?php } else { ?>
-
-                                            <span class="badge bg-secondary">
-                                                <?= htmlspecialchars($data['status'] ?? 'Belum'); ?>
-                                            </span>
-
-                                        <?php } ?>
-                                    </td>
-
-                                    <td>
-                                        <a href="beri_tindakan.php?id=<?= urlencode($data['id']); ?>"
-                                           class="btn btn-primary btn-sm">
-                                            Beri Tindakan
-                                        </a>
-                                    </td>
-                                </tr>
-
-                                <?php
-                                    }
-                                }
-                                ?>
-
-                            </tbody>
-
-                        </table>
-
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0 fw-bold">Daftar Pelanggaran</h5>
                     </div>
 
+                    <div class="card-body">
+
+                        <div class="table-responsive">
+
+                            <table id="tabelTindakan"
+                                   class="table table-bordered table-striped table-hover align-middle">
+
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Tanggal</th>
+                                        <th>Nama Siswa</th>
+                                        <th>Kelas</th>
+                                        <th>Pelanggaran</th>
+                                        <th>Poin</th>
+                                        <th>Keterangan</th>
+                                        <th>Tindakan</th>
+                                        <th>Status</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <?php
+                                    $no = 1;
+
+                                    if (mysqli_num_rows($query) > 0) {
+                                        while ($data = mysqli_fetch_assoc($query)) {
+                                    ?>
+
+                                    <tr>
+                                        <td><?= $no++; ?></td>
+
+                                        <td>
+                                            <?= htmlspecialchars($data['tanggal'] ?? '-'); ?>
+                                        </td>
+
+                                        <td>
+                                            <?= htmlspecialchars($data['nama_siswa'] ?? '-'); ?>
+                                        </td>
+
+                                        <td>
+                                            <?= htmlspecialchars($data['nama_kelas'] ?? '-'); ?>
+                                        </td>
+
+                                        <td>
+                                            <?= htmlspecialchars($data['nama_pelanggaran'] ?? '-'); ?>
+                                        </td>
+
+                                        <td>
+                                            <?= htmlspecialchars($data['poin'] ?? '0'); ?>
+                                        </td>
+
+                                        <td>
+                                            <?= htmlspecialchars($data['keterangan'] ?? '-'); ?>
+                                        </td>
+
+                                        <td>
+                                            <?= htmlspecialchars($data['tindakan'] ?? '-'); ?>
+                                        </td>
+
+                                        <td>
+                                            <?php if (($data['status'] ?? '') == 'Selesai') { ?>
+
+                                                <span class="badge bg-success">Selesai</span>
+
+                                            <?php } elseif (($data['status'] ?? '') == 'Diproses') { ?>
+
+                                                <span class="badge bg-warning text-dark">Diproses</span>
+
+                                            <?php } else { ?>
+
+                                                <span class="badge bg-secondary">
+                                                    <?= htmlspecialchars($data['status'] ?? 'Belum'); ?>
+                                                </span>
+
+                                            <?php } ?>
+                                        </td>
+
+                                        <td>
+                                            <a href="beri_tindakan.php?id=<?= urlencode($data['id']); ?>"
+                                               class="btn btn-primary btn-sm">
+                                                Beri Tindakan
+                                            </a>
+                                        </td>
+                                    </tr>
+
+                                    <?php
+                                        }
+                                    }
+                                    ?>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
                 </div>
+
+                <p class="text-secondary text-center mt-4 small">
+                    © 2026 Sistem Pelanggaran Siswa
+                </p>
+
             </div>
-
-            <p class="text-secondary text-center mt-4 small">
-                © 2026 Sistem Pelanggaran Siswa
-            </p>
-
         </main>
 
     </div>

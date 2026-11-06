@@ -109,7 +109,7 @@ if (!$query) {
                     </li>
 
                     <li class="nav-item">
-                        <a href="riwayat.php" class="nav-link active">Riwayat</a>
+                        <a href="riwayat.php" class="nav-link <?= $halaman == 'riwayat.php' ? 'active' : 'text-white'; ?>">Riwayat</a>
                     </li>
 
                     <li class="nav-item">
@@ -131,71 +131,74 @@ if (!$query) {
             </ul>
         </div>
 
-        <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
+        <main class="content-main">
+            <div class="page-content">
 
-            <div class="bg-white rounded shadow-sm p-4 mb-4">
-                <h2 class="fw-bold">Riwayat Pelanggaran</h2>
-                <p class="text-secondary mb-0">
-                    Daftar riwayat pelanggaran siswa.
-                </p>
-            </div>
-
-            <div class="card border-0 shadow-sm">
-                <div class="card-body p-4">
-
-                    <h5 class="fw-bold mb-4">Daftar Pelanggaran</h5>
-
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover align-middle" id="tabelRiwayat">
-
-                            <thead class="table-primary">
-                                <tr>
-                                    <th>No</th>
-                                    <th>Tanggal</th>
-                                    <th>Nama Siswa</th>
-                                    <th>Kelas</th>
-                                    <th>Pelanggaran</th>
-                                    <th>Poin</th>
-                                    <th>Keterangan</th>
-                                    <th>Tindakan</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                <?php
-                                $no = 1;
-
-                                if ($query && mysqli_num_rows($query) > 0) {
-                                    while ($data = mysqli_fetch_assoc($query)) {
-                                ?>
-                                    <tr>
-                                        <td><?= $no++; ?></td>
-                                        <td><?= htmlspecialchars($data['tanggal'] ?? '-'); ?></td>
-                                        <td><?= htmlspecialchars($data['nama_siswa'] ?? '-'); ?></td>
-                                        <td><?= htmlspecialchars($data['nama_kelas'] ?? '-'); ?></td>
-                                        <td><?= htmlspecialchars($data['nama_pelanggaran'] ?? '-'); ?></td>
-                                        <td><?= htmlspecialchars($data['poin'] ?? '0'); ?></td>
-                                        <td><?= htmlspecialchars($data['keterangan'] ?? '-'); ?></td>
-                                        <td><?= htmlspecialchars($data['tindakan'] ?? '-'); ?></td>
-                                        <td><?= htmlspecialchars($data['status'] ?? 'Belum'); ?></td>
-                                    </tr>
-                                <?php
-                                    }
-                                }
-                                ?>
-                            </tbody>
-
-                        </table>
-                    </div>
-
+                <div class="bg-white rounded shadow-sm p-4 mb-4">
+                    <h2 class="fw-bold">Riwayat Pelanggaran</h2>
+                    <p class="text-secondary mb-0">
+                        Selamat datang,
+                        <b><?= htmlspecialchars($nama_login); ?></b>
+                    </p>
                 </div>
+
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+
+                        <h5 class="fw-bold mb-4">Daftar Pelanggaran</h5>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover align-middle" id="tabelRiwayat">
+
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Tanggal</th>
+                                        <th>Nama Siswa</th>
+                                        <th>Kelas</th>
+                                        <th>Pelanggaran</th>
+                                        <th>Poin</th>
+                                        <th>Keterangan</th>
+                                        <th>Tindakan</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <?php
+                                    $no = 1;
+
+                                    if (mysqli_num_rows($query) > 0) {
+                                        while ($data = mysqli_fetch_assoc($query)) {
+                                    ?>
+                                        <tr>
+                                            <td><?= $no++; ?></td>
+                                            <td><?= htmlspecialchars($data['tanggal'] ?? '-'); ?></td>
+                                            <td><?= htmlspecialchars($data['nama_siswa'] ?? '-'); ?></td>
+                                            <td><?= htmlspecialchars($data['nama_kelas'] ?? '-'); ?></td>
+                                            <td><?= htmlspecialchars($data['nama_pelanggaran'] ?? '-'); ?></td>
+                                            <td><?= htmlspecialchars($data['poin'] ?? '0'); ?></td>
+                                            <td><?= htmlspecialchars($data['keterangan'] ?? '-'); ?></td>
+                                            <td><?= htmlspecialchars($data['tindakan'] ?? '-'); ?></td>
+                                            <td><?= htmlspecialchars($data['status'] ?? 'Belum'); ?></td>
+                                        </tr>
+                                    <?php
+                                        }
+                                    }
+                                    ?>
+                                </tbody>
+
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+
+                <p class="text-secondary text-center mt-4 small">
+                    © 2026 Sistem Pelanggaran Siswa
+                </p>
+
             </div>
-
-            <p class="text-secondary text-center mt-4 small">
-                © 2026 Sistem Pelanggaran Siswa
-            </p>
-
         </main>
 
     </div>

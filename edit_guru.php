@@ -13,7 +13,7 @@ if ($_SESSION['role'] != 'admin') {
     exit;
 }
 
-$name = $_SESSION['name'];
+$name = $_SESSION['name'] ?? 'Admin';
 $halaman = basename($_SERVER['PHP_SELF']);
 
 $id = $_GET['id'] ?? '';
@@ -49,7 +49,6 @@ if (!$data) {
 <div class="container-fluid">
     <div class="row">
 
-        <!-- SIDEBAR ADMIN -->
         <div class="sidebar col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto">
 
             <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
@@ -57,13 +56,13 @@ if (!$data) {
             <ul class="nav nav-pills flex-column gap-1">
 
                 <li class="nav-item">
-                    <a href="dashboard.php" class="nav-link text-white">
+                    <a href="dashboard.php" class="nav-link <?= $halaman == 'dashboard.php' ? 'active' : 'text-white'; ?>">
                         Dashboard
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_siswa.php" class="nav-link text-white">
+                    <a href="data_siswa.php" class="nav-link <?= $halaman == 'data_siswa.php' ? 'active' : 'text-white'; ?>">
                         Data Siswa
                     </a>
                 </li>
@@ -75,49 +74,49 @@ if (!$data) {
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_kelas.php" class="nav-link text-white">
+                    <a href="data_kelas.php" class="nav-link <?= $halaman == 'data_kelas.php' ? 'active' : 'text-white'; ?>">
                         Data Kelas
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_tahun_ajaran.php" class="nav-link text-white">
+                    <a href="data_tahun_ajaran.php" class="nav-link <?= $halaman == 'data_tahun_ajaran.php' ? 'active' : 'text-white'; ?>">
                         Tahun Ajaran
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_penempatan_siswa.php" class="nav-link text-white">
+                    <a href="data_penempatan_siswa.php" class="nav-link <?= $halaman == 'data_penempatan_siswa.php' ? 'active' : 'text-white'; ?>">
                         Penempatan Siswa
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_wali_kelas.php" class="nav-link text-white">
+                    <a href="data_wali_kelas.php" class="nav-link <?= $halaman == 'data_wali_kelas.php' ? 'active' : 'text-white'; ?>">
                         Data Wali Kelas
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_kategori_pelanggaran.php" class="nav-link text-white">
+                    <a href="data_kategori_pelanggaran.php" class="nav-link <?= $halaman == 'data_kategori_pelanggaran.php' ? 'active' : 'text-white'; ?>">
                         Kategori Pelanggaran
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_jenis_pelanggaran.php" class="nav-link text-white">
+                    <a href="data_jenis_pelanggaran.php" class="nav-link <?= $halaman == 'data_jenis_pelanggaran.php' ? 'active' : 'text-white'; ?>">
                         Jenis Pelanggaran
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="laporan.php" class="nav-link text-white">
+                    <a href="laporan.php" class="nav-link <?= $halaman == 'laporan.php' ? 'active' : 'text-white'; ?>">
                         Laporan
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="about_me.php" class="nav-link text-white">
+                    <a href="about_me.php" class="nav-link <?= $halaman == 'about_me.php' ? 'active' : 'text-white'; ?>">
                         About Me
                     </a>
                 </li>
@@ -133,113 +132,109 @@ if (!$data) {
             </ul>
         </div>
 
-        <!-- KONTEN -->
-        <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
+        <main class="content-main">
+            <div class="page-content">
 
-            <div class="bg-white rounded shadow-sm p-4 mb-4">
-                <h2 class="fw-bold mb-2">Edit Data Guru</h2>
-                <p class="text-secondary mb-0">
-                    Ubah data guru yang sudah tersimpan.
-                </p>
-            </div>
-
-            <div class="card shadow-sm border-0">
-
-                <div class="card-header bg-white p-3">
-                    <h5 class="mb-0 fw-bold">Form Edit Guru</h5>
+                <div class="bg-white rounded shadow-sm p-4 mb-4">
+                    <h2 class="fw-bold mb-2">Edit Data Guru</h2>
+                    <p class="text-secondary mb-0">
+                        Ubah data guru yang sudah tersimpan.
+                    </p>
                 </div>
 
-                <div class="card-body p-4">
+                <div class="card shadow-sm border-0">
 
-                    <form action="proses_edit_guru.php" method="POST">
+                    <div class="card-header bg-white p-3">
+                        <h5 class="mb-0 fw-bold">Form Edit Guru</h5>
+                    </div>
 
-                        <input type="hidden" name="id"
-                               value="<?= htmlspecialchars($data['id']); ?>">
+                    <div class="card-body p-4">
 
-                        <!-- NIP -->
-                        <div class="mb-3">
-                            <label for="nip" class="form-label">NIP</label>
-                            <input type="text"
-                                   id="nip"
-                                   name="nip"
-                                   class="form-control"
-                                   maxlength="18"
-                                   inputmode="numeric"
-                                   placeholder="Masukkan NIP guru"
-                                   value="<?= htmlspecialchars($data['nip']); ?>"
-                                   required>
-                        </div>
+                        <form action="proses_edit_guru.php" method="POST">
 
-                        <!-- NAMA GURU -->
-                        <div class="mb-3">
-                            <label for="nama" class="form-label">Nama Guru</label>
-                            <input type="text"
-                                   id="nama"
-                                   name="nama"
-                                   class="form-control"
-                                   value="<?= htmlspecialchars($data['nama']); ?>"
-                                   required>
-                        </div>
+                            <input type="hidden" name="id"
+                                   value="<?= htmlspecialchars($data['id']); ?>">
 
-                        <!-- EMAIL -->
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email"
-                                   id="email"
-                                   name="email"
-                                   class="form-control"
-                                   value="<?= htmlspecialchars($data['email']); ?>"
-                                   required>
-                        </div>
+                            <div class="mb-3">
+                                <label for="nip" class="form-label">NIP</label>
+                                <input type="text"
+                                       id="nip"
+                                       name="nip"
+                                       class="form-control"
+                                       maxlength="18"
+                                       inputmode="numeric"
+                                       placeholder="Masukkan NIP guru"
+                                       value="<?= htmlspecialchars($data['nip']); ?>"
+                                       required>
+                            </div>
 
-                        <!-- STATUS AKTIF -->
-                        <div class="mb-3">
-                            <label for="status_aktif" class="form-label">Status Aktif</label>
-                            <select id="status_aktif"
-                                    name="status_aktif"
-                                    class="form-select"
-                                    required>
-                                <option value="1" <?= $data['status_aktif'] == 1 ? 'selected' : ''; ?>>
-                                    Aktif
-                                </option>
+                            <div class="mb-3">
+                                <label for="nama" class="form-label">Nama Guru</label>
+                                <input type="text"
+                                       id="nama"
+                                       name="nama"
+                                       class="form-control"
+                                       value="<?= htmlspecialchars($data['nama']); ?>"
+                                       required>
+                            </div>
 
-                                <option value="0" <?= $data['status_aktif'] == 0 ? 'selected' : ''; ?>>
-                                    Tidak Aktif
-                                </option>
-                            </select>
-                        </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email"
+                                       id="email"
+                                       name="email"
+                                       class="form-control"
+                                       value="<?= htmlspecialchars($data['email']); ?>"
+                                       required>
+                            </div>
 
-                        <!-- USER ID -->
-                        <div class="mb-4">
-                            <label for="user_id" class="form-label">User ID</label>
-                            <input type="number"
-                                   id="user_id"
-                                   name="user_id"
-                                   class="form-control"
-                                   value="<?= htmlspecialchars($data['user_id']); ?>"
-                                   required>
-                        </div>
+                            <div class="mb-3">
+                                <label for="status_aktif" class="form-label">Status Aktif</label>
+                                <select id="status_aktif"
+                                        name="status_aktif"
+                                        class="form-select"
+                                        required>
+                                    <option value="1" <?= $data['status_aktif'] == 1 ? 'selected' : ''; ?>>
+                                        Aktif
+                                    </option>
 
-                        <hr>
+                                    <option value="0" <?= $data['status_aktif'] == 0 ? 'selected' : ''; ?>>
+                                        Tidak Aktif
+                                    </option>
+                                </select>
+                            </div>
 
-                        <div class="d-flex justify-content-between align-items-center">
-                            <a href="data_guru.php" class="btn btn-secondary">
-                                Kembali
-                            </a>
+                            <div class="mb-4">
+                                <label for="user_id" class="form-label">User ID</label>
+                                <input type="number"
+                                       id="user_id"
+                                       name="user_id"
+                                       class="form-control"
+                                       value="<?= htmlspecialchars($data['user_id']); ?>"
+                                       required>
+                            </div>
 
-                            <button type="submit"
-                                    name="update"
-                                    value="1"
-                                    class="btn btn-primary">
-                                Simpan Perubahan
-                            </button>
-                        </div>
+                            <hr>
 
-                    </form>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="data_guru.php" class="btn btn-secondary">
+                                    Kembali
+                                </a>
 
+                                <button type="submit"
+                                        name="update"
+                                        value="1"
+                                        class="btn btn-primary">
+                                    Simpan Perubahan
+                                </button>
+                            </div>
+
+                        </form>
+
+                    </div>
                 </div>
-            </div>
 
+            </div>
         </main>
 
     </div>

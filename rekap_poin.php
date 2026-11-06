@@ -119,7 +119,9 @@ if (!$query) {
                     </li>
 
                     <li class="nav-item">
-                        <a href="rekap_poin.php" class="nav-link active">Rekap Poin</a>
+                        <a href="rekap_poin.php" class="nav-link <?= $halaman == 'rekap_poin.php' ? 'active' : 'text-white'; ?>">
+                            Rekap Poin
+                        </a>
                     </li>
 
                 <?php } ?>
@@ -137,89 +139,103 @@ if (!$query) {
             </ul>
         </div>
 
-        <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4">
+        <main class="content-main">
+            <div class="page-content">
 
-            <div class="bg-white rounded shadow-sm p-4 mb-4">
-                <h2 class="fw-bold">Rekap Poin Pelanggaran</h2>
+                <div class="bg-white rounded shadow-sm p-4 mb-4">
 
-                <p class="text-secondary mb-0">
-                    Ringkasan jumlah pelanggaran dan total poin setiap siswa.
-                </p>
-            </div>
+                    <h2 class="fw-bold">Rekap Poin Pelanggaran</h2>
 
-            <div class="card border-0 shadow-sm">
-                <div class="card-body p-4">
-
-                    <h5 class="fw-bold mb-4">Data Rekap Poin Siswa</h5>
-
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover align-middle"
-                               id="tabelRekapPoin">
-
-                            <thead class="table-primary">
-                                <tr>
-                                    <th>No</th>
-                                    <th>Nama Siswa</th>
-                                    <th>Kelas</th>
-                                    <th>Jumlah Pelanggaran</th>
-                                    <th>Total Poin</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                <?php
-                                $no = 1;
-
-                                if ($query && mysqli_num_rows($query) > 0) {
-                                    while ($data = mysqli_fetch_assoc($query)) {
-                                ?>
-                                    <tr>
-                                        <td><?= $no++; ?></td>
-
-                                        <td>
-                                            <?= htmlspecialchars($data['nama_siswa'] ?? '-'); ?>
-                                        </td>
-
-                                        <td>
-                                            <?= htmlspecialchars($data['nama_kelas'] ?? '-'); ?>
-                                        </td>
-
-                                        <td>
-                                            <?= htmlspecialchars($data['jumlah_pelanggaran'] ?? '0'); ?>
-                                        </td>
-
-                                        <td>
-                                            <span class="badge bg-primary">
-                                                <?= htmlspecialchars($data['total_poin'] ?? '0'); ?> poin
-                                            </span>
-                                        </td>
-                                    </tr>
-                                <?php
-                                    }
-                                } else {
-                                ?>
-                                    <tr>
-                                        <td colspan="5" class="text-center">
-                                            Belum ada data rekap poin.
-                                        </td>
-                                    </tr>
-                                <?php } ?>
-                            </tbody>
-
-                        </table>
-                    </div>
+                    <p class="text-secondary mb-0">
+                        Selamat datang,
+                        <b><?= htmlspecialchars($nama_login); ?></b>
+                    </p>
 
                 </div>
+
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-body p-4">
+
+                        <h5 class="fw-bold mb-4">Data Rekap Poin Siswa</h5>
+
+                        <div class="table-responsive">
+
+                            <table class="table table-bordered table-hover align-middle"
+                                   id="tabelRekapPoin">
+
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Nama Siswa</th>
+                                        <th>Kelas</th>
+                                        <th>Jumlah Pelanggaran</th>
+                                        <th>Total Poin</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <?php
+                                    $no = 1;
+
+                                    if ($query && mysqli_num_rows($query) > 0) {
+                                        while ($data = mysqli_fetch_assoc($query)) {
+                                    ?>
+
+                                        <tr>
+                                            <td><?= $no++; ?></td>
+
+                                            <td>
+                                                <?= htmlspecialchars($data['nama_siswa'] ?? '-'); ?>
+                                            </td>
+
+                                            <td>
+                                                <?= htmlspecialchars($data['nama_kelas'] ?? '-'); ?>
+                                            </td>
+
+                                            <td>
+                                                <?= htmlspecialchars($data['jumlah_pelanggaran'] ?? '0'); ?>
+                                            </td>
+
+                                            <td>
+                                                <span class="badge bg-primary">
+                                                    <?= htmlspecialchars($data['total_poin'] ?? '0'); ?> poin
+                                                </span>
+                                            </td>
+                                        </tr>
+
+                                    <?php
+                                        }
+                                    } else {
+                                    ?>
+
+                                        <tr>
+                                            <td colspan="5" class="text-center">
+                                                Belum ada data rekap poin.
+                                            </td>
+                                        </tr>
+
+                                    <?php } ?>
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <p class="text-secondary text-center mt-4 small">
+                    © 2026 Sistem Pelanggaran Siswa
+                </p>
+
             </div>
-
-            <p class="text-secondary text-center mt-4 small">
-                © 2026 Sistem Pelanggaran Siswa
-            </p>
-
         </main>
 
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
 <script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
 
@@ -262,7 +278,5 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
-</html>
+</html> 
