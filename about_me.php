@@ -44,101 +44,86 @@ if ($role != 'admin' && $role != 'guru') {
                 <?php if ($role == 'admin') { ?>
 
                     <li class="nav-item">
-                        <a href="dashboard.php" class="nav-link <?= $halaman == 'dashboard.php' ? 'active' : 'text-white'; ?>">
-                            Dashboard
-                        </a>
-                    </li>
+                    <a href="dashboard.php" class="nav-link text-white">
+                        Dashboard
+                    </a>
+                </li>
 
-                    <li class="nav-item">
-                        <a href="data_siswa.php" class="nav-link <?= $halaman == 'data_siswa.php' ? 'active' : 'text-white'; ?>">
-                            Data Siswa
-                        </a>
-                    </li>
+                <li class="nav-item">
+                    <a href="data_siswa.php" class="nav-link text-white">
+                        Data Siswa
+                    </a>
+                </li>
 
-                    <li class="nav-item">
-                        <a href="data_guru.php" class="nav-link <?= $halaman == 'data_guru.php' ? 'active' : 'text-white'; ?>">
-                            Data Guru
-                        </a>
-                    </li>
+                <li class="nav-item">
+                    <a href="data_guru.php" class="nav-link text-white">
+                        Data Guru
+                    </a>
+                </li>
 
-                    <li class="nav-item">
-                        <a href="data_kelas.php" class="nav-link <?= $halaman == 'data_kelas.php' ? 'active' : 'text-white'; ?>">
-                            Data Kelas
-                        </a>
-                    </li>
+                <li class="nav-item">
+                    <a href="data_kelas.php" class="nav-link text-white">
+                        Data Kelas
+                    </a>
+                </li>
 
-                    <li class="nav-item">
-                        <a href="data_tahun_ajaran.php" class="nav-link <?= $halaman == 'data_tahun_ajaran.php' ? 'active' : 'text-white'; ?>">
-                            Tahun Ajaran
-                        </a>
-                    </li>
+                <li class="nav-item">
+                    <a href="data_tahun_ajaran.php" class="nav-link text-white">
+                        Tahun Ajaran
+                    </a>
+                </li>
 
-                    <li class="nav-item">
-                        <a href="data_penempatan_siswa.php" class="nav-link <?= $halaman == 'data_penempatan_siswa.php' ? 'active' : 'text-white'; ?>">
-                            Penempatan Siswa
-                        </a>
-                    </li>
+                <li class="nav-item">
+                    <a href="data_penempatan_siswa.php" class="nav-link text-white">
+                        Penempatan Siswa
+                    </a>
+                </li>
 
-                    <li class="nav-item">
-                        <a href="data_wali_kelas.php" class="nav-link <?= $halaman == 'data_wali_kelas.php' ? 'active' : 'text-white'; ?>">
-                            Data Wali Kelas
-                        </a>
-                    </li>
+                <li class="nav-item">
+                    <a href="data_wali_kelas.php" class="nav-link text-white">
+                        Data Wali Kelas
+                    </a>
+                </li>
 
-                    <li class="nav-item">
-                        <a href="data_kategori_pelanggaran.php" class="nav-link <?= $halaman == 'data_kategori_pelanggaran.php' ? 'active' : 'text-white'; ?>">
-                            Kategori Pelanggaran
-                        </a>
-                    </li>
+                <li class="nav-item">
+                    <a href="data_kategori_pelanggaran.php" class="nav-link text-white">
+                        Kategori Pelanggaran
+                    </a>
+                </li>
 
-                    <li class="nav-item">
-                        <a href="data_jenis_pelanggaran.php" class="nav-link <?= $halaman == 'data_jenis_pelanggaran.php' ? 'active' : 'text-white'; ?>">
-                            Jenis Pelanggaran
-                        </a>
-                    </li>
+                <li class="nav-item">
+                    <a href="data_jenis_pelanggaran.php" class="nav-link text-white">
+                        Jenis Pelanggaran
+                    </a>
+                </li>
 
-                    <li class="nav-item">
-                        <a href="laporan.php" class="nav-link <?= $halaman == 'laporan.php' ? 'active' : 'text-white'; ?>">
-                            Laporan
-                        </a>
-                    </li>
+                <li class="nav-item">
+                    <a href="laporan.php" class="nav-link text-white">
+                        Laporan
+                    </a>
+                </li>
 
-                <?php } else { ?>
+                <li class="nav-item">
+                    <a href="about_me.php" class="nav-link active">
+                        About Me
+                    </a>
+                </li>
 
-                    <li class="nav-item">
-                        <a href="dashboard.php" class="nav-link <?= $halaman == 'dashboard.php' ? 'active' : 'text-white'; ?>">
-                            Dashboard
-                        </a>
-                    </li>
+                <hr class="border-white">
 
-                    <li class="nav-item">
-                        <a href="catat_pelanggaran.php" class="nav-link <?= $halaman == 'catat_pelanggaran.php' ? 'active' : 'text-white'; ?>">
-                            Catat Pelanggaran
-                        </a>
-                    </li>
+                <li class="nav-item">
+                    <a href="logout.php" class="nav-link text-white">
+                        Logout
+                    </a>
+                </li>
 
-                    <li class="nav-item">
-                        <a href="tindakan.php" class="nav-link <?= $halaman == 'tindakan.php' ? 'active' : 'text-white'; ?>">
-                            Tindakan
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a href="riwayat.php" class="nav-link <?= $halaman == 'riwayat.php' ? 'active' : 'text-white'; ?>">
-                            Riwayat
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a href="rekap_poin.php" class="nav-link <?= $halaman == 'rekap_poin.php' ? 'active' : 'text-white'; ?>">
-                            Rekap Poin
-                        </a>
-                    </li>
+            </ul>
+        </div>
 
                 <?php } ?>
 
                 <li class="nav-item">
-                    <a href="about_me.php" class="nav-link <?= $halaman == 'about_me.php' ? 'active' : 'text-white'; ?>">
+                    <a href="about_me.php" class="nav-link active">
                         About Me
                     </a>
                 </li>
