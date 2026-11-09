@@ -151,7 +151,7 @@ if (isset($_POST['simpan'])) {
                                 <label class="form-label">Kode Pelanggaran</label>
                                 <input type="text" name="kode"
                                        class="form-control"
-                                       placeholder="Contoh: PLG-051"
+                                       placeholder=""
                                        required>
                             </div>
 
@@ -159,7 +159,7 @@ if (isset($_POST['simpan'])) {
                                 <label class="form-label">Nama Pelanggaran</label>
                                 <input type="text" name="nama"
                                        class="form-control"
-                                       placeholder="Contoh: Tidak membawa buku"
+                                       placeholder=""
                                        required>
                             </div>
 
@@ -218,18 +218,18 @@ if (isset($_POST['simpan'])) {
                             </div>
 
                             <hr>
+                            
+                        <div class="d-flex gap-2 mt-3">
 
-                            <div class="d-flex justify-content-between">
-                                <a href="data_jenis_pelanggaran.php"
-                                   class="btn btn-secondary">
-                                    Kembali
-                                </a>
+                            <button type="submit" name="update" class="btn btn-primary">
+                                Simpan Data
+                            </button>
 
-                                <button type="submit" name="simpan"
-                                        class="btn btn-primary">
-                                    Simpan
-                                </button>
-                            </div>
+                            <a href="data_jenis_pelanggaran.php" class="btn btn-secondary">
+                                Kembali
+                            </a>
+
+                        </div>
 
                         </form>
 

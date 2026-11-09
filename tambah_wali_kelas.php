@@ -199,16 +199,16 @@ $guru = mysqli_query($koneksi, "SELECT * FROM t_guru WHERE status_aktif = 1 ORDE
                             </div>
 
                             <hr>
+                           
+                            <div class="d-flex gap-2 mt-3">
 
-                            <div class="d-flex justify-content-between">
+                                <button type="submit" name="update" class="btn btn-primary">
+                                    Simpan Data
+                                </button>
 
                                 <a href="data_wali_kelas.php" class="btn btn-secondary">
                                     Kembali
                                 </a>
-
-                                <button type="submit" name="simpan" class="btn btn-primary">
-                                    Simpan Wali Kelas
-                                </button>
 
                             </div>
 

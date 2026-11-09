@@ -102,12 +102,17 @@ if (!$d) {
                         </div>
 
                         <hr>
+                       
+                        <div class="d-flex gap-2 mt-3">
 
-                        <div class="d-flex justify-content-between">
-                            <a href="data_kategori_pelanggaran.php" class="btn btn-secondary">Kembali</a>
-                            <button type="submit" name="ubah" class="btn btn-primary">
+                            <button type="submit" name="update" class="btn btn-primary">
                                 Simpan Perubahan
                             </button>
+
+                            <a href="data_kategori pelanggaran.php" class="btn btn-secondary">
+                                Kembali
+                            </a>
+
                         </div>
 
                     </form>

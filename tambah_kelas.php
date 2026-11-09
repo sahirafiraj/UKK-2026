@@ -208,19 +208,18 @@ $name = $_SESSION['name'] ?? 'Admin';
 
                             <hr class="my-4">
 
-                            <div class="d-flex justify-content-between align-items-center">
+                            
+                        <div class="d-flex gap-2 mt-3">
 
-                                <a href="data_kelas.php" class="btn btn-secondary">
-                                    Kembali
-                                </a>
+                            <button type="submit" name="update" class="btn btn-primary">
+                                Simpan Data
+                            </button>
 
-                                <button type="submit"
-                                        name="simpan"
-                                        class="btn btn-primary">
-                                    Simpan Kelas
-                                </button>
+                            <a href="data_kelas.php" class="btn btn-secondary">
+                                Kembali
+                            </a>
 
-                            </div>
+                        </div>
 
                         </form>
 

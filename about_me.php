@@ -120,6 +120,39 @@ if ($role != 'admin' && $role != 'guru') {
             </ul>
         </div>
 
+                <?php } else { ?>
+
+                    <li class="nav-item">
+                        <a href="dashboard.php"
+                           class="nav-link text-white">
+                            Dashboard
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="catat_pelanggaran.php" class="nav-link text-white">
+                            Catat Pelanggaran
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="tindakan.php" class="nav-link text-white">
+                            Tindakan
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="riwayat.php" class="nav-link text-white">
+                            Riwayat
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="rekap_poin.php" class="nav-link text-white">
+                            Rekap Poin
+                        </a>
+                    </li>
+
                 <?php } ?>
 
                 <li class="nav-item">

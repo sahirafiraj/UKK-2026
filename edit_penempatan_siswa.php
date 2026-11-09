@@ -271,20 +271,16 @@ $kelas = mysqli_query($koneksi, "
                                     </select>
                                 </div>
 
-                                <div class="col-12 mt-4">
+                                
+                            <div class="d-flex gap-2 mt-3">
 
-                                    <button type="submit"
-                                            name="simpan"
-                                            class="btn btn-primary">
-                                        Simpan Perubahan
-                                    </button>
+                                <button type="submit" name="update" class="btn btn-primary">
+                                    Simpan Perubahan
+                                </button>
 
-                                    <a href="data_penempatan_siswa.php"
-                                       class="btn btn-secondary">
-                                        Kembali
-                                    </a>
-
-                                </div>
+                                <a href="data_penempatan_siswa.php" class="btn btn-secondary">
+                                    Kembali
+                                </a>
 
                             </div>
                         </form>

@@ -191,15 +191,17 @@ $kategori = mysqli_query($koneksi, "SELECT * FROM t_pelanggaran_kategori");
                             </div>
 
                             <hr>
+                            
+                            <div class="d-flex gap-2 mt-3">
 
-                            <div class="d-flex justify-content-between">
+                                <button type="submit" name="update" class="btn btn-primary">
+                                    Simpan Perubahan
+                                </button>
+
                                 <a href="data_jenis_pelanggaran.php" class="btn btn-secondary">
                                     Kembali
                                 </a>
 
-                                <button type="submit" name="ubah" class="btn btn-primary">
-                                    Simpan Perubahan
-                                </button>
                             </div>
 
                         </form>

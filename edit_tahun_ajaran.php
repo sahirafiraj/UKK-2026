@@ -166,15 +166,17 @@ if (!$data) {
                             </div>
 
                             <hr>
+                            
+                            <div class="d-flex gap-2 mt-3">
 
-                            <div class="d-flex justify-content-between">
+                                <button type="submit" name="update" class="btn btn-primary">
+                                    Simpan Perubahan
+                                </button>
+
                                 <a href="data_tahun_ajaran.php" class="btn btn-secondary">
                                     Kembali
                                 </a>
 
-                                <button type="submit" name="simpan" class="btn btn-primary">
-                                    Simpan Perubahan
-                                </button>
                             </div>
 
                         </form>

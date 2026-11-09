@@ -353,17 +353,14 @@ if (isset($_POST['simpan'])) {
                                 </select>
 
                             </div>
+                            
+                            <div class="d-flex gap-2 mt-3">
 
-                            <div class="d-flex gap-2">
-
-                                <button type="submit"
-                                        name="simpan"
-                                        class="btn btn-primary">
+                                <button type="submit" name="update" class="btn btn-primary">
                                     Simpan Data
                                 </button>
 
-                                <a href="data_tahun_ajaran.php"
-                                   class="btn btn-secondary">
+                                <a href="data_tahun_ajaran.php" class="btn btn-secondary">
                                     Kembali
                                 </a>
 

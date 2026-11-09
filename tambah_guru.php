@@ -201,14 +201,16 @@ $halaman = basename($_SERVER['PHP_SELF']);
 
                             <hr>
 
-                            <div class="d-flex justify-content-between">
+                            <div class="d-flex gap-2 mt-3">
+
+                                <button type="submit" name="update" class="btn btn-primary">
+                                    Simpan Data
+                                </button>
+
                                 <a href="data_guru.php" class="btn btn-secondary">
                                     Kembali
                                 </a>
 
-                                <button type="submit" name="simpan" class="btn btn-primary">
-                                    Simpan Guru
-                                </button>
                             </div>
 
                         </form>

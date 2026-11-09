@@ -172,17 +172,18 @@ if (!$data) {
                                 </select>
                             </div>
 
-                            <hr>
+                            <hr>                  
 
-                            <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex gap-2 mt-3">
+
+                                <button type="submit" name="update" class="btn btn-primary">
+                                    Simpan Perubahan
+                                </button>
+
                                 <a href="data_kelas.php" class="btn btn-secondary">
                                     Kembali
                                 </a>
 
-                                <button type="submit" name="update" value="1"
-                                        class="btn btn-primary">
-                                    Simpan Perubahan
-                                </button>
                             </div>
 
                         </form>

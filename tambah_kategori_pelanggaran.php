@@ -93,11 +93,16 @@ $halaman = basename($_SERVER['PHP_SELF']);
 
                         <hr>
 
-                        <div class="d-flex justify-content-between">
-                            <a href="data_kategori_pelanggaran.php" class="btn btn-secondary">Kembali</a>
-                            <button type="submit" name="simpan" class="btn btn-primary">
-                                Simpan Kategori
+                        <div class="d-flex gap-2 mt-3">
+
+                            <button type="submit" name="update" class="btn btn-primary">
+                                Simpan Perubahan
                             </button>
+
+                            <a href="data_kategori_pelanggaran.php" class="btn btn-secondary">
+                                Kembali
+                            </a>
+
                         </div>
 
                     </form>
