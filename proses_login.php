@@ -1,3 +1,4 @@
+
 <?php
 session_start();
 include 'config/koneksi.php';
@@ -21,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             $role = strtolower(trim($user['role']));
 
+            // Hanya 2 role: admin dan guru
             if ($role == 'admin' || $role == 'guru') {
 
                 session_regenerate_id(true);
@@ -32,15 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_SESSION['email'] = $user['email'];
                 $_SESSION['role'] = $role;
 
-                if ($role == 'admin') {
-                    header("Location: dashboard.php");
-                    exit;
-                }
-
-                if ($role == 'guru') {
-                    header("Location: dashboard.php");
-                    exit;
-                }
+                header("Location: dashboard.php");
+                exit;
 
             } else {
                 $_SESSION['pesan_error'] = "Anda tidak memiliki hak akses.";
