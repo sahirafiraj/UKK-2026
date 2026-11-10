@@ -18,9 +18,13 @@ if ($role != 'admin' && $role != 'guru') {
 }
 
 $query = mysqli_query($koneksi, "
-    SELECT *
-    FROM t_pelanggaran_siswa
-    ORDER BY tanggal DESC
+    SELECT
+        ps.*,
+        pk.nama AS nama_kategori
+    FROM t_pelanggaran_siswa ps
+    LEFT JOIN t_pelanggaran_kategori pk
+        ON ps.pelanggaran_kategori_id = pk.id
+    ORDER BY ps.tanggal DESC, ps.id DESC
 ");
 
 if (!$query) {
@@ -46,6 +50,7 @@ if (!$query) {
 <div class="container-fluid">
     <div class="row">
 
+        <!-- SIDEBAR -->
         <div class="sidebar col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto">
 
             <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
@@ -119,6 +124,10 @@ if (!$query) {
                 <?php } ?>
 
                 <li class="nav-item">
+                    <a href="laporan.php" class="nav-link text-white">Laporan</a>
+                </li>
+
+                <li class="nav-item">
                     <a href="about_me.php" class="nav-link text-white">About Me</a>
                 </li>
 
@@ -131,11 +140,13 @@ if (!$query) {
             </ul>
         </div>
 
+        <!-- KONTEN -->
         <main class="content-main">
             <div class="page-content">
 
                 <div class="bg-white rounded shadow-sm p-4 mb-4">
                     <h2 class="fw-bold">Riwayat Pelanggaran</h2>
+
                     <p class="text-secondary mb-0">
                         Selamat datang,
                         <b><?= htmlspecialchars($nama_login); ?></b>
@@ -148,16 +159,18 @@ if (!$query) {
                         <h5 class="fw-bold mb-4">Daftar Pelanggaran</h5>
 
                         <div class="table-responsive">
+
                             <table class="table table-bordered table-hover align-middle" id="tabelRiwayat">
 
                                 <thead class="table-primary">
                                     <tr>
                                         <th>No</th>
-                                        <th>Tanggal</th>
                                         <th>Nama Siswa</th>
-                                        <th>Kelas</th>
                                         <th>Pelanggaran</th>
+                                        <th>Kategori</th>
+                                        <th>Tanggal</th>
                                         <th>Poin</th>
+                                        <th>Guru Pencatat</th>
                                         <th>Keterangan</th>
                                         <th>Tindakan</th>
                                         <th>Status</th>
@@ -165,30 +178,84 @@ if (!$query) {
                                 </thead>
 
                                 <tbody>
+
                                     <?php
                                     $no = 1;
 
                                     if (mysqli_num_rows($query) > 0) {
                                         while ($data = mysqli_fetch_assoc($query)) {
+
+                                            $tindakan = $data['tindakan'] ?? '';
+                                            $status = $data['status'] ?? 'Belum';
+
+                                            if ($status == 'Belum') {
+                                                $status = 'Belum Ditindaklanjuti';
+                                            }
                                     ?>
+
                                         <tr>
+
                                             <td><?= $no++; ?></td>
-                                            <td><?= htmlspecialchars($data['tanggal'] ?? '-'); ?></td>
-                                            <td><?= htmlspecialchars($data['nama_siswa'] ?? '-'); ?></td>
-                                            <td><?= htmlspecialchars($data['nama_kelas'] ?? '-'); ?></td>
-                                            <td><?= htmlspecialchars($data['nama_pelanggaran'] ?? '-'); ?></td>
-                                            <td><?= htmlspecialchars($data['poin'] ?? '0'); ?></td>
-                                            <td><?= htmlspecialchars($data['keterangan'] ?? '-'); ?></td>
-                                            <td><?= htmlspecialchars($data['tindakan'] ?? '-'); ?></td>
-                                            <td><?= htmlspecialchars($data['status'] ?? 'Belum'); ?></td>
+
+                                            <td>
+                                                <?= htmlspecialchars($data['nama_siswa'] ?? '-'); ?>
+                                            </td>
+
+                                            <td>
+                                                <?= htmlspecialchars($data['nama_pelanggaran'] ?? '-'); ?>
+                                            </td>
+
+                                            <td>
+                                                <?= htmlspecialchars($data['nama_kategori'] ?? '-'); ?>
+                                            </td>
+
+                                            <td>
+                                                <?= htmlspecialchars($data['tanggal'] ?? '-'); ?>
+                                            </td>
+
+                                            <td>
+                                                <?= htmlspecialchars($data['poin'] ?? '0'); ?>
+                                            </td>
+
+                                            <td>
+                                                <?= htmlspecialchars($data['nama_guru'] ?? '-'); ?>
+                                            </td>
+
+                                            <td>
+                                                <?= htmlspecialchars($data['keterangan'] ?? '-'); ?>
+                                            </td>
+
+                                            <!-- TINDAKAN: TEKS BIASA -->
+                                            <td>
+                                                <?= htmlspecialchars($tindakan ?: '-'); ?>
+                                            </td>
+
+                                            <!-- STATUS: BADGE BOOTSTRAP -->
+                                            <td>
+                                                <?php if ($status == 'Selesai') { ?>
+                                                    <span class="badge bg-success">Selesai</span>
+
+                                                <?php } elseif ($status == 'Diproses') { ?>
+                                                    <span class="badge bg-warning text-dark">Diproses</span>
+
+                                                <?php } else { ?>
+                                                    <span class="badge bg-secondary">
+                                                        <?= htmlspecialchars($status); ?>
+                                                    </span>
+                                                <?php } ?>
+                                            </td>
+
                                         </tr>
+
                                     <?php
                                         }
                                     }
                                     ?>
+
                                 </tbody>
 
                             </table>
+
                         </div>
 
                     </div>
@@ -208,16 +275,22 @@ if (!$query) {
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+
     new DataTable('#tabelRiwayat', {
+
         pageLength: 10,
+
         lengthMenu: [5, 10, 25, 50, 100],
+
         order: [],
+
         layout: {
             topStart: 'info',
             bottom: 'paging',
             bottomStart: null,
             bottomEnd: null
         },
+
         language: {
             search: 'Cari:',
             searchPlaceholder: 'Cari riwayat pelanggaran...',
@@ -227,6 +300,7 @@ document.addEventListener('DOMContentLoaded', function () {
             infoFiltered: '(difilter dari _MAX_ total data)',
             zeroRecords: 'Data tidak ditemukan',
             emptyTable: 'Belum ada data pelanggaran',
+
             paginate: {
                 first: 'Pertama',
                 last: 'Terakhir',
@@ -234,6 +308,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 previous: 'Sebelumnya'
             }
         },
+
         columnDefs: [
             {
                 targets: 0,
@@ -241,7 +316,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 searchable: false
             }
         ]
+
     });
+
 });
 </script>
 

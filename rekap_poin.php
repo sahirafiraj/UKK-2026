@@ -127,15 +127,24 @@ if (!$query) {
                 <?php } ?>
 
                 <li class="nav-item">
-                    <a href="about_me.php" class="nav-link text-white">About Me</a>
-                </li>
+                        <a href="laporan.php" class="nav-link text-white">
+                            Laporan
+                        </a>
+                    </li>
 
-                <hr class="border-white">
+                    <li class="nav-item">
+                        <a href="about_me.php" class="nav-link text-white">
+                            About Me
+                        </a>
+                    </li>
 
-                <li class="nav-item">
-                    <a href="logout.php" class="nav-link text-white">Logout</a>
-                </li>
+                    <hr class="border-white">
 
+                    <li class="nav-item">
+                        <a href="logout.php" class="nav-link text-white">
+                            Logout
+                        </a>
+                    </li>
             </ul>
         </div>
 

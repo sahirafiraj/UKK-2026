@@ -16,6 +16,8 @@ if (!in_array($role, ['admin', 'guru'])) {
     exit;
 }
 
+$name = $_SESSION['name'] ?? 'Admin';
+
 $query_tahun = mysqli_query($koneksi, "
     SELECT id
     FROM t_tahun_ajaran
@@ -62,15 +64,6 @@ if ($role == 'guru') {
         }
     }
 }
-
-if ($role == 'admin') {
-    $akses = 'Admin';
-} elseif ($status_wali_kelas) {
-    $akses = 'Wali Kelas';
-} else {
-    $akses = 'Guru';
-}
-
 /* DASHBOARD ADMIN */
 
 $query_siswa = mysqli_query($koneksi, "
@@ -306,9 +299,9 @@ $total_poin = mysqli_fetch_assoc($query_poin)['total'] ?? 0;
 
                         <h2>Dashboard</h2>
 
-                        <p>
-                            Pengguna: <?= htmlspecialchars($nama_login); ?>
-                            | Akses: <?= htmlspecialchars($akses); ?>
+                        <p class="text-secondary mb-0">
+                             Selamat datang,
+                            <b><?= htmlspecialchars($name); ?></b>
                         </p>
 
                         <?php if ($status_wali_kelas) { ?>

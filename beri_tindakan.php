@@ -1,4 +1,3 @@
-
 <?php
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
@@ -39,7 +38,23 @@ if (!$data) {
 
 $error = '';
 
+$pilihan_tindakan = [
+    'Teguran',
+    'Pembinaan',
+    'Dipantau'
+];
+
+$pilihan_status = [
+    'Belum',
+    'Diproses',
+    'Selesai'
+];
+
+$tindakan_saat_ini = $data['tindakan'] ?? '';
+$status_saat_ini = $data['status'] ?? 'Belum';
+
 if (isset($_POST['simpan'])) {
+
     $tindakan = mysqli_real_escape_string(
         $koneksi,
         trim($_POST['tindakan'] ?? '')
@@ -50,20 +65,12 @@ if (isset($_POST['simpan'])) {
         trim($_POST['status'] ?? '')
     );
 
-    $status_valid = [
-        'Belum',
-        'Dipantau',
-        'Pembinaan',
-        'Teguran',
-        'Selesai',
-        'Ditindaklanjuti'
-    ];
-
-    if ($tindakan == '') {
-        $error = 'Tindakan wajib diisi.';
-    } elseif (!in_array($status, $status_valid)) {
+    if (!in_array($tindakan, $pilihan_tindakan, true)) {
+        $error = 'Tindakan tidak valid.';
+    } elseif (!in_array($status, $pilihan_status, true)) {
         $error = 'Status tidak valid.';
     } else {
+
         $query_update = mysqli_query($koneksi, "
             UPDATE t_pelanggaran_siswa
             SET tindakan = '$tindakan',
@@ -78,22 +85,15 @@ if (isset($_POST['simpan'])) {
             $error = 'Gagal menyimpan tindakan.';
         }
     }
+
+    $tindakan_saat_ini = $tindakan;
+    $status_saat_ini = $status;
 }
-
-$pilihan_status = [
-    'Belum',
-    'Dipantau',
-    'Pembinaan',
-    'Teguran',
-    'Selesai',
-    'Ditindaklanjuti'
-];
-
-$status_saat_ini = $data['status'] ?? 'Belum';
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -109,6 +109,7 @@ $status_saat_ini = $data['status'] ?? 'Belum';
 <div class="container-fluid">
     <div class="row">
 
+        <!-- SIDEBAR -->
         <div class="sidebar col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto">
 
             <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
@@ -118,7 +119,8 @@ $status_saat_ini = $data['status'] ?? 'Belum';
                 <?php if ($role == 'admin') { ?>
 
                     <li class="nav-item">
-                        <a href="dashboard.php" class="nav-link <?= $halaman == 'dashboard.php' ? 'active' : 'text-white'; ?>">
+                        <a href="dashboard.php"
+                           class="nav-link <?= $halaman == 'dashboard.php' ? 'active' : 'text-white'; ?>">
                             Dashboard
                         </a>
                     </li>
@@ -162,7 +164,8 @@ $status_saat_ini = $data['status'] ?? 'Belum';
                 <?php } else { ?>
 
                     <li class="nav-item">
-                        <a href="dashboard.php" class="nav-link <?= $halaman == 'dashboard.php' ? 'active' : 'text-white'; ?>">
+                        <a href="dashboard.php"
+                           class="nav-link <?= $halaman == 'dashboard.php' ? 'active' : 'text-white'; ?>">
                             Dashboard
                         </a>
                     </li>
@@ -174,7 +177,8 @@ $status_saat_ini = $data['status'] ?? 'Belum';
                     </li>
 
                     <li class="nav-item">
-                        <a href="tindakan.php" class="nav-link <?= ($halaman == 'tindakan.php' || $halaman == 'beri_tindakan.php') ? 'active' : 'text-white'; ?>">
+                        <a href="tindakan.php"
+                           class="nav-link <?= ($halaman == 'tindakan.php' || $halaman == 'beri_tindakan.php') ? 'active' : 'text-white'; ?>">
                             Tindakan
                         </a>
                     </li>
@@ -190,27 +194,42 @@ $status_saat_ini = $data['status'] ?? 'Belum';
                 <?php } ?>
 
                 <li class="nav-item">
-                    <a href="about_me.php" class="nav-link text-white">About Me</a>
+                    <a href="laporan.php" class="nav-link text-white">
+                        Laporan
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="about_me.php" class="nav-link text-white">
+                        About Me
+                    </a>
                 </li>
 
                 <hr class="border-white">
 
                 <li class="nav-item">
-                    <a href="logout.php" class="nav-link text-white">Logout</a>
+                    <a href="logout.php" class="nav-link text-white">
+                        Logout
+                    </a>
                 </li>
 
             </ul>
         </div>
 
+        <!-- KONTEN -->
         <main class="content-main">
+
             <div class="page-content">
 
                 <div class="bg-white rounded shadow-sm p-4 mb-4">
+
                     <h2 class="fw-bold">Tindakan Pelanggaran Siswa</h2>
+
                     <p class="text-secondary mb-0">
                         Selamat datang,
                         <b><?= htmlspecialchars($nama_login); ?></b>
                     </p>
+
                 </div>
 
                 <div class="bg-white rounded shadow-sm mb-4">
@@ -231,8 +250,10 @@ $status_saat_ini = $data['status'] ?? 'Belum';
 
                             <div class="row">
 
+                                <!-- NAMA SISWA -->
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Nama Siswa</label>
+
                                     <input
                                         type="text"
                                         class="form-control"
@@ -241,8 +262,10 @@ $status_saat_ini = $data['status'] ?? 'Belum';
                                     >
                                 </div>
 
+                                <!-- KELAS -->
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Kelas</label>
+
                                     <input
                                         type="text"
                                         class="form-control"
@@ -251,8 +274,10 @@ $status_saat_ini = $data['status'] ?? 'Belum';
                                     >
                                 </div>
 
+                                <!-- PELANGGARAN -->
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Pelanggaran</label>
+
                                     <input
                                         type="text"
                                         class="form-control"
@@ -261,8 +286,10 @@ $status_saat_ini = $data['status'] ?? 'Belum';
                                     >
                                 </div>
 
+                                <!-- POIN -->
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Poin</label>
+
                                     <input
                                         type="text"
                                         class="form-control"
@@ -271,8 +298,10 @@ $status_saat_ini = $data['status'] ?? 'Belum';
                                     >
                                 </div>
 
+                                <!-- KETERANGAN -->
                                 <div class="col-12 mb-3">
                                     <label class="form-label">Keterangan</label>
+
                                     <textarea
                                         class="form-control"
                                         rows="4"
@@ -280,19 +309,43 @@ $status_saat_ini = $data['status'] ?? 'Belum';
                                     ><?= htmlspecialchars($data['keterangan'] ?? '-'); ?></textarea>
                                 </div>
 
-                                <div class="col-12 mb-3">
-                                    <label for="tindakan" class="form-label">Tindakan</label>
-                                    <textarea
+                                <!-- TINDAKAN -->
+                                <div class="col-md-6 mb-3">
+
+                                    <label for="tindakan" class="form-label">
+                                        Tindakan
+                                    </label>
+
+                                    <select
                                         name="tindakan"
                                         id="tindakan"
-                                        class="form-control"
-                                        rows="4"
+                                        class="form-select"
                                         required
-                                    ><?= htmlspecialchars($data['tindakan'] ?? ''); ?></textarea>
+                                    >
+
+                                        <option value="">Pilih Tindakan</option>
+
+                                        <?php foreach ($pilihan_tindakan as $pilihan) { ?>
+
+                                            <option
+                                                value="<?= htmlspecialchars($pilihan); ?>"
+                                                <?= ($tindakan_saat_ini == $pilihan) ? 'selected' : ''; ?>
+                                            >
+                                                <?= htmlspecialchars($pilihan); ?>
+                                            </option>
+
+                                        <?php } ?>
+
+                                    </select>
+
                                 </div>
 
+                                <!-- STATUS -->
                                 <div class="col-md-6 mb-4">
-                                    <label for="status" class="form-label">Status</label>
+
+                                    <label for="status" class="form-label">
+                                        Status
+                                    </label>
 
                                     <select
                                         name="status"
@@ -300,22 +353,29 @@ $status_saat_ini = $data['status'] ?? 'Belum';
                                         class="form-select"
                                         required
                                     >
-                                        <?php foreach ($pilihan_status as $pilihan) {
-                                            $selected = ($status_saat_ini == $pilihan) ? 'selected' : '';
-                                        ?>
+
+                                        <?php foreach ($pilihan_status as $pilihan) { ?>
+
                                             <option
                                                 value="<?= htmlspecialchars($pilihan); ?>"
-                                                <?= $selected; ?>
+                                                <?= ($status_saat_ini == $pilihan) ? 'selected' : ''; ?>
                                             >
                                                 <?= htmlspecialchars($pilihan); ?>
                                             </option>
+
                                         <?php } ?>
+
                                     </select>
+
                                 </div>
 
                             </div>
 
-                            <button type="submit" name="simpan" class="btn btn-primary">
+                            <button
+                                type="submit"
+                                name="simpan"
+                                class="btn btn-primary"
+                            >
                                 Simpan Tindakan
                             </button>
 
@@ -333,6 +393,7 @@ $status_saat_ini = $data['status'] ?? 'Belum';
                 </p>
 
             </div>
+
         </main>
 
     </div>

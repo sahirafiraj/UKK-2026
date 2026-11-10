@@ -1,4 +1,3 @@
-
 <?php
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
@@ -17,10 +16,15 @@ if ($role != 'admin' && $role != 'guru') {
     exit;
 }
 
+// Mengambil data pelanggaran beserta kategori
 $query = mysqli_query($koneksi, "
-    SELECT *
-    FROM t_pelanggaran_siswa
-    ORDER BY id DESC
+    SELECT
+        ps.*,
+        pk.nama AS nama_kategori
+    FROM t_pelanggaran_siswa ps
+    LEFT JOIN t_pelanggaran_kategori pk
+        ON ps.pelanggaran_kategori_id = pk.id
+    ORDER BY ps.id DESC
 ");
 
 if (!$query) {
@@ -48,6 +52,7 @@ if (!$query) {
 <div class="container-fluid">
     <div class="row">
 
+        <!-- SIDEBAR -->
         <div class="sidebar col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto">
 
             <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
@@ -119,13 +124,13 @@ if (!$query) {
                 <?php } else { ?>
 
                     <li class="nav-item">
-                        <a href="dashboard.php" class="nav-link <?= $halaman == 'dashboard.php' ? 'active' : 'text-white'; ?>">
+                        <a href="dashboard.php" class="nav-link text-white">
                             Dashboard
                         </a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="catat_pelanggaran.php" class="nav-link <?= $halaman == 'catat_pelanggaran.php' ? 'active' : 'text-white'; ?>">
+                        <a href="catat_pelanggaran.php" class="nav-link text-white">
                             Catat Pelanggaran
                         </a>
                     </li>
@@ -137,13 +142,13 @@ if (!$query) {
                     </li>
 
                     <li class="nav-item">
-                        <a href="riwayat.php" class="nav-link <?= $halaman == 'riwayat.php' ? 'active' : 'text-white'; ?>">
+                        <a href="riwayat.php" class="nav-link text-white">
                             Riwayat
                         </a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="rekap_poin.php" class="nav-link <?= $halaman == 'rekap_poin.php' ? 'active' : 'text-white'; ?>">
+                        <a href="rekap_poin.php" class="nav-link text-white">
                             Rekap Poin
                         </a>
                     </li>
@@ -151,7 +156,13 @@ if (!$query) {
                 <?php } ?>
 
                 <li class="nav-item">
-                    <a href="about_me.php" class="nav-link <?= $halaman == 'about_me.php' ? 'active' : 'text-white'; ?>">
+                    <a href="laporan.php" class="nav-link text-white">
+                        Laporan
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="about_me.php" class="nav-link text-white">
                         About Me
                     </a>
                 </li>
@@ -167,6 +178,7 @@ if (!$query) {
             </ul>
         </div>
 
+        <!-- KONTEN -->
         <main class="content-main">
             <div class="page-content">
 
@@ -197,11 +209,12 @@ if (!$query) {
                                 <thead class="table-primary">
                                     <tr>
                                         <th>No</th>
-                                        <th>Tanggal</th>
                                         <th>Nama Siswa</th>
-                                        <th>Kelas</th>
                                         <th>Pelanggaran</th>
+                                        <th>Kategori</th>
+                                        <th>Tanggal</th>
                                         <th>Poin</th>
+                                        <th>Guru Pencatat</th>
                                         <th>Keterangan</th>
                                         <th>Tindakan</th>
                                         <th>Status</th>
@@ -210,6 +223,7 @@ if (!$query) {
                                 </thead>
 
                                 <tbody>
+
                                     <?php
                                     $no = 1;
 
@@ -221,15 +235,7 @@ if (!$query) {
                                         <td><?= $no++; ?></td>
 
                                         <td>
-                                            <?= htmlspecialchars($data['tanggal'] ?? '-'); ?>
-                                        </td>
-
-                                        <td>
                                             <?= htmlspecialchars($data['nama_siswa'] ?? '-'); ?>
-                                        </td>
-
-                                        <td>
-                                            <?= htmlspecialchars($data['nama_kelas'] ?? '-'); ?>
                                         </td>
 
                                         <td>
@@ -237,7 +243,19 @@ if (!$query) {
                                         </td>
 
                                         <td>
+                                            <?= htmlspecialchars($data['nama_kategori'] ?? '-'); ?>
+                                        </td>
+
+                                        <td>
+                                            <?= htmlspecialchars($data['tanggal'] ?? '-'); ?>
+                                        </td>
+
+                                        <td>
                                             <?= htmlspecialchars($data['poin'] ?? '0'); ?>
+                                        </td>
+
+                                        <td>
+                                            <?= htmlspecialchars($data['nama_guru'] ?? '-'); ?>
                                         </td>
 
                                         <td>
@@ -251,11 +269,15 @@ if (!$query) {
                                         <td>
                                             <?php if (($data['status'] ?? '') == 'Selesai') { ?>
 
-                                                <span class="badge bg-success">Selesai</span>
+                                                <span class="badge bg-success">
+                                                    Selesai
+                                                </span>
 
                                             <?php } elseif (($data['status'] ?? '') == 'Diproses') { ?>
 
-                                                <span class="badge bg-warning text-dark">Diproses</span>
+                                                <span class="badge bg-warning text-dark">
+                                                    Diproses
+                                                </span>
 
                                             <?php } else { ?>
 
@@ -272,12 +294,21 @@ if (!$query) {
                                                 Beri Tindakan
                                             </a>
                                         </td>
+
                                     </tr>
 
                                     <?php
                                         }
-                                    }
+                                    } else {
                                     ?>
+
+                                    <tr>
+                                        <td colspan="11" class="text-center">
+                                            Belum ada data pelanggaran.
+                                        </td>
+                                    </tr>
+
+                                    <?php } ?>
 
                                 </tbody>
 
@@ -304,10 +335,12 @@ if (!$query) {
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+
     new DataTable('#tabelTindakan', {
         pageLength: 10,
         lengthMenu: [5, 10, 25, 50, 100],
         order: [],
+
         layout: {
             topStart: 'info',
             topEnd: 'search',
@@ -315,6 +348,7 @@ document.addEventListener('DOMContentLoaded', function () {
             bottomStart: null,
             bottomEnd: null
         },
+
         language: {
             search: 'Cari:',
             searchPlaceholder: 'Cari data...',
@@ -324,6 +358,7 @@ document.addEventListener('DOMContentLoaded', function () {
             infoFiltered: '(difilter dari _MAX_ total data)',
             zeroRecords: 'Data tidak ditemukan',
             emptyTable: 'Belum ada data pelanggaran',
+
             paginate: {
                 first: 'Pertama',
                 last: 'Terakhir',
@@ -331,12 +366,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 previous: 'Sebelumnya'
             }
         },
+
         columnDefs: [{
-            targets: 9,
+            targets: [0, 10],
             orderable: false,
             searchable: false
         }]
     });
+
 });
 </script>
 

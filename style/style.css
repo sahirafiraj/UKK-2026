@@ -718,20 +718,27 @@ a {
    19. DASHBOARD
 ========================================= */
 
+/* KONTEN DASHBOARD */
+
 .dashboard-content {
+    display: block;
     width: 100%;
-    max-width: 1100px;
-    margin: 0 auto;
+    max-width: none;
+    margin: 0;
 }
 
 /* HEADER DASHBOARD */
 
 .dashboard-header {
-    background: #ffffff;
-    border-radius: 14px;
-    padding: 22px 24px;
-    margin-bottom: 25px;
-    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
+    display: block;
+    width: 100%;
+    max-width: none;
+    background-color: #ffffff;
+    border: 1px solid #dce6f3;
+    border-radius: 6px;
+    padding: 21px 24px;
+    margin: 0 0 20px 0;
+    box-shadow: 0 2px 5px rgba(23, 47, 82, 0.06);
 }
 
 .dashboard-header h2 {
@@ -749,64 +756,82 @@ a {
     line-height: 1.5;
 }
 
-.dashboard-header p + p {
-    margin-top: 5px;
-}
-
 /* KARTU DASHBOARD */
 
 .dashboard-cards {
-    display: grid !important;
+    display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 14px;
     width: 100%;
-    max-width: 1100px;
+    max-width: none;
     margin: 0;
 }
 
 .dashboard-card {
+    display: block;
+    width: 100%;
     min-width: 0;
-    background: #ffffff;
-    border: 1px solid #e8edf4;
-    border-radius: 9px;
-    padding: 15px;
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
-    transition: 0.2s ease;
+    background-color: #ffffff;
+    border: 1px solid #dce6f3;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(23, 47, 82, 0.06);
+    transition: all 0.2s ease;
 }
 
 .dashboard-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(23, 47, 82, 0.08);
+    box-shadow: 0 4px 12px rgba(23, 47, 82, 0.09);
 }
+
+/* JUDUL CARD */
 
 .dashboard-card p {
     color: #64748b;
-    font-size: 11px;
-    margin-bottom: 7px;
+    font-size: 13px;
+    font-weight: 500;
+    margin: 0 0 8px;
 }
 
 .dashboard-card h2 {
     color: #172f52;
-    font-size: 22px;
+    font-size: 25px;
     font-weight: 700;
-    margin-bottom: 8px;
+    margin: 0 0 12px;
 }
 
+/* TOMBOL LIHAT DATA */
+
 .dashboard-card .btn {
-    background: #244b7a;
-    border: none;
-    border-radius: 4px;
-    padding: 5px 9px;
-    font-size: 10px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #193b65;
+    border: 1px solid #193b65;
+    border-radius: 7px;
+    color: #ffffff;
+    padding: 9px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: all 0.2s ease;
 }
 
 .dashboard-card .btn:hover {
-    background: #172f52;
+    background-color: #294f7e;
+    border-color: #294f7e;
+    color: #ffffff;
+    transform: translateY(-1px);
 }
 
-/* TABLET */
+/* RESPONSIVE TABLET */
 
 @media (max-width: 1100px) and (min-width: 768px) {
+
+    .dashboard-content {
+        width: 100%;
+        max-width: none;
+    }
 
     .dashboard-cards {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -814,13 +839,13 @@ a {
 
 }
 
-/* HP */
+/* RESPONSIVE HP */
 
 @media (max-width: 767px) {
 
-    .dashboard-cards {
-        grid-template-columns: 1fr;
-        gap: 14px;
+    .dashboard-content {
+        width: 100%;
+        max-width: none;
     }
 
     .dashboard-header {
@@ -829,6 +854,15 @@ a {
 
     .dashboard-header h2 {
         font-size: 25px;
+    }
+
+    .dashboard-cards {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .dashboard-card {
+        padding: 18px;
     }
 
 }
