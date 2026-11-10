@@ -162,7 +162,7 @@ if ($role != 'admin' && $role != 'guru') {
                     </li>
 
                     <li class="nav-item">
-                        <a href="about_me.php" class="nav-link text-white">
+                        <a href="about_me.php" class="nav-link active">
                             About Me
                         </a>
                     </li>

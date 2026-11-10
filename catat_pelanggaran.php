@@ -20,31 +20,78 @@ if ($role != 'guru') {
 }
 
 $nama_login = $_SESSION['name'] ?? 'Guru';
+$id_user = (int) ($_SESSION['id'] ?? 0);
 $halaman = basename($_SERVER['PHP_SELF']);
 
 $pesan = "";
 $jenis_pesan = "";
 
 // ==========================================
-// 2. MENGAMBIL DATA GURU
+// 2. MENGAMBIL GURU SESUAI AKUN LOGIN
 // ==========================================
 
-$query_guru = mysqli_query($koneksi, "
+$query_guru_login = mysqli_query($koneksi, "
     SELECT id, nama
     FROM t_guru
+    WHERE user_id = '$id_user'
+    AND status_aktif = 1
+    LIMIT 1
+");
+
+$data_guru_login = mysqli_fetch_assoc($query_guru_login);
+
+if (!$data_guru_login) {
+    echo "Data guru tidak ditemukan atau tidak aktif.";
+    exit;
+}
+
+$guru_id = (int) $data_guru_login['id'];
+$nama_guru = $data_guru_login['nama'];
+
+// ==========================================
+// 3. MENGAMBIL TAHUN AJARAN AKTIF
+// ==========================================
+
+$query_tahun = mysqli_query($koneksi, "
+    SELECT id, nama
+    FROM t_tahun_ajaran
     WHERE status_aktif = 1
-    ORDER BY nama ASC
+    LIMIT 1
+");
+
+$data_tahun = mysqli_fetch_assoc($query_tahun);
+
+if (!$data_tahun) {
+    echo "Tahun ajaran aktif belum tersedia.";
+    exit;
+}
+
+$tahun_ajaran_id = (int) $data_tahun['id'];
+$nama_tahun = $data_tahun['nama'];
+
+// ==========================================
+// 4. MENGAMBIL PILIHAN KELAS
+// ==========================================
+
+$kelas_id = (int) ($_GET['kelas_id'] ?? $_POST['kelas_id'] ?? 0);
+
+$query_kelas = mysqli_query($koneksi, "
+    SELECT DISTINCT k.id, k.nama
+    FROM t_kelas_siswa ks
+    JOIN t_kelas k ON ks.kelas_id = k.id
+    WHERE ks.tahun_ajaran_id = '$tahun_ajaran_id'
+    ORDER BY k.nama ASC
 ");
 
 // ==========================================
-// 3. PROSES SIMPAN PELANGGARAN
+// 5. PROSES SIMPAN PELANGGARAN
 // ==========================================
 
 if (isset($_POST['simpan'])) {
 
     $penempatan_id = (int) $_POST['penempatan_id'];
     $pelanggaran_id = (int) $_POST['pelanggaran_id'];
-    $guru_id = (int) $_POST['guru_id'];
+    $kelas_id = (int) $_POST['kelas_id'];
 
     $tanggal = mysqli_real_escape_string(
         $koneksi,
@@ -56,14 +103,7 @@ if (isset($_POST['simpan'])) {
         trim($_POST['keterangan'])
     );
 
-    $query_pilih_guru = mysqli_query($koneksi, "
-        SELECT id, nama
-        FROM t_guru
-        WHERE id = '$guru_id'
-        AND status_aktif = 1
-        LIMIT 1
-    ");
-
+    // Cek siswa sesuai kelas dan tahun ajaran aktif
     $query_siswa_pilih = mysqli_query($koneksi, "
         SELECT
             ks.siswa_id,
@@ -75,9 +115,12 @@ if (isset($_POST['simpan'])) {
         JOIN t_siswa s ON ks.siswa_id = s.id
         JOIN t_kelas k ON ks.kelas_id = k.id
         WHERE ks.id = '$penempatan_id'
+        AND ks.kelas_id = '$kelas_id'
+        AND ks.tahun_ajaran_id = '$tahun_ajaran_id'
         LIMIT 1
     ");
 
+    // Cek jenis pelanggaran
     $query_jenis_pilih = mysqli_query($koneksi, "
         SELECT
             p.id,
@@ -93,16 +136,15 @@ if (isset($_POST['simpan'])) {
         LIMIT 1
     ");
 
-    if ($guru_id <= 0 || !$query_pilih_guru ||
-        mysqli_num_rows($query_pilih_guru) == 0) {
+    if ($kelas_id <= 0) {
 
-        $pesan = "Silakan pilih guru pencatat.";
+        $pesan = "Silakan pilih kelas terlebih dahulu.";
         $jenis_pesan = "danger";
 
     } elseif (!$query_siswa_pilih ||
               mysqli_num_rows($query_siswa_pilih) == 0) {
 
-        $pesan = "Silakan pilih siswa yang benar.";
+        $pesan = "Siswa tidak sesuai dengan kelas yang dipilih.";
         $jenis_pesan = "danger";
 
     } elseif (!$query_jenis_pilih ||
@@ -118,18 +160,9 @@ if (isset($_POST['simpan'])) {
 
     } else {
 
-        $data_guru = mysqli_fetch_assoc($query_pilih_guru);
-
-        $nama_guru = mysqli_real_escape_string(
-            $koneksi,
-            $data_guru['nama']
-        );
-
         $data_siswa = mysqli_fetch_assoc($query_siswa_pilih);
 
-        $siswa_id = $data_siswa['siswa_id'];
-        $tahun_ajaran_id = $data_siswa['tahun_ajaran_id'];
-        $kelas_id = $data_siswa['kelas_id'];
+        $siswa_id = (int) $data_siswa['siswa_id'];
 
         $nama_siswa = mysqli_real_escape_string(
             $koneksi,
@@ -148,9 +181,10 @@ if (isset($_POST['simpan'])) {
             $data_jenis['nama_kategori']
         );
 
-        $kategori_id = $data_jenis['pelanggaran_kategori_id'];
-        $poin = $data_jenis['poin'];
+        $kategori_id = (int) $data_jenis['pelanggaran_kategori_id'];
+        $poin = (int) $data_jenis['poin'];
 
+        // Simpan pelanggaran
         $simpan = mysqli_query($koneksi, "
             INSERT INTO t_pelanggaran_siswa
             (
@@ -192,7 +226,7 @@ if (isset($_POST['simpan'])) {
 
         if ($simpan) {
 
-            header("Location: catat_pelanggaran.php?berhasil=1");
+            header("Location: catat_pelanggaran.php?kelas_id=$kelas_id&berhasil=1");
             exit;
 
         } else {
@@ -205,7 +239,7 @@ if (isset($_POST['simpan'])) {
 }
 
 // ==========================================
-// 4. PESAN BERHASIL
+// 6. PESAN BERHASIL
 // ==========================================
 
 if (isset($_GET['berhasil'])) {
@@ -214,25 +248,31 @@ if (isset($_GET['berhasil'])) {
 }
 
 // ==========================================
-// 5. MENGAMBIL DATA SISWA
+// 7. MENGAMBIL DATA SISWA SESUAI KELAS
 // ==========================================
 
-$query_siswa = mysqli_query($koneksi, "
-    SELECT
-        ks.id AS penempatan_id,
-        s.nis,
-        s.nama AS nama_siswa,
-        k.nama AS nama_kelas,
-        ta.nama AS nama_tahun
-    FROM t_kelas_siswa ks
-    JOIN t_siswa s ON ks.siswa_id = s.id
-    JOIN t_kelas k ON ks.kelas_id = k.id
-    JOIN t_tahun_ajaran ta ON ks.tahun_ajaran_id = ta.id
-    ORDER BY s.nama ASC
-");
+$query_siswa = false;
+
+if ($kelas_id > 0) {
+
+    $query_siswa = mysqli_query($koneksi, "
+        SELECT
+            ks.id AS penempatan_id,
+            s.nis,
+            s.nama AS nama_siswa,
+            k.nama AS nama_kelas
+        FROM t_kelas_siswa ks
+        JOIN t_siswa s ON ks.siswa_id = s.id
+        JOIN t_kelas k ON ks.kelas_id = k.id
+        WHERE ks.kelas_id = '$kelas_id'
+        AND ks.tahun_ajaran_id = '$tahun_ajaran_id'
+        ORDER BY s.nama ASC
+    ");
+
+}
 
 // ==========================================
-// 6. MENGAMBIL DATA KATEGORI PELANGGARAN
+// 8. MENGAMBIL DATA KATEGORI PELANGGARAN
 // ==========================================
 
 $query_pelanggaran = mysqli_query($koneksi, "
@@ -250,7 +290,7 @@ $query_pelanggaran = mysqli_query($koneksi, "
 ");
 
 // ==========================================
-// 7. MENGAMBIL PELANGGARAN TERBARU
+// 9. MENGAMBIL SELURUH DATA PELANGGARAN
 // ==========================================
 
 $query_terbaru = mysqli_query($koneksi, "
@@ -286,6 +326,94 @@ $query_terbaru = mysqli_query($koneksi, "
           rel="stylesheet">
 
     <link rel="stylesheet" href="style/style.css">
+
+    <style>
+        .form-pelanggaran {
+            border: 0;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .form-pelanggaran .card-header {
+            border-bottom: 1px solid #eef1f5;
+            padding: 20px 24px;
+        }
+
+        .form-pelanggaran .card-body {
+            padding: 24px;
+        }
+
+        .form-pelanggaran .form-label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #344054;
+            margin-bottom: 8px;
+        }
+
+        .form-pelanggaran .form-control,
+        .form-pelanggaran .form-select {
+            min-height: 45px;
+            border-radius: 8px;
+            border-color: #d9dee7;
+            font-size: 14px;
+        }
+
+        .form-pelanggaran .form-control:focus,
+        .form-pelanggaran .form-select:focus {
+            border-color: #6478b8;
+            box-shadow: 0 0 0 3px rgba(23, 37, 84, .10);
+        }
+
+        .form-pelanggaran textarea.form-control {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .kelas-box {
+            background: #f8faff;
+            border: 1px solid #e5eaf5;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 22px;
+        }
+
+        .form-divider {
+            border-top: 1px solid #edf0f5;
+            margin: 8px 0 22px;
+        }
+
+        .btn-form {
+            min-height: 42px;
+            padding: 9px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .readonly-field {
+            background: #f7f8fa !important;
+            color: #667085;
+        }
+
+        @media (max-width: 576px) {
+            .form-pelanggaran .card-body {
+                padding: 16px;
+            }
+
+            .form-pelanggaran .card-header {
+                padding: 16px;
+            }
+
+            .form-actions .btn {
+                width: 100%;
+            }
+
+            .form-actions {
+                display: flex;
+                flex-direction: column-reverse;
+                gap: 8px;
+            }
+        }
+    </style>
 
 </head>
 
@@ -339,24 +467,24 @@ $query_terbaru = mysqli_query($koneksi, "
                 </li>
 
                 <li class="nav-item">
-                        <a href="laporan.php" class="nav-link text-white">
-                            Laporan
-                        </a>
-                    </li>
+                    <a href="laporan.php" class="nav-link text-white">
+                        Laporan
+                    </a>
+                </li>
 
-                    <li class="nav-item">
-                        <a href="about_me.php" class="nav-link text-white">
-                            About Me
-                        </a>
-                    </li>
+                <li class="nav-item">
+                    <a href="about_me.php" class="nav-link text-white">
+                        About Me
+                    </a>
+                </li>
 
-                    <hr class="border-white">
+                <hr class="border-white">
 
-                    <li class="nav-item">
-                        <a href="logout.php" class="nav-link text-white">
-                            Logout
-                        </a>
-                    </li>
+                <li class="nav-item">
+                    <a href="logout.php" class="nav-link text-white">
+                        Logout
+                    </a>
+                </li>
 
             </ul>
 
@@ -390,78 +518,95 @@ $query_terbaru = mysqli_query($koneksi, "
                 <?php } ?>
 
                 <!-- FORM CATAT PELANGGARAN -->
-                <div class="card shadow-sm border-0 mb-4">
+                <div class="card shadow-sm form-pelanggaran mb-4">
 
-                    <div class="card-header bg-white py-3">
-
-                        <h5 class="fw-bold mb-0">
-                            Form Catat Pelanggaran
-                        </h5>
-
+                    <div class="card-header bg-white">
+                        <h5 class="fw-bold mb-1">Form Catat Pelanggaran</h5>
+                        <small class="text-secondary">Lengkapi data pelanggaran siswa dengan benar.</small>
                     </div>
 
-                    <div class="card-body p-4">
+                    <div class="card-body">
 
-                        <form method="POST" action="">
+                        <!-- PILIH KELAS -->
+                        <form method="GET" action="catat_pelanggaran.php">
+                            <div class="kelas-box">
+                                <label class="form-label" for="kelas_id">Kelas Siswa</label>
 
-                            <div class="row">
+                                <select name="kelas_id" id="kelas_id"
+                                        class="form-select"
+                                        onchange="this.form.submit()" required>
+                                    <option value="">-- Pilih Kelas --</option>
 
-                                <div class="col-md-6 mb-3">
-
-                                    <label class="form-label">
-                                        Nama Siswa
-                                    </label>
-
-                                    <select name="penempatan_id"
-                                            class="form-select"
-                                            required>
-
-                                        <option value="">
-                                            -- Pilih Siswa --
+                                    <?php
+                                    if ($query_kelas) {
+                                        while ($kelas = mysqli_fetch_assoc($query_kelas)) {
+                                    ?>
+                                        <option value="<?= $kelas['id']; ?>"
+                                            <?= ($kelas_id == $kelas['id']) ? 'selected' : ''; ?>>
+                                            <?= htmlspecialchars($kelas['nama']); ?>
                                         </option>
+                                    <?php
+                                        }
+                                    }
+                                    ?>
+                                </select>
+
+                                <small class="text-secondary d-block mt-2">
+                                    Pilih kelas terlebih dahulu untuk menampilkan siswa di kelas tersebut.
+                                </small>
+                            </div>
+                        </form>
+
+                        <!-- FORM SIMPAN -->
+                        <form method="POST" action="catat_pelanggaran.php">
+
+                            <input type="hidden" name="kelas_id" value="<?= $kelas_id; ?>">
+
+                            <div class="row g-3">
+
+                                <!-- NAMA SISWA -->
+                                <div class="col-md-6">
+                                    <label class="form-label" for="penempatan_id">Nama Siswa</label>
+
+                                    <select name="penempatan_id" id="penempatan_id"
+                                            class="form-select"
+                                            required <?= $kelas_id <= 0 ? 'disabled' : ''; ?>>
+
+                                        <option value="">-- Pilih Siswa --</option>
 
                                         <?php
                                         if ($query_siswa) {
                                             while ($siswa = mysqli_fetch_assoc($query_siswa)) {
                                         ?>
-
                                             <option value="<?= $siswa['penempatan_id']; ?>">
-                                                <?= htmlspecialchars(
-                                                    $siswa['nis'] . ' - ' .
-                                                    $siswa['nama_siswa'] . ' - ' .
-                                                    $siswa['nama_kelas'] . ' (' .
-                                                    $siswa['nama_tahun'] . ')'
-                                                ); ?>
+                                                <?= htmlspecialchars($siswa['nis'] . ' - ' . $siswa['nama_siswa']); ?>
                                             </option>
-
                                         <?php
                                             }
                                         }
                                         ?>
-
                                     </select>
 
+                                    <?php if ($kelas_id <= 0) { ?>
+                                        <small class="text-danger d-block mt-2">
+                                            Siswa akan muncul setelah kelas dipilih.
+                                        </small>
+                                    <?php } ?>
                                 </div>
 
-                                <div class="col-md-6 mb-3">
+                                <!-- JENIS PELANGGARAN -->
+                                <div class="col-md-6">
+                                    <label class="form-label" for="pelanggaran_id">Jenis Pelanggaran</label>
 
-                                    <label class="form-label">
-                                        Jenis Pelanggaran
-                                    </label>
+                                    <select name="pelanggaran_id" id="pelanggaran_id"
+                                            class="form-select" required>
 
-                                    <select name="pelanggaran_id"
-                                            class="form-select"
-                                            required>
-
-                                        <option value="">
-                                            -- Pilih Kategori Pelanggaran --
-                                        </option>
+                                        <option value="">-- Pilih Jenis Pelanggaran --</option>
 
                                         <?php
                                         if ($query_pelanggaran) {
                                             while ($pelanggaran = mysqli_fetch_assoc($query_pelanggaran)) {
                                         ?>
-
                                             <option value="<?= $pelanggaran['id']; ?>">
                                                 <?= htmlspecialchars(
                                                     $pelanggaran['nama_kategori'] .
@@ -470,88 +615,66 @@ $query_terbaru = mysqli_query($koneksi, "
                                                     ' poin)'
                                                 ); ?>
                                             </option>
-
                                         <?php
                                             }
                                         }
                                         ?>
-
                                     </select>
-
                                 </div>
 
-                                <div class="col-md-6 mb-3">
+                                <!-- TANGGAL -->
+                                <div class="col-md-6">
+                                    <label class="form-label" for="tanggal">Tanggal Pelanggaran</label>
 
-                                    <label class="form-label">
-                                        Tanggal Pelanggaran
-                                    </label>
-
-                                    <input type="date"
-                                           name="tanggal"
+                                    <input type="date" name="tanggal" id="tanggal"
                                            class="form-control"
                                            value="<?= date('Y-m-d'); ?>"
                                            required>
-
                                 </div>
 
-                                <div class="col-md-6 mb-3">
+                                <!-- GURU PENCATAT -->
+                                <div class="col-md-6">
+                                    <label class="form-label">Guru Pencatat</label>
 
-                                    <label class="form-label">
-                                        Guru Pencatat
-                                    </label>
-
-                                    <select name="guru_id"
-                                            class="form-select"
-                                            required>
-
-                                        <option value="">
-                                            -- Pilih Guru --
-                                        </option>
-
-                                        <?php
-                                        if ($query_guru) {
-                                            while ($guru = mysqli_fetch_assoc($query_guru)) {
-                                        ?>
-
-                                            <option value="<?= $guru['id']; ?>">
-                                                <?= htmlspecialchars($guru['nama']); ?>
-                                            </option>
-
-                                        <?php
-                                            }
-                                        }
-                                        ?>
-
-                                    </select>
-
+                                    <input type="text" class="form-control readonly-field"
+                                           value="<?= htmlspecialchars($nama_guru); ?>"
+                                           readonly>
                                 </div>
 
-                                <div class="col-12 mb-3">
+                                <!-- TAHUN AJARAN -->
+                                <div class="col-md-6">
+                                    <label class="form-label">Tahun Ajaran</label>
 
-                                    <label class="form-label">
-                                        Keterangan
-                                    </label>
+                                    <input type="text" class="form-control readonly-field"
+                                           value="<?= htmlspecialchars($nama_tahun); ?>"
+                                           readonly>
+                                </div>
 
-                                    <textarea name="keterangan"
+                                <!-- KETERANGAN -->
+                                <div class="col-12">
+                                    <label class="form-label" for="keterangan">Keterangan</label>
+
+                                    <textarea name="keterangan" id="keterangan"
                                               class="form-control"
-                                              rows="3"
-                                              placeholder="Masukkan keterangan pelanggaran..."
+                                              rows="4"
+                                              placeholder="Tuliskan keterangan pelanggaran secara singkat dan jelas..."
                                               required></textarea>
-
                                 </div>
 
                             </div>
 
-                            <div class="text-end">
+                            <div class="form-divider"></div>
+
+                            <div class="form-actions d-flex justify-content-end gap-2">
 
                                 <button type="reset"
-                                        class="btn btn-light border">
-                                    Reset
+                                        class="btn btn-light border btn-form">
+                                    Reset Form
                                 </button>
 
-                                <button type="submit"
-                                        name="simpan"
-                                        class="btn btn-primary">
+                                <button type="submit" name="simpan"
+                                        class="btn btn-primary btn-form"
+                                        <?= $kelas_id <= 0 ? 'disabled' : ''; ?>>
                                     Simpan Pelanggaran
                                 </button>
 
@@ -560,7 +683,6 @@ $query_terbaru = mysqli_query($koneksi, "
                         </form>
 
                     </div>
-
                 </div>
 
                 <!-- PELANGGARAN TERBARU -->

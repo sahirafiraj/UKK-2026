@@ -1,3 +1,4 @@
+
 <?php
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
@@ -16,7 +17,7 @@ if ($role != 'admin' && $role != 'guru') {
     exit;
 }
 
-// Mengambil data pelanggaran beserta kategori
+// Mengambil data pelanggaran yang belum selesai
 $query = mysqli_query($koneksi, "
     SELECT
         ps.*,
@@ -24,6 +25,7 @@ $query = mysqli_query($koneksi, "
     FROM t_pelanggaran_siswa ps
     LEFT JOIN t_pelanggaran_kategori pk
         ON ps.pelanggaran_kategori_id = pk.id
+    WHERE ps.status IN ('Belum', 'Diproses')
     ORDER BY ps.id DESC
 ");
 

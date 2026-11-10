@@ -17,15 +17,40 @@ if ($role != 'admin' && $role != 'guru') {
     exit;
 }
 
-$query = mysqli_query($koneksi, "
-    SELECT
-        ps.*,
-        pk.nama AS nama_kategori
-    FROM t_pelanggaran_siswa ps
-    LEFT JOIN t_pelanggaran_kategori pk
-        ON ps.pelanggaran_kategori_id = pk.id
-    ORDER BY ps.tanggal DESC, ps.id DESC
-");
+// ADMIN: semua pelanggaran yang selesai
+if ($role == 'admin') {
+
+    $query = mysqli_query($koneksi, "
+        SELECT
+            ps.*,
+            pk.nama AS nama_kategori
+        FROM t_pelanggaran_siswa ps
+        LEFT JOIN t_pelanggaran_kategori pk
+            ON ps.pelanggaran_kategori_id = pk.id
+        WHERE ps.status = 'Selesai'
+        ORDER BY ps.tanggal DESC, ps.id DESC
+    ");
+
+} else {
+
+    // GURU: hanya pelanggaran milik guru login yang selesai
+    $nama_guru_login = mysqli_real_escape_string(
+        $koneksi,
+        $nama_login
+    );
+
+    $query = mysqli_query($koneksi, "
+        SELECT
+            ps.*,
+            pk.nama AS nama_kategori
+        FROM t_pelanggaran_siswa ps
+        LEFT JOIN t_pelanggaran_kategori pk
+            ON ps.pelanggaran_kategori_id = pk.id
+        WHERE ps.nama_guru = '$nama_guru_login'
+        AND ps.status = 'Selesai'
+        ORDER BY ps.tanggal DESC, ps.id DESC
+    ");
+}
 
 if (!$query) {
     die("Query gagal: " . htmlspecialchars(mysqli_error($koneksi)));
@@ -184,73 +209,44 @@ if (!$query) {
 
                                     if (mysqli_num_rows($query) > 0) {
                                         while ($data = mysqli_fetch_assoc($query)) {
-
-                                            $tindakan = $data['tindakan'] ?? '';
-                                            $status = $data['status'] ?? 'Belum';
-
-                                            if ($status == 'Belum') {
-                                                $status = 'Belum Ditindaklanjuti';
-                                            }
                                     ?>
 
                                         <tr>
-
                                             <td><?= $no++; ?></td>
 
-                                            <td>
-                                                <?= htmlspecialchars($data['nama_siswa'] ?? '-'); ?>
-                                            </td>
+                                            <td><?= htmlspecialchars($data['nama_siswa'] ?? '-'); ?></td>
+
+                                            <td><?= htmlspecialchars($data['nama_pelanggaran'] ?? '-'); ?></td>
+
+                                            <td><?= htmlspecialchars($data['nama_kategori'] ?? '-'); ?></td>
+
+                                            <td><?= htmlspecialchars($data['tanggal'] ?? '-'); ?></td>
+
+                                            <td><?= htmlspecialchars($data['poin'] ?? '0'); ?></td>
+
+                                            <td><?= htmlspecialchars($data['nama_guru'] ?? '-'); ?></td>
+
+                                            <td><?= htmlspecialchars($data['keterangan'] ?? '-'); ?></td>
+
+                                            <td><?= htmlspecialchars($data['tindakan'] ?? '-'); ?></td>
 
                                             <td>
-                                                <?= htmlspecialchars($data['nama_pelanggaran'] ?? '-'); ?>
+                                                <span class="badge bg-success">Selesai</span>
                                             </td>
-
-                                            <td>
-                                                <?= htmlspecialchars($data['nama_kategori'] ?? '-'); ?>
-                                            </td>
-
-                                            <td>
-                                                <?= htmlspecialchars($data['tanggal'] ?? '-'); ?>
-                                            </td>
-
-                                            <td>
-                                                <?= htmlspecialchars($data['poin'] ?? '0'); ?>
-                                            </td>
-
-                                            <td>
-                                                <?= htmlspecialchars($data['nama_guru'] ?? '-'); ?>
-                                            </td>
-
-                                            <td>
-                                                <?= htmlspecialchars($data['keterangan'] ?? '-'); ?>
-                                            </td>
-
-                                            <!-- TINDAKAN: TEKS BIASA -->
-                                            <td>
-                                                <?= htmlspecialchars($tindakan ?: '-'); ?>
-                                            </td>
-
-                                            <!-- STATUS: BADGE BOOTSTRAP -->
-                                            <td>
-                                                <?php if ($status == 'Selesai') { ?>
-                                                    <span class="badge bg-success">Selesai</span>
-
-                                                <?php } elseif ($status == 'Diproses') { ?>
-                                                    <span class="badge bg-warning text-dark">Diproses</span>
-
-                                                <?php } else { ?>
-                                                    <span class="badge bg-secondary">
-                                                        <?= htmlspecialchars($status); ?>
-                                                    </span>
-                                                <?php } ?>
-                                            </td>
-
                                         </tr>
 
                                     <?php
                                         }
-                                    }
+                                    } else {
                                     ?>
+
+                                        <tr>
+                                            <td colspan="10" class="text-center">
+                                                Belum ada pelanggaran yang selesai ditindak.
+                                            </td>
+                                        </tr>
+
+                                    <?php } ?>
 
                                 </tbody>
 

@@ -8,14 +8,9 @@ if (!isset($_SESSION['login'])) {
     exit;
 }
 
-// ========================================
-// DATA LOGIN
-// ========================================
-
 $role = strtolower(trim($_SESSION['role'] ?? ''));
 $id_user = $_SESSION['id'] ?? 0;
-$nama_login = $_SESSION['name'] ?? 'Pengguna';
-$halaman = basename($_SERVER['PHP_SELF']);
+$name = $_SESSION['name'] ?? 'Pengguna';
 
 if (!in_array($role, ['admin', 'guru'])) {
     echo "Anda tidak memiliki akses";
@@ -23,7 +18,7 @@ if (!in_array($role, ['admin', 'guru'])) {
 }
 
 // ========================================
-// CEK TAHUN AJARAN AKTIF
+// TAHUN AJARAN AKTIF
 // ========================================
 
 $query_tahun = mysqli_query($koneksi, "
@@ -37,12 +32,12 @@ $data_tahun = mysqli_fetch_assoc($query_tahun);
 $id_tahun = $data_tahun['id'] ?? 0;
 
 // ========================================
-// CEK STATUS WALI KELAS
+// DATA GURU DAN KELAS WALI
 // ========================================
 
 $id_guru = 0;
-$status_wali_kelas = false;
 $kelas_wali = [];
+$id_kelas_wali = [];
 
 if ($role == 'guru') {
 
@@ -59,9 +54,7 @@ if ($role == 'guru') {
     if ($id_guru > 0 && $id_tahun > 0) {
 
         $query_wali = mysqli_query($koneksi, "
-            SELECT DISTINCT
-                k.id,
-                k.nama AS nama_kelas
+            SELECT DISTINCT k.id, k.nama AS nama_kelas
             FROM t_wali_kelas wk
             JOIN t_kelas k ON k.id = wk.kelas_id
             WHERE wk.guru_id = '$id_guru'
@@ -69,154 +62,203 @@ if ($role == 'guru') {
             AND wk.status_aktif = 1
         ");
 
-        while ($wali = mysqli_fetch_assoc($query_wali)) {
-            $kelas_wali[] = $wali;
-        }
-
-        if (count($kelas_wali) > 0) {
-            $status_wali_kelas = true;
+        while ($data_wali = mysqli_fetch_assoc($query_wali)) {
+            $kelas_wali[] = $data_wali;
+            $id_kelas_wali[] = $data_wali['id'];
         }
     }
+}
 
-    // GURU BIASA TIDAK BOLEH MASUK LAPORAN
-    if (!$status_wali_kelas) {
-        echo "<script>
-            alert('Akses ditolak. Menu laporan ini hanya untuk Admin dan Wali Kelas.');
-            window.location.href = 'dashboard.php';
-        </script>";
-        exit;
+// ========================================
+// FILTER TANGGAL
+// ========================================
+
+$tanggal_awal = $_GET['tanggal_awal'] ?? '';
+$tanggal_akhir = $_GET['tanggal_akhir'] ?? '';
+
+$filter_tanggal = "";
+
+if ($tanggal_awal != '') {
+    $filter_tanggal .= " AND ps.tanggal >= '$tanggal_awal'";
+}
+
+if ($tanggal_akhir != '') {
+    $filter_tanggal .= " AND ps.tanggal <= '$tanggal_akhir'";
+}
+
+// ========================================
+// FILTER KELAS WALI
+// ========================================
+
+$filter_kelas = "";
+
+if ($role == 'guru') {
+
+    if (count($id_kelas_wali) > 0) {
+
+        $daftar_kelas = implode(',', $id_kelas_wali);
+
+        $filter_kelas = "
+            AND ps.kelas_id IN ($daftar_kelas)
+        ";
+
+    } else {
+        $filter_kelas = " AND 1 = 0";
     }
 }
 
 // ========================================
-// ID KELAS WALI
+// REKAPITULASI SISWA PELANGGAR
 // ========================================
 
-$id_kelas_wali = [];
-
-if ($status_wali_kelas) {
-    foreach ($kelas_wali as $kelas) {
-        $id_kelas_wali[] = (int) $kelas['id'];
-    }
-}
-
-$kondisi_kelas = '';
-
-if ($status_wali_kelas && count($id_kelas_wali) > 0) {
-    $kondisi_kelas = implode(',', $id_kelas_wali);
-}
+$query_rekap = mysqli_query($koneksi, "
+    SELECT
+        s.id,
+        s.nis,
+        s.nama,
+        k.nama AS nama_kelas,
+        COUNT(ps.id) AS jumlah_pelanggaran,
+        COALESCE(SUM(p.poin), 0) AS total_poin
+    FROM t_pelanggaran_siswa ps
+    JOIN t_siswa s ON s.id = ps.siswa_id
+    LEFT JOIN t_kelas k ON k.id = ps.kelas_id
+    JOIN t_pelanggaran p ON p.id = ps.pelanggaran_id
+    WHERE 1 = 1
+    $filter_tanggal
+    $filter_kelas
+    GROUP BY s.id, s.nis, s.nama, k.nama
+    ORDER BY jumlah_pelanggaran DESC, s.nama ASC
+");
 
 // ========================================
-// PILIH SISWA
+// DETAIL LAPORAN SISWA
 // ========================================
 
-$siswa_id = isset($_GET['siswa_id']) ? (int) $_GET['siswa_id'] : 0;
-
+$siswa_id = $_GET['siswa_id'] ?? '';
 $data_siswa = null;
-$daftar_laporan = [];
+$data_detail = [];
 $total_poin = 0;
-$error_laporan = false;
+$jumlah_detail = 0;
 
-// ADMIN BISA MEMILIH SEMUA SISWA
-if ($role == 'admin') {
+if ($siswa_id != '') {
 
+    $siswa_id = mysqli_real_escape_string($koneksi, $siswa_id);
+
+    $filter_siswa_wali = "";
+
+    if ($role == 'guru') {
+
+        if (count($id_kelas_wali) > 0) {
+
+            $daftar_kelas = implode(',', $id_kelas_wali);
+
+            $filter_siswa_wali = "
+                AND ps.kelas_id IN ($daftar_kelas)
+            ";
+
+        } else {
+            $filter_siswa_wali = " AND 1 = 0";
+        }
+    }
+
+    // DATA IDENTITAS SISWA
     $query_siswa = mysqli_query($koneksi, "
-        SELECT id, nis, nama
-        FROM t_siswa
-        ORDER BY nama ASC
-    ");
-
-} else {
-
-    // WALI KELAS HANYA MELIHAT SISWA DARI KELAS TUGASNYA
-    $query_siswa = mysqli_query($koneksi, "
-        SELECT DISTINCT
+        SELECT
             s.id,
             s.nis,
             s.nama
         FROM t_siswa s
-        JOIN t_kelas_siswa ks ON ks.siswa_id = s.id
-        WHERE ks.tahun_ajaran_id = '$id_tahun'
-        AND ks.kelas_id IN ($kondisi_kelas)
-        ORDER BY s.nama ASC
+        WHERE s.id = '$siswa_id'
+        LIMIT 1
     ");
+
+    $data_siswa = mysqli_fetch_assoc($query_siswa);
+
+    // DETAIL PELANGGARAN
+    if ($data_siswa) {
+
+        $query_detail = mysqli_query($koneksi, "
+            SELECT
+                ps.id,
+                ps.tanggal,
+                k.nama AS nama_kelas,
+                p.nama AS nama_pelanggaran,
+                p.poin,
+                g.nama AS nama_guru,
+                ps.keterangan,
+                ps.tindakan,
+                ps.status
+            FROM t_pelanggaran_siswa ps
+            JOIN t_pelanggaran p ON p.id = ps.pelanggaran_id
+            LEFT JOIN t_kelas k ON k.id = ps.kelas_id
+            LEFT JOIN t_guru g ON g.id = ps.guru_id
+            WHERE ps.siswa_id = '$siswa_id'
+            $filter_tanggal
+            $filter_siswa_wali
+            ORDER BY ps.tanggal ASC, ps.id ASC
+        ");
+
+        while ($data = mysqli_fetch_assoc($query_detail)) {
+            $data_detail[] = $data;
+            $total_poin += $data['poin'];
+            $jumlah_detail++;
+        }
+
+        // GURU TIDAK BOLEH MELIHAT SISWA DI LUAR KELAS WALI
+        if ($role == 'guru' && $jumlah_detail == 0) {
+            $data_siswa = null;
+        }
+    }
 }
 
 // ========================================
-// CEK SISWA YANG DIPILIH
+// EXPORT EXCEL
 // ========================================
 
-if ($siswa_id > 0) {
+if (isset($_GET['export']) && $_GET['export'] == 'excel' && $data_siswa && $jumlah_detail > 0) {
 
-    if ($role == 'admin') {
+    header("Content-Type: application/vnd.ms-excel");
+    header("Content-Disposition: attachment; filename=Laporan_Pelanggaran_Siswa.xls");
 
-        $query_pilih = mysqli_query($koneksi, "
-            SELECT id, nis, nama
-            FROM t_siswa
-            WHERE id = $siswa_id
-            LIMIT 1
-        ");
+    echo "<table border='1'>";
 
-    } else {
+    echo "<tr><th colspan='7'>LAPORAN PELANGGARAN SISWA</th></tr>";
+    echo "<tr><td colspan='7'>Nama Siswa: " . htmlspecialchars($data_siswa['nama']) . "</td></tr>";
+    echo "<tr><td colspan='7'>NIS: " . htmlspecialchars($data_siswa['nis']) . "</td></tr>";
 
-        // PASTIKAN SISWA BENAR-BENAR BERADA DI KELAS WALI
-        $query_pilih = mysqli_query($koneksi, "
-            SELECT DISTINCT
-                s.id,
-                s.nis,
-                s.nama
-            FROM t_siswa s
-            JOIN t_kelas_siswa ks ON ks.siswa_id = s.id
-            WHERE s.id = $siswa_id
-            AND ks.tahun_ajaran_id = '$id_tahun'
-            AND ks.kelas_id IN ($kondisi_kelas)
-            LIMIT 1
-        ");
+    echo "<tr>
+        <th>No</th>
+        <th>Tanggal</th>
+        <th>Kelas</th>
+        <th>Jenis Pelanggaran</th>
+        <th>Poin</th>
+        <th>Guru</th>
+        <th>Status</th>
+    </tr>";
+
+    $no = 1;
+
+    foreach ($data_detail as $detail) {
+
+        echo "<tr>";
+        echo "<td>" . $no++ . "</td>";
+        echo "<td>" . htmlspecialchars($detail['tanggal']) . "</td>";
+        echo "<td>" . htmlspecialchars($detail['nama_kelas'] ?? '-') . "</td>";
+        echo "<td>" . htmlspecialchars($detail['nama_pelanggaran']) . "</td>";
+        echo "<td>" . htmlspecialchars($detail['poin']) . "</td>";
+        echo "<td>" . htmlspecialchars($detail['nama_guru'] ?? '-') . "</td>";
+        echo "<td>" . htmlspecialchars($detail['status'] ?? '-') . "</td>";
+        echo "</tr>";
     }
 
-    if ($query_pilih) {
-        $data_siswa = mysqli_fetch_assoc($query_pilih);
-    }
+    echo "<tr>
+        <td colspan='4'><b>Total Poin</b></td>
+        <td><b>$total_poin</b></td>
+        <td colspan='2'></td>
+    </tr>";
 
-    // ========================================
-    // AMBIL LAPORAN SISWA
-    // ========================================
-
-    if ($data_siswa) {
-
-        if ($role == 'admin') {
-
-            $query_laporan = mysqli_query($koneksi, "
-                SELECT *
-                FROM t_pelanggaran_siswa
-                WHERE siswa_id = $siswa_id
-                ORDER BY tanggal DESC, id DESC
-            ");
-
-        } else {
-
-            // WALI KELAS HANYA MELIHAT LAPORAN KELAS TUGASNYA
-            $query_laporan = mysqli_query($koneksi, "
-                SELECT *
-                FROM t_pelanggaran_siswa
-                WHERE siswa_id = $siswa_id
-                AND tahun_ajaran_id = '$id_tahun'
-                AND kelas_id IN ($kondisi_kelas)
-                ORDER BY tanggal DESC, id DESC
-            ");
-        }
-
-        if ($query_laporan) {
-
-            while ($laporan = mysqli_fetch_assoc($query_laporan)) {
-                $daftar_laporan[] = $laporan;
-                $total_poin += (int) ($laporan['poin'] ?? 0);
-            }
-
-        } else {
-            $error_laporan = true;
-        }
-    }
+    echo "</table>";
+    exit;
 }
 ?>
 
@@ -227,162 +269,13 @@ if ($siswa_id > 0) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Laporan Pelanggaran Siswa</title>
+    <title>Laporan - Sistem Pelanggaran</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style/style.css">
-
-    <style>
-        @media screen {
-            .judul-cetak,
-            .identitas-cetak,
-            .tabel-cetak,
-            .tanda-tangan {
-                display: none;
-            }
-        }
-
-        @media print {
-            body {
-                background: white !important;
-            }
-
-            .sidebar,
-            .header-website,
-            .form-pilih,
-            .tombol-cetak,
-            .kembali-dashboard {
-                display: none !important;
-            }
-
-            .content-main {
-                margin: 0 !important;
-                padding: 0 !important;
-                width: 100% !important;
-            }
-
-            .page-content {
-                padding: 0 !important;
-            }
-
-            #area-cetak {
-                border: none !important;
-                box-shadow: none !important;
-            }
-
-            #area-cetak .card-header {
-                display: none !important;
-            }
-
-            #area-cetak .card-body {
-                padding: 0 !important;
-            }
-
-            .judul-cetak,
-            .identitas-cetak,
-            .tabel-cetak,
-            .tanda-tangan {
-                display: block !important;
-            }
-
-            .judul-cetak {
-                text-align: center;
-                margin-bottom: 25px;
-            }
-
-            .judul-cetak h2 {
-                font-size: 20px;
-                font-weight: bold;
-            }
-
-            .judul-cetak p {
-                font-size: 12px;
-                margin-bottom: 10px;
-            }
-
-            .garis-judul {
-                border-top: 2px solid black;
-                margin-top: 12px;
-            }
-
-            .identitas-cetak {
-                margin-bottom: 20px;
-            }
-
-            .identitas-cetak h5 {
-                font-size: 14px;
-                font-weight: bold;
-                margin-bottom: 10px;
-            }
-
-            .identitas-cetak table td {
-                padding: 3px 8px 3px 0;
-                font-size: 12px;
-            }
-
-            .tabel-website {
-                display: none !important;
-            }
-
-            .tabel-cetak table {
-                width: 100%;
-                border-collapse: collapse;
-                font-size: 11px;
-            }
-
-            .tabel-cetak th,
-            .tabel-cetak td {
-                border: 1px solid black;
-                padding: 7px;
-            }
-
-            .tabel-cetak th {
-                text-align: center;
-            }
-
-            .tabel-cetak tfoot td {
-                font-weight: bold;
-            }
-
-            .tanda-tangan {
-                margin-top: 60px;
-            }
-
-            .tabel-tanda-tangan {
-                width: 100%;
-                text-align: center;
-            }
-
-            .tabel-tanda-tangan td {
-                width: 33.33%;
-                font-size: 12px;
-                vertical-align: top;
-            }
-
-            .ruang-tanda-tangan {
-                height: 75px;
-            }
-
-            .garis-tanda-tangan {
-                border-top: 1px solid black;
-                width: 80%;
-                margin: auto;
-            }
-
-            .nama-tanda-tangan {
-                display: block;
-                margin-top: 5px;
-            }
-
-            @page {
-                size: A4;
-                margin: 2cm;
-            }
-        }
-    </style>
 </head>
 
-<body class="bg-light">
+<body>
 
 <div class="container-fluid">
     <div class="row">
@@ -395,8 +288,7 @@ if ($siswa_id > 0) {
             <ul class="nav nav-pills flex-column gap-1">
 
                 <li class="nav-item">
-                    <a href="dashboard.php"
-                       class="nav-link <?= $halaman == 'dashboard.php' ? 'active' : 'text-white'; ?>">
+                    <a href="dashboard.php" class="nav-link text-white">
                         Dashboard
                     </a>
                 </li>
@@ -404,466 +296,373 @@ if ($siswa_id > 0) {
                 <?php if ($role == 'admin') { ?>
 
                     <li class="nav-item">
-                        <a href="data_siswa.php"
-                           class="nav-link <?= $halaman == 'data_siswa.php' ? 'active' : 'text-white'; ?>">
-                            Data Siswa
-                        </a>
+                        <a href="data_siswa.php" class="nav-link text-white">Data Siswa</a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="data_guru.php"
-                           class="nav-link <?= $halaman == 'data_guru.php' ? 'active' : 'text-white'; ?>">
-                            Data Guru
-                        </a>
+                        <a href="data_guru.php" class="nav-link text-white">Data Guru</a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="data_kelas.php"
-                           class="nav-link <?= $halaman == 'data_kelas.php' ? 'active' : 'text-white'; ?>">
-                            Data Kelas
-                        </a>
+                        <a href="data_kelas.php" class="nav-link text-white">Data Kelas</a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="data_tahun_ajaran.php"
-                           class="nav-link <?= $halaman == 'data_tahun_ajaran.php' ? 'active' : 'text-white'; ?>">
-                            Tahun Ajaran
-                        </a>
+                        <a href="data_tahun_ajaran.php" class="nav-link text-white">Tahun Ajaran</a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="data_penempatan_siswa.php"
-                           class="nav-link <?= $halaman == 'data_penempatan_siswa.php' ? 'active' : 'text-white'; ?>">
-                            Penempatan Siswa
-                        </a>
+                        <a href="data_penempatan_siswa.php" class="nav-link text-white">Penempatan Siswa</a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="data_wali_kelas.php"
-                           class="nav-link <?= $halaman == 'data_wali_kelas.php' ? 'active' : 'text-white'; ?>">
-                            Data Wali Kelas
-                        </a>
+                        <a href="data_wali_kelas.php" class="nav-link text-white">Data Wali Kelas</a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="data_kategori_pelanggaran.php"
-                           class="nav-link <?= $halaman == 'data_kategori_pelanggaran.php' ? 'active' : 'text-white'; ?>">
-                            Kategori Pelanggaran
-                        </a>
+                        <a href="data_kategori_pelanggaran.php" class="nav-link text-white">Kategori Pelanggaran</a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="data_jenis_pelanggaran.php"
-                           class="nav-link <?= $halaman == 'data_jenis_pelanggaran.php' ? 'active' : 'text-white'; ?>">
-                            Jenis Pelanggaran
-                        </a>
+                        <a href="data_jenis_pelanggaran.php" class="nav-link text-white">Jenis Pelanggaran</a>
                     </li>
 
                 <?php } else { ?>
 
                     <li class="nav-item">
-                        <a href="catat_pelanggaran.php" class="nav-link text-white">
-                            Catat Pelanggaran
-                        </a>
+                        <a href="catat_pelanggaran.php" class="nav-link text-white">Catat Pelanggaran</a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="tindakan.php" class="nav-link text-white">
-                            Tindakan
-                        </a>
+                        <a href="tindakan.php" class="nav-link text-white">Tindakan</a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="riwayat.php" class="nav-link text-white">
-                            Riwayat
-                        </a>
+                        <a href="riwayat.php" class="nav-link text-white">Riwayat</a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="rekap_poin.php" class="nav-link text-white">
-                            Rekap Poin
-                        </a>
+                        <a href="rekap_poin.php" class="nav-link text-white">Rekap Poin</a>
                     </li>
 
                 <?php } ?>
 
                 <li class="nav-item">
-                    <a href="laporan.php"
-                       class="nav-link <?= $halaman == 'laporan.php' ? 'active' : 'text-white'; ?>">
-                        Laporan
-                    </a>
+                    <a href="laporan.php" class="nav-link active">Laporan</a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="about_me.php" class="nav-link text-white">
-                        About Me
-                    </a>
+                    <a href="about_me.php" class="nav-link text-white">About Me</a>
                 </li>
 
                 <hr class="border-white">
 
                 <li class="nav-item">
-                    <a href="logout.php" class="nav-link text-white">
-                        Logout
-                    </a>
+                    <a href="logout.php" class="nav-link text-white">Logout</a>
                 </li>
 
             </ul>
         </div>
 
-        <!-- KONTEN -->
+        <!-- KONTEN LAPORAN -->
         <main class="content-main">
-            <div class="page-content">
 
-                <div class="bg-white rounded shadow-sm p-4 mb-4 header-website">
+            <div class="dashboard-content">
 
-                    <h2 class="fw-bold">Laporan Pelanggaran Siswa</h2>
+                <!-- HEADER -->
+                <div class="dashboard-header">
+
+                    <h2>Laporan Pelanggaran Siswa</h2>
 
                     <p class="text-secondary mb-0">
                         Selamat datang,
-                        <strong><?= htmlspecialchars($nama_login); ?></strong>.
-                        Pilih siswa untuk melihat riwayat pelanggarannya.
+                        <b><?= htmlspecialchars($name); ?></b>
                     </p>
+
+                    <?php if ($role == 'guru' && count($kelas_wali) > 0) { ?>
+
+                        <p>
+                            Kelas Wali:
+                            <b>
+                                <?php
+                                $nama_kelas = [];
+
+                                foreach ($kelas_wali as $kelas) {
+                                    $nama_kelas[] = $kelas['nama_kelas'];
+                                }
+
+                                echo htmlspecialchars(implode(', ', $nama_kelas));
+                                ?>
+                            </b>
+                        </p>
+
+                    <?php } ?>
 
                 </div>
 
-                <!-- PILIH SISWA -->
-                <div class="card shadow-sm border-0 mb-4 form-pilih">
+                <!-- FILTER TANGGAL -->
+                <div class="card-data mt-4">
 
-                    <div class="card-header bg-white py-3">
-                        <h5 class="mb-0">Pilih Siswa</h5>
+                    <div class="card-header">
+                        <div class="card-header-content">
+                            <h5 class="card-title">Filter Laporan</h5>
+                        </div>
                     </div>
 
                     <div class="card-body">
 
-                        <form action="laporan.php" method="GET">
+                        <form method="GET" class="row g-3">
 
-                            <div class="mb-3">
-
-                                <label class="form-label">Nama Siswa</label>
-
-                                <select name="siswa_id" class="form-select" required>
-
-                                    <option value="">-- Pilih Siswa --</option>
-
-                                    <?php if ($query_siswa) { ?>
-
-                                        <?php while ($siswa = mysqli_fetch_assoc($query_siswa)) { ?>
-
-                                            <option value="<?= (int) $siswa['id']; ?>"
-                                                <?= $siswa_id == $siswa['id'] ? 'selected' : ''; ?>>
-
-                                                <?= htmlspecialchars($siswa['nama']); ?>
-                                                - NIS: <?= htmlspecialchars($siswa['nis']); ?>
-
-                                            </option>
-
-                                        <?php } ?>
-
-                                    <?php } ?>
-
-                                </select>
-
+                            <div class="col-md-4">
+                                <label class="form-label">Tanggal Awal</label>
+                                <input type="date" name="tanggal_awal" class="form-control"
+                                    value="<?= htmlspecialchars($tanggal_awal); ?>">
                             </div>
 
-                            <button type="submit" class="btn btn-primary">
-                                Lihat Laporan
-                            </button>
+                            <div class="col-md-4">
+                                <label class="form-label">Tanggal Akhir</label>
+                                <input type="date" name="tanggal_akhir" class="form-control"
+                                    value="<?= htmlspecialchars($tanggal_akhir); ?>">
+                            </div>
 
-                            <a href="laporan.php" class="btn btn-secondary">
-                                Reset
-                            </a>
+                            <div class="col-md-4 d-flex align-items-end gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    Tampilkan
+                                </button>
+
+                                <a href="laporan.php" class="btn btn-secondary">
+                                    Reset
+                                </a>
+                            </div>
 
                         </form>
 
                     </div>
                 </div>
 
-                <?php if ($siswa_id > 0 && $data_siswa) { ?>
+                <!-- REKAPITULASI -->
+                <div class="card-data mt-4">
 
-                    <div id="area-cetak" class="card shadow-sm border-0">
+                    <div class="card-header">
+                        <div class="card-header-content">
+                            <h5 class="card-title">Rekapitulasi Pelanggaran Siswa</h5>
+                        </div>
+                    </div>
 
-                        <div class="card-header bg-white py-3">
+                    <div class="card-body">
 
-                            <h5 class="mb-1">Riwayat Pelanggaran Siswa</h5>
+                        <div class="table-responsive">
 
-                            <p class="text-secondary mb-0">
-                                Nama:
-                                <strong><?= htmlspecialchars($data_siswa['nama']); ?></strong>
-                                |
-                                NIS: <?= htmlspecialchars($data_siswa['nis']); ?>
-                            </p>
+                            <table class="table table-bordered table-striped table-hover">
+
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th>No</th>
+                                        <th>NIS</th>
+                                        <th>Nama Siswa</th>
+                                        <th>Kelas</th>
+                                        <th>Jumlah Pelanggaran</th>
+                                        <th>Total Poin</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+
+                                <?php
+                                $no = 1;
+
+                                if (mysqli_num_rows($query_rekap) > 0) {
+
+                                    while ($rekap = mysqli_fetch_assoc($query_rekap)) {
+                                ?>
+
+                                    <tr>
+                                        <td><?= $no++; ?></td>
+                                        <td><?= htmlspecialchars($rekap['nis']); ?></td>
+                                        <td><?= htmlspecialchars($rekap['nama']); ?></td>
+                                        <td><?= htmlspecialchars($rekap['nama_kelas'] ?? '-'); ?></td>
+                                        <td><?= $rekap['jumlah_pelanggaran']; ?></td>
+                                        <td><?= $rekap['total_poin']; ?></td>
+                                        <td>
+                                            <a href="laporan.php?siswa_id=<?= $rekap['id']; ?>&tanggal_awal=<?= urlencode($tanggal_awal); ?>&tanggal_akhir=<?= urlencode($tanggal_akhir); ?>"
+                                                class="btn btn-primary btn-sm">
+                                                Lihat Laporan
+                                            </a>
+                                        </td>
+                                    </tr>
+
+                                <?php
+                                    }
+
+                                } else {
+                                ?>
+
+                                    <tr>
+                                        <td colspan="7" class="text-center">
+                                            Tidak ada data pelanggaran siswa.
+                                        </td>
+                                    </tr>
+
+                                <?php } ?>
+
+                                </tbody>
+
+                            </table>
 
                         </div>
 
-                        <div class="card-body">
+                    </div>
+                </div>
 
-                            <div class="judul-cetak">
-                                <h2>LAPORAN PELANGGARAN SISWA</h2>
-                                <p>REKAPITULASI CATATAN PELANGGARAN SISWA</p>
-                                <div class="garis-judul"></div>
+                <!-- DETAIL LAPORAN -->
+                <?php if ($data_siswa && $jumlah_detail > 0) { ?>
+
+                <div class="card-data mt-4" id="detail-laporan">
+
+                    <div class="card-header">
+                        <div class="card-header-content">
+
+                            <h5 class="card-title">Detail Laporan Pelanggaran</h5>
+
+                            <div class="card-actions">
+
+                                <button type="button" onclick="window.print()" class="btn btn-primary">
+                                    Print
+                                </button>
+
+                                <a href="laporan.php?siswa_id=<?= $data_siswa['id']; ?>&tanggal_awal=<?= urlencode($tanggal_awal); ?>&tanggal_akhir=<?= urlencode($tanggal_akhir); ?>&export=excel"
+                                    class="btn btn-success">
+                                    Export Excel
+                                </a>
+
                             </div>
 
-                            <div class="identitas-cetak">
+                        </div>
+                    </div>
 
-                                <h5>IDENTITAS SISWA</h5>
+                    <div class="card-body">
 
-                                <table>
+                        <!-- IDENTITAS SISWA -->
+                        <div class="identitas-laporan">
+
+                            <h4 class="text-center mb-3">LAPORAN PELANGGARAN SISWA</h4>
+
+                            <table class="table table-borderless">
+
+                                <tr>
+                                    <td width="150">Nama Siswa</td>
+                                    <td>: <?= htmlspecialchars($data_siswa['nama']); ?></td>
+                                </tr>
+
+                                <tr>
+                                    <td>NIS</td>
+                                    <td>: <?= htmlspecialchars($data_siswa['nis']); ?></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Tanggal Laporan</td>
+                                    <td>: <?= date('d-m-Y'); ?></td>
+                                </tr>
+
+                            </table>
+
+                        </div>
+
+                        <!-- TABEL DETAIL -->
+                        <div class="table-responsive">
+
+                            <table class="table table-bordered table-striped">
+
+                                <thead class="table-primary">
                                     <tr>
-                                        <td>Nama</td>
-                                        <td>:</td>
-                                        <td><?= htmlspecialchars($data_siswa['nama']); ?></td>
+                                        <th>No</th>
+                                        <th>Tanggal</th>
+                                        <th>Kelas</th>
+                                        <th>Jenis Pelanggaran</th>
+                                        <th>Poin</th>
+                                        <th>Guru</th>
+                                        <th>Keterangan</th>
+                                        <th>Tindakan</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+
+                                <?php
+                                $no = 1;
+
+                                foreach ($data_detail as $detail) {
+                                ?>
+
+                                    <tr>
+                                        <td><?= $no++; ?></td>
+                                        <td><?= date('d-m-Y', strtotime($detail['tanggal'])); ?></td>
+                                        <td><?= htmlspecialchars($detail['nama_kelas'] ?? '-'); ?></td>
+                                        <td><?= htmlspecialchars($detail['nama_pelanggaran']); ?></td>
+                                        <td><?= htmlspecialchars($detail['poin']); ?></td>
+                                        <td><?= htmlspecialchars($detail['nama_guru'] ?? '-'); ?></td>
+                                        <td><?= htmlspecialchars($detail['keterangan'] ?? '-'); ?></td>
+                                        <td><?= htmlspecialchars($detail['tindakan'] ?? '-'); ?></td>
+                                        <td><?= htmlspecialchars($detail['status'] ?? '-'); ?></td>
                                     </tr>
 
-                                    <tr>
-                                        <td>NIS</td>
-                                        <td>:</td>
-                                        <td><?= htmlspecialchars($data_siswa['nis']); ?></td>
-                                    </tr>
+                                <?php } ?>
 
+                                </tbody>
+
+                                <tfoot>
                                     <tr>
-                                        <td>Tanggal cetak</td>
-                                        <td>:</td>
-                                        <td><?= date('d-m-Y'); ?></td>
+                                        <th colspan="4" class="text-end">Total Poin</th>
+                                        <th><?= $total_poin; ?></th>
+                                        <th colspan="4"></th>
                                     </tr>
-                                </table>
+                                </tfoot>
+
+                            </table>
+
+                        </div>
+
+                        <!-- TANDA TANGAN -->
+                        <div class="tanda-tangan-laporan">
+
+                            <p class="text-end">
+                                Tasikmalaya, <?= date('d F Y'); ?>
+                            </p>
+
+                            <div class="row text-center mt-4">
+
+                                <div class="col-md-4">
+                                    <p>Siswa</p>
+                                    <br><br><br>
+                                    <p><b><?= htmlspecialchars($data_siswa['nama']); ?></b></p>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <p>Orang Tua</p>
+                                    <br><br><br>
+                                    <p><b>(................................)</b></p>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <p>Wali Kelas</p>
+                                    <br><br><br>
+                                    <p><b>(................................)</b></p>
+                                </div>
 
                             </div>
 
-                            <?php if ($error_laporan) { ?>
-
-                                <div class="alert alert-danger">
-                                    Data laporan gagal diambil dari database.
-                                </div>
-
-                            <?php } elseif (count($daftar_laporan) > 0) { ?>
-
-                                <!-- TABEL WEBSITE -->
-                                <div class="table-responsive tabel-website">
-
-                                    <table class="table table-bordered table-striped table-hover align-middle">
-
-                                        <thead class="table-primary">
-                                            <tr>
-                                                <th>No.</th>
-                                                <th>Tanggal</th>
-                                                <th>Kelas</th>
-                                                <th>Jenis Pelanggaran</th>
-                                                <th>Guru</th>
-                                                <th>Poin</th>
-                                                <th>Keterangan</th>
-                                                <th>Tindakan</th>
-                                                <th>Status</th>
-                                            </tr>
-                                        </thead>
-
-                                        <tbody>
-
-                                            <?php $no = 1; ?>
-
-                                            <?php foreach ($daftar_laporan as $laporan) { ?>
-
-                                                <tr>
-                                                    <td><?= $no++; ?></td>
-
-                                                    <td>
-                                                        <?= htmlspecialchars($laporan['tanggal'] ?? '-'); ?>
-                                                    </td>
-
-                                                    <td>
-                                                        <?= htmlspecialchars($laporan['nama_kelas'] ?? '-'); ?>
-                                                    </td>
-
-                                                    <td>
-                                                        <?= htmlspecialchars($laporan['nama_pelanggaran'] ?? '-'); ?>
-                                                    </td>
-
-                                                    <td>
-                                                        <?= htmlspecialchars($laporan['nama_guru'] ?? '-'); ?>
-                                                    </td>
-
-                                                    <td class="text-center">
-                                                        <?= (int) ($laporan['poin'] ?? 0); ?>
-                                                    </td>
-
-                                                    <td>
-                                                        <?= htmlspecialchars($laporan['keterangan'] ?? '-'); ?>
-                                                    </td>
-
-                                                    <td>
-                                                        <?= htmlspecialchars($laporan['tindakan'] ?? '-'); ?>
-                                                    </td>
-
-                                                    <td>
-                                                        <?= htmlspecialchars($laporan['status'] ?? '-'); ?>
-                                                    </td>
-                                                </tr>
-
-                                            <?php } ?>
-
-                                        </tbody>
-
-                                        <tfoot>
-                                            <tr>
-                                                <th colspan="5" class="text-end">Total Poin</th>
-                                                <th class="text-center"><?= $total_poin; ?></th>
-                                                <th colspan="3"></th>
-                                            </tr>
-                                        </tfoot>
-
-                                    </table>
-
-                                </div>
-
-                                <!-- TABEL CETAK -->
-                                <div class="tabel-cetak">
-
-                                    <table>
-
-                                        <thead>
-                                            <tr>
-                                                <th>Tanggal</th>
-                                                <th>Pelanggaran</th>
-                                                <th>Poin</th>
-                                            </tr>
-                                        </thead>
-
-                                        <tbody>
-
-                                            <?php foreach ($daftar_laporan as $laporan) { ?>
-
-                                                <tr>
-                                                    <td>
-                                                        <?= htmlspecialchars($laporan['tanggal'] ?? '-'); ?>
-                                                    </td>
-
-                                                    <td>
-                                                        <?= htmlspecialchars($laporan['nama_pelanggaran'] ?? '-'); ?>
-                                                    </td>
-
-                                                    <td>
-                                                        <?= (int) ($laporan['poin'] ?? 0); ?>
-                                                    </td>
-                                                </tr>
-
-                                            <?php } ?>
-
-                                        </tbody>
-
-                                        <tfoot>
-                                            <tr>
-                                                <td colspan="3">
-                                                    Total Poin: <?= $total_poin; ?>
-                                                </td>
-                                            </tr>
-                                        </tfoot>
-
-                                    </table>
-
-                                </div>
-
-                                <!-- TANDA TANGAN -->
-                                <div class="tanda-tangan">
-
-                                    <table class="tabel-tanda-tangan">
-
-                                        <tbody>
-                                            <tr>
-
-                                                <td>
-                                                    Siswa
-
-                                                    <div class="ruang-tanda-tangan"></div>
-
-                                                    <div class="garis-tanda-tangan"></div>
-
-                                                    <span class="nama-tanda-tangan">
-                                                        <?= htmlspecialchars($data_siswa['nama']); ?>
-                                                    </span>
-                                                </td>
-
-                                                <td>
-                                                    Orang Tua/Wali
-
-                                                    <div class="ruang-tanda-tangan"></div>
-
-                                                    <div class="garis-tanda-tangan"></div>
-
-                                                    <span class="nama-tanda-tangan">
-                                                        (............................)
-                                                    </span>
-                                                </td>
-
-                                                <td>
-                                                    Wali Kelas
-
-                                                    <div class="ruang-tanda-tangan"></div>
-
-                                                    <div class="garis-tanda-tangan"></div>
-
-                                                    <span class="nama-tanda-tangan">
-                                                        (............................)
-                                                    </span>
-                                                </td>
-
-                                            </tr>
-                                        </tbody>
-
-                                    </table>
-
-                                </div>
-
-                            <?php } else { ?>
-
-                                <div class="alert alert-info mb-0">
-                                    Belum ada catatan pelanggaran untuk siswa ini.
-                                </div>
-
-                            <?php } ?>
-
-                        </div>
-                    </div>
-
-                    <div class="mt-3 tombol-cetak">
-                        <button type="button" onclick="window.print()" class="btn btn-primary">
-                            Cetak Laporan
-                        </button>
-                    </div>
-
-                <?php } elseif ($siswa_id > 0) { ?>
-
-                    <div class="alert alert-warning">
-                        Data siswa tidak ditemukan atau siswa bukan bagian dari kelas yang menjadi tanggung jawabmu.
-                    </div>
-
-                <?php } else { ?>
-
-                    <div class="card shadow-sm border-0">
-
-                        <div class="card-body text-center py-5">
-
-                            <h5 class="text-secondary">
-                                Belum Ada Siswa yang Dipilih
-                            </h5>
-
-                            <p class="text-muted mb-0">
-                                Pilih nama siswa terlebih dahulu untuk melihat
-                                riwayat pelanggarannya.
-                            </p>
-
                         </div>
 
                     </div>
+
+                </div>
 
                 <?php } ?>
 
-                <div class="mt-4 kembali-dashboard">
-                    <a href="dashboard.php" class="btn btn-secondary">
-                        Kembali ke Dashboard
-                    </a>
-                </div>
-
             </div>
+
         </main>
 
     </div>
