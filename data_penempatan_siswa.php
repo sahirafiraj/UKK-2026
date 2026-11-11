@@ -48,7 +48,9 @@ $hasil = mysqli_query($koneksi, $sql);
     <title>Data Penempatan Siswa</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <link rel="stylesheet" href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css">
+
     <link rel="stylesheet" href="style/style.css">
 </head>
 
@@ -57,6 +59,7 @@ $hasil = mysqli_query($koneksi, $sql);
 <div class="container-fluid">
     <div class="row">
 
+        <!-- SIDEBAR -->
         <div class="sidebar col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto">
 
             <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
@@ -119,10 +122,12 @@ $hasil = mysqli_query($koneksi, $sql);
             </ul>
         </div>
 
+        <!-- KONTEN -->
         <main class="content-main">
 
             <div class="page-content">
 
+                <!-- HEADER -->
                 <div class="bg-white rounded shadow-sm p-4 mb-4">
 
                     <h2 class="fw-bold">Kelola Data Penempatan Siswa</h2>
@@ -134,6 +139,7 @@ $hasil = mysqli_query($koneksi, $sql);
 
                 </div>
 
+                <!-- CARD TABEL -->
                 <div class="card shadow-sm border-0">
 
                     <div class="card-header bg-white">
@@ -144,15 +150,15 @@ $hasil = mysqli_query($koneksi, $sql);
 
                             <div class="d-flex gap-2">
 
-                            <a href="dashboard.php" class="btn btn-secondary btn-sm">
-                                Kembali ke Dashboard
-                            </a>
+                                <a href="dashboard.php" class="btn btn-secondary btn-sm">
+                                    Kembali ke Dashboard
+                                </a>
 
-                            <a href="tambah_penempatan_siswa.php" class="btn btn-primary btn-sm">
-                                Tambah Penempatan
-                            </a>
+                                <a href="tambah_penempatan_siswa.php" class="btn btn-primary btn-sm">
+                                    Tambah Penempatan
+                                </a>
 
-                        </div>
+                            </div>
 
                         </div>
 
@@ -183,12 +189,12 @@ $hasil = mysqli_query($koneksi, $sql);
 
                                 <tbody>
 
-                                    <?php
-                                    $no = 1;
+                                <?php
+                                $no = 1;
 
-                                    if ($hasil && mysqli_num_rows($hasil) > 0) {
-                                        while ($row = mysqli_fetch_assoc($hasil)) {
-                                    ?>
+                                if ($hasil && mysqli_num_rows($hasil) > 0) {
+                                    while ($row = mysqli_fetch_assoc($hasil)) {
+                                ?>
 
                                     <tr>
                                         <td><?= $no++; ?></td>
@@ -235,10 +241,10 @@ $hasil = mysqli_query($koneksi, $sql);
                                         </td>
                                     </tr>
 
-                                    <?php
-                                        }
-                                    } else {
-                                    ?>
+                                <?php
+                                    }
+                                } else {
+                                ?>
 
                                     <tr>
                                         <td colspan="11" class="text-center">
@@ -246,7 +252,7 @@ $hasil = mysqli_query($koneksi, $sql);
                                         </td>
                                     </tr>
 
-                                    <?php } ?>
+                                <?php } ?>
 
                                 </tbody>
 
@@ -264,26 +270,23 @@ $hasil = mysqli_query($koneksi, $sql);
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
 <script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
     new DataTable('#tabelPenempatan', {
-        pageLength: 10,
-        lengthMenu: [5, 10, 25, 50, 100],
-        order: [],
 
-        layout: {
-            topStart: 'info',
-            bottom: 'paging',
-            bottomStart: null,
-            bottomEnd: null
-        },
+        pageLength: 10,
+
+        lengthMenu: [5, 10, 25, 50, 100],
+
+        order: [],
 
         language: {
             search: 'Cari:',
-            searchPlaceholder: 'Cari data penempatan...',
+            searchPlaceholder: 'Cari data...',
             lengthMenu: 'Tampilkan _MENU_ data',
             info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
             infoEmpty: 'Tidak ada data',
@@ -297,13 +300,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 next: 'Berikutnya',
                 previous: 'Sebelumnya'
             }
-        },
+        }
 
-        columnDefs: [{
-            targets: 10,
-            orderable: false,
-            searchable: false
-        }]
     });
 
 });

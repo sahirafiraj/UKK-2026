@@ -203,7 +203,7 @@ $halaman = basename($_SERVER['PHP_SELF']);
 
                             <div class="d-flex gap-2 mt-3">
 
-                                <button type="submit" name="update" class="btn btn-primary">
+                                <button type="submit" name="simpan" class="btn btn-primary">
                                     Simpan Data
                                 </button>
 

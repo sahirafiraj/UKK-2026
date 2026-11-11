@@ -21,6 +21,10 @@ $query = mysqli_query(
     $koneksi,
     "SELECT * FROM t_guru ORDER BY id DESC"
 );
+
+if (!$query) {
+    die("Gagal mengambil data guru: " . mysqli_error($koneksi));
+}
 ?>
 
 <!DOCTYPE html>
@@ -38,8 +42,9 @@ $query = mysqli_query(
     <!-- DataTables CSS -->
     <link rel="stylesheet"
           href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css">
-    <link rel="stylesheet" href="style/style.css">
 
+    <!-- CSS Utama -->
+    <link rel="stylesheet" href="style/style.css">
 </head>
 
 <body class="bg-light">
@@ -68,7 +73,7 @@ $query = mysqli_query(
 
                 <li class="nav-item">
                     <a href="data_guru.php"
-                       class="nav-link active">
+                       class="nav-link <?= $halaman == 'data_guru.php' ? 'active' : 'text-white'; ?>">
                         Data Guru
                     </a>
                 </li>
@@ -136,135 +141,153 @@ $query = mysqli_query(
         <main class="content-main">
             <div class="page-content">
 
-            <!-- HEADER -->
-            <div class="bg-white rounded shadow-sm p-4 mb-4">
+                <!-- HEADER -->
+                <div class="bg-white rounded shadow-sm p-4 mb-4">
 
-                <h2 class="fw-bold">Kelola Data Guru</h2>
+                    <h2 class="fw-bold">Kelola Data Guru</h2>
 
-                <p class="text-secondary mb-0">
-                    Selamat datang,
-                    <b><?= htmlspecialchars($name); ?></b>
-                </p>
+                    <p class="text-secondary mb-0">
+                        Selamat datang,
+                        <b><?= htmlspecialchars($name); ?></b>
+                    </p>
 
-            </div>
+                </div>
 
-            <!-- TABEL DATA GURU -->
-            <div class="card shadow-sm border-0">
+                <!-- TABEL DATA GURU -->
+                <div class="card shadow-sm border-0">
 
-                <div class="card-header bg-white">
-                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div class="card-header bg-white">
 
-                        <h5 class="mb-0 fw-bold">Daftar Data Guru</h5>
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
 
-                        <div class="d-flex gap-2">
+                            <h5 class="mb-0 fw-bold">Daftar Data Guru</h5>
 
-                            <a href="dashboard.php" class="btn btn-secondary btn-sm">
-                                Kembali ke Dashboard
-                            </a>
+                            <div class="d-flex gap-2">
 
-                            <a href="tambah_guru.php" class="btn btn-primary btn-sm">
-                                Tambah Guru
-                            </a>
+                                <a href="dashboard.php" class="btn btn-secondary btn-sm">
+                                    Kembali ke Dashboard
+                                </a>
+
+                                <a href="tambah_guru.php" class="btn btn-primary btn-sm">
+                                    Tambah Guru
+                                </a>
+
+                            </div>
 
                         </div>
 
                     </div>
-                </div>
 
-                <div class="card-body">
+                    <!-- TABEL -->
+                    <div class="card-body">
 
-                    <div class="table-responsive">
+                        <div class="table-responsive">
 
-                        <table id="tabelGuru"
-                               class="table table-bordered table-striped table-hover align-middle">
+                            <table id="tabelGuru"
+                                   class="table table-bordered table-striped table-hover align-middle w-100">
 
-                            <thead class="table-primary">
-                                <tr>
-                                    <th>No</th>
-                                    <th>NIP</th>
-                                    <th>Nama Guru</th>
-                                    <th>Email</th>
-                                    <th>Status</th>
-                                    <th>User ID</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th>No</th>
+                                        <th>NIP</th>
+                                        <th>Nama Guru</th>
+                                        <th>Email</th>
+                                        <th>Status</th>
+                                        <th>User ID</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
 
-                            <tbody>
+                                <tbody>
 
-                            <?php
-                            $no = 1;
+                                <?php
+                                $no = 1;
 
-                            if ($query && mysqli_num_rows($query) > 0) {
-                                while ($data = mysqli_fetch_assoc($query)) {
-                            ?>
+                                if (mysqli_num_rows($query) > 0) {
 
-                                <tr>
-                                    <td><?= $no++; ?></td>
+                                    while ($data = mysqli_fetch_assoc($query)) {
+                                ?>
 
-                                    <td>
-                                        <?= htmlspecialchars($data['nip'] ?? '-'); ?>
-                                    </td>
+                                    <tr>
 
-                                    <td>
-                                        <?= htmlspecialchars($data['nama'] ?? '-'); ?>
-                                    </td>
+                                        <td><?= $no++; ?></td>
 
-                                    <td>
-                                        <?= htmlspecialchars($data['email'] ?? '-'); ?>
-                                    </td>
+                                        <td>
+                                            <?= htmlspecialchars($data['nip'] ?? '-'); ?>
+                                        </td>
 
-                                    <td>
-                                        <?php if (($data['status_aktif'] ?? 0) == 1) { ?>
-                                            <span class="badge bg-success">Aktif</span>
-                                        <?php } else { ?>
-                                            <span class="badge bg-secondary">Tidak Aktif</span>
-                                        <?php } ?>
-                                    </td>
+                                        <td>
+                                            <?= htmlspecialchars($data['nama'] ?? '-'); ?>
+                                        </td>
 
-                                    <td>
-                                        <?= htmlspecialchars((string)($data['user_id'] ?? '-')); ?>
-                                    </td>
+                                        <td>
+                                            <?= htmlspecialchars($data['email'] ?? '-'); ?>
+                                        </td>
 
-                                    <td>
-                                        <div class="d-flex gap-1">
+                                        <td>
+                                            <?php if (($data['status_aktif'] ?? 0) == 1) { ?>
 
-                                            <a href="edit_guru.php?id=<?= urlencode($data['id']); ?>"
-                                               class="btn btn-warning btn-sm">
-                                                Edit
-                                            </a>
+                                                <span class="badge bg-success">
+                                                    Aktif
+                                                </span>
 
-                                            <a href="hapus_guru.php?id=<?= urlencode($data['id']); ?>"
-                                               class="btn btn-danger btn-sm"
-                                               onclick="return confirm('Yakin ingin menghapus data guru ini?')">
-                                                Hapus
-                                            </a>
+                                            <?php } else { ?>
 
-                                        </div>
-                                    </td>
-                                </tr>
+                                                <span class="badge bg-secondary">
+                                                    Tidak Aktif
+                                                </span>
 
-                            <?php
-                                }
-                            } else {
-                            ?>
+                                            <?php } ?>
+                                        </td>
 
-                                <tr>
-                                    <td colspan="7" class="text-center">
-                                        Belum ada data guru.
-                                    </td>
-                                </tr>
+                                        <td>
+                                            <?= htmlspecialchars((string)($data['user_id'] ?? '-')); ?>
+                                        </td>
 
-                            <?php } ?>
+                                        <td>
+                                            <div class="d-flex gap-1">
 
-                            </tbody>
+                                                <a href="edit_guru.php?id=<?= urlencode($data['id']); ?>"
+                                                   class="btn btn-warning btn-sm">
+                                                    Edit
+                                                </a>
 
-                        </table>
+                                                <a href="hapus_guru.php?id=<?= urlencode($data['id']); ?>"
+                                                   class="btn btn-danger btn-sm"
+                                                   onclick="return confirm('Yakin ingin menghapus data guru ini?')">
+                                                    Hapus
+                                                </a>
+
+                                            </div>
+                                        </td>
+
+                                    </tr>
+
+                                <?php
+                                    }
+
+                                } else {
+                                ?>
+
+                                    <tr>
+                                        <td colspan="7" class="text-center">
+                                            Belum ada data guru.
+                                        </td>
+                                    </tr>
+
+                                <?php } ?>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
 
                     </div>
-                </div>
-            </div>
 
+                </div>
+
+            </div>
         </main>
 
     </div>
@@ -276,20 +299,17 @@ $query = mysqli_query(
 <!-- DataTables JavaScript -->
 <script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
 
+<!-- Inisialisasi DataTables -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
     new DataTable('#tabelGuru', {
-        pageLength: 10,
-        lengthMenu: [5, 10, 25, 50, 100],
-        order: [],
 
-        layout: {
-            topStart: 'info',
-            bottom: 'paging',
-            bottomStart: null,
-            bottomEnd: null
-        },
+        pageLength: 10,
+
+        lengthMenu: [5, 10, 25, 50, 100],
+
+        order: [],
 
         language: {
             search: 'Cari:',
@@ -307,13 +327,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 next: 'Berikutnya',
                 previous: 'Sebelumnya'
             }
-        },
+        }
 
-        columnDefs: [{
-            targets: 6,
-            orderable: false,
-            searchable: false
-        }]
     });
 
 });

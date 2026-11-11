@@ -24,6 +24,11 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $id = (int) $_GET['id'];
 
 $query = mysqli_query($koneksi, "SELECT * FROM t_tahun_ajaran WHERE id = $id");
+
+if (!$query) {
+    die("ERROR SELECT: " . mysqli_error($koneksi));
+}
+
 $data = mysqli_fetch_assoc($query);
 
 if (!$data) {
@@ -71,10 +76,7 @@ if (!$data) {
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_tahun_ajaran.php"
-                       class="nav-link <?= $halaman == 'edit_tahun_ajaran.php' ? 'active' : 'text-white'; ?>">
-                        Tahun Ajaran
-                    </a>
+                    <a href="data_tahun_ajaran.php" class="nav-link active">Tahun Ajaran</a>
                 </li>
 
                 <li class="nav-item">
@@ -166,10 +168,10 @@ if (!$data) {
                             </div>
 
                             <hr>
-                            
+
                             <div class="d-flex gap-2 mt-3">
 
-                                <button type="submit" name="update" class="btn btn-primary">
+                                <button type="submit" name="update" value="1" class="btn btn-primary">
                                     Simpan Perubahan
                                 </button>
 

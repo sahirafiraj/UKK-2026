@@ -3,6 +3,10 @@
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
 
+// ==========================================
+// 1. CEK LOGIN DAN HAK AKSES
+// ==========================================
+
 if (!isset($_SESSION['login'])) {
     header("Location: login.php");
     exit;
@@ -13,10 +17,18 @@ if (strtolower(trim($_SESSION['role'] ?? '')) != 'admin') {
     exit;
 }
 
+// ==========================================
+// 2. CEK METHOD POST
+// ==========================================
+
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     header("Location: tambah_penempatan_siswa.php");
     exit;
 }
+
+// ==========================================
+// 3. AMBIL DATA FORM
+// ==========================================
 
 $siswa_id = (int) ($_POST['siswa_id'] ?? 0);
 $tahun_ajaran_id = (int) ($_POST['tahun_ajaran_id'] ?? 0);
@@ -24,6 +36,10 @@ $kelas_id = (int) ($_POST['kelas_id'] ?? 0);
 $tanggal_mulai = $_POST['tanggal_mulai'] ?? '';
 $tanggal_selesai = $_POST['tanggal_selesai'] ?? '';
 $status_aktif = (int) ($_POST['status_aktif'] ?? 0);
+
+// ==========================================
+// 4. VALIDASI DATA
+// ==========================================
 
 if (
     $siswa_id <= 0 ||
@@ -34,7 +50,7 @@ if (
     !in_array($status_aktif, [0, 1])
 ) {
     echo "<script>
-        alert('Semua data wajib diisi!');
+        alert('Penempatan gagal! Semua data wajib diisi dengan lengkap.');
         window.location='tambah_penempatan_siswa.php';
     </script>";
     exit;
@@ -42,13 +58,16 @@ if (
 
 if ($tanggal_selesai < $tanggal_mulai) {
     echo "<script>
-        alert('Tanggal selesai tidak boleh lebih awal dari tanggal mulai!');
+        alert('Penempatan gagal! Tanggal selesai tidak boleh lebih awal dari tanggal mulai.');
         window.location='tambah_penempatan_siswa.php';
     </script>";
     exit;
 }
 
-// CEK SISWA
+// ==========================================
+// 5. CEK DATA SISWA
+// ==========================================
+
 $cek_siswa = mysqli_query($koneksi, "
     SELECT id FROM t_siswa
     WHERE id = '$siswa_id'
@@ -57,13 +76,16 @@ $cek_siswa = mysqli_query($koneksi, "
 
 if (!$cek_siswa || mysqli_num_rows($cek_siswa) == 0) {
     echo "<script>
-        alert('Data siswa tidak ditemukan atau tidak aktif!');
+        alert('Penempatan gagal! Data siswa tidak ditemukan atau sudah tidak aktif.');
         window.location='tambah_penempatan_siswa.php';
     </script>";
     exit;
 }
 
-// CEK TAHUN AJARAN
+// ==========================================
+// 6. CEK TAHUN AJARAN
+// ==========================================
+
 $cek_tahun = mysqli_query($koneksi, "
     SELECT id FROM t_tahun_ajaran
     WHERE id = '$tahun_ajaran_id'
@@ -72,13 +94,16 @@ $cek_tahun = mysqli_query($koneksi, "
 
 if (!$cek_tahun || mysqli_num_rows($cek_tahun) == 0) {
     echo "<script>
-        alert('Tahun ajaran tidak ditemukan atau tidak aktif!');
+        alert('Penempatan gagal! Tahun ajaran tidak ditemukan atau sudah tidak aktif.');
         window.location='tambah_penempatan_siswa.php';
     </script>";
     exit;
 }
 
-// CEK KELAS
+// ==========================================
+// 7. CEK KELAS
+// ==========================================
+
 $cek_kelas = mysqli_query($koneksi, "
     SELECT id FROM t_kelas
     WHERE id = '$kelas_id'
@@ -87,13 +112,16 @@ $cek_kelas = mysqli_query($koneksi, "
 
 if (!$cek_kelas || mysqli_num_rows($cek_kelas) == 0) {
     echo "<script>
-        alert('Kelas tidak ditemukan atau tidak aktif!');
+        alert('Penempatan gagal! Kelas tidak ditemukan atau sudah tidak aktif.');
         window.location='tambah_penempatan_siswa.php';
     </script>";
     exit;
 }
 
-// CEK PENEMPATAN GANDA
+// ==========================================
+// 8. CEK PENEMPATAN GANDA
+// ==========================================
+
 $cek_penempatan = mysqli_query($koneksi, "
     SELECT id
     FROM t_kelas_siswa
@@ -107,13 +135,16 @@ if (!$cek_penempatan) {
 
 if (mysqli_num_rows($cek_penempatan) > 0) {
     echo "<script>
-        alert('Siswa sudah ditempatkan pada tahun ajaran tersebut!');
+        alert('Penempatan gagal! Siswa sudah terdaftar pada tahun ajaran ini. Silakan periksa kembali data penempatan siswa.');
         window.location='tambah_penempatan_siswa.php';
     </script>";
     exit;
 }
 
-// SIMPAN DATA
+// ==========================================
+// 9. SIMPAN DATA PENEMPATAN
+// ==========================================
+
 $query = mysqli_query($koneksi, "
     INSERT INTO t_kelas_siswa (
         siswa_id,
@@ -132,16 +163,21 @@ $query = mysqli_query($koneksi, "
     )
 ");
 
+// ==========================================
+// 10. NOTIFIKASI HASIL
+// ==========================================
+
 if ($query) {
     echo "<script>
-        alert('Data penempatan siswa berhasil ditambahkan!');
+        alert('Berhasil! Data penempatan siswa telah ditambahkan.');
         window.location='data_penempatan_siswa.php';
     </script>";
 } else {
     echo "<script>
-        alert('Data gagal ditambahkan: " . addslashes(mysqli_error($koneksi)) . "');
+        alert('Penempatan gagal! Terjadi kesalahan saat menyimpan data.');
         window.location='tambah_penempatan_siswa.php';
     </script>";
 }
 
 exit;
+?>

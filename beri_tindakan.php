@@ -1,3 +1,4 @@
+
 <?php
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
@@ -38,22 +39,22 @@ if (!$data) {
 
 $error = '';
 
-$pilihan_tindakan = [
-    'Teguran',
-    'Pembinaan',
-    'Dipantau'
-];
-
 $pilihan_status = [
     'Belum',
     'Diproses',
     'Selesai'
 ];
 
+$keterangan_saat_ini = $data['keterangan'] ?? '';
 $tindakan_saat_ini = $data['tindakan'] ?? '';
 $status_saat_ini = $data['status'] ?? 'Belum';
 
 if (isset($_POST['simpan'])) {
+
+    $keterangan = mysqli_real_escape_string(
+        $koneksi,
+        trim($_POST['keterangan'] ?? '')
+    );
 
     $tindakan = mysqli_real_escape_string(
         $koneksi,
@@ -65,15 +66,14 @@ if (isset($_POST['simpan'])) {
         trim($_POST['status'] ?? '')
     );
 
-    if (!in_array($tindakan, $pilihan_tindakan, true)) {
-        $error = 'Tindakan tidak valid.';
-    } elseif (!in_array($status, $pilihan_status, true)) {
+    if (!in_array($status, $pilihan_status, true)) {
         $error = 'Status tidak valid.';
     } else {
 
         $query_update = mysqli_query($koneksi, "
             UPDATE t_pelanggaran_siswa
-            SET tindakan = '$tindakan',
+            SET keterangan = '$keterangan',
+                tindakan = '$tindakan',
                 status = '$status'
             WHERE id = $id
         ");
@@ -86,6 +86,7 @@ if (isset($_POST['simpan'])) {
         }
     }
 
+    $keterangan_saat_ini = $keterangan;
     $tindakan_saat_ini = $tindakan;
     $status_saat_ini = $status;
 }
@@ -300,13 +301,17 @@ if (isset($_POST['simpan'])) {
 
                                 <!-- KETERANGAN -->
                                 <div class="col-12 mb-3">
-                                    <label class="form-label">Keterangan</label>
+                                    <label for="keterangan" class="form-label">
+                                        Keterangan
+                                    </label>
 
                                     <textarea
+                                        name="keterangan"
+                                        id="keterangan"
                                         class="form-control"
                                         rows="4"
-                                        readonly
-                                    ><?= htmlspecialchars($data['keterangan'] ?? '-'); ?></textarea>
+                                        placeholder="Masukkan keterangan (opsional)"
+                                    ><?= htmlspecialchars($keterangan_saat_ini); ?></textarea>
                                 </div>
 
                                 <!-- TINDAKAN -->
@@ -316,27 +321,14 @@ if (isset($_POST['simpan'])) {
                                         Tindakan
                                     </label>
 
-                                    <select
+                                    <input
+                                        type="text"
                                         name="tindakan"
                                         id="tindakan"
-                                        class="form-select"
-                                        required
+                                        class="form-control"
+                                        value="<?= htmlspecialchars($tindakan_saat_ini); ?>"
+                                        placeholder="Masukkan tindakan (opsional)"
                                     >
-
-                                        <option value="">Pilih Tindakan</option>
-
-                                        <?php foreach ($pilihan_tindakan as $pilihan) { ?>
-
-                                            <option
-                                                value="<?= htmlspecialchars($pilihan); ?>"
-                                                <?= ($tindakan_saat_ini == $pilihan) ? 'selected' : ''; ?>
-                                            >
-                                                <?= htmlspecialchars($pilihan); ?>
-                                            </option>
-
-                                        <?php } ?>
-
-                                    </select>
 
                                 </div>
 
@@ -402,4 +394,4 @@ if (isset($_POST['simpan'])) {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
-</html>
+</html

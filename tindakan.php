@@ -3,6 +3,10 @@
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
 
+// ==========================================
+// 1. CEK LOGIN DAN HAK AKSES
+// ==========================================
+
 if (!isset($_SESSION['login'])) {
     header("Location: login.php");
     exit;
@@ -17,7 +21,10 @@ if ($role != 'admin' && $role != 'guru') {
     exit;
 }
 
-// Mengambil data pelanggaran yang belum selesai
+// ==========================================
+// 2. MENGAMBIL DATA PELANGGARAN
+// ==========================================
+
 $query = mysqli_query($koneksi, "
     SELECT
         ps.*,
@@ -25,7 +32,7 @@ $query = mysqli_query($koneksi, "
     FROM t_pelanggaran_siswa ps
     LEFT JOIN t_pelanggaran_kategori pk
         ON ps.pelanggaran_kategori_id = pk.id
-    WHERE ps.status IN ('Belum', 'Diproses')
+    WHERE ps.status IN ('Pending', 'Belum', 'Diproses')
     ORDER BY ps.id DESC
 ");
 
@@ -36,16 +43,22 @@ if (!$query) {
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Tindakan - Sistem Pelanggaran</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- BOOTSTRAP -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet">
 
-    <link rel="stylesheet" href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css">
+    <!-- DATATABLES CSS -->
+    <link href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css"
+          rel="stylesheet">
 
+    <!-- CSS SENDIRI -->
     <link rel="stylesheet" href="style/style.css">
 </head>
 
@@ -57,14 +70,17 @@ if (!$query) {
         <!-- SIDEBAR -->
         <div class="sidebar col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto">
 
-            <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
+            <h4 class="text-white mb-4">
+                Sistem Pelanggaran
+            </h4>
 
             <ul class="nav nav-pills flex-column gap-1">
 
                 <?php if ($role == 'admin') { ?>
 
                     <li class="nav-item">
-                        <a href="dashboard.php" class="nav-link <?= $halaman == 'dashboard.php' ? 'active' : 'text-white'; ?>">
+                        <a href="dashboard.php"
+                           class="nav-link <?= $halaman == 'dashboard.php' ? 'active' : 'text-white'; ?>">
                             Dashboard
                         </a>
                     </li>
@@ -138,7 +154,8 @@ if (!$query) {
                     </li>
 
                     <li class="nav-item">
-                        <a href="tindakan.php" class="nav-link <?= $halaman == 'tindakan.php' ? 'active' : 'text-white'; ?>">
+                        <a href="tindakan.php"
+                           class="nav-link <?= $halaman == 'tindakan.php' ? 'active' : 'text-white'; ?>">
                             Tindakan
                         </a>
                     </li>
@@ -184,6 +201,7 @@ if (!$query) {
         <main class="content-main">
             <div class="page-content">
 
+                <!-- HEADER -->
                 <div class="bg-white rounded shadow-sm p-4 mb-4">
 
                     <h2 class="fw-bold">Tindakan</h2>
@@ -195,10 +213,15 @@ if (!$query) {
 
                 </div>
 
+                <!-- DAFTAR PELANGGARAN -->
                 <div class="card shadow-sm border-0">
 
                     <div class="card-header bg-white">
-                        <h5 class="mb-0 fw-bold">Daftar Pelanggaran</h5>
+
+                        <h5 class="mb-0 fw-bold">
+                            Daftar Pelanggaran
+                        </h5>
+
                     </div>
 
                     <div class="card-body">
@@ -229,86 +252,79 @@ if (!$query) {
                                     <?php
                                     $no = 1;
 
-                                    if (mysqli_num_rows($query) > 0) {
-                                        while ($data = mysqli_fetch_assoc($query)) {
+                                    while ($data = mysqli_fetch_assoc($query)) {
                                     ?>
 
-                                    <tr>
-                                        <td><?= $no++; ?></td>
+                                        <tr>
 
-                                        <td>
-                                            <?= htmlspecialchars($data['nama_siswa'] ?? '-'); ?>
-                                        </td>
+                                            <td><?= $no++; ?></td>
 
-                                        <td>
-                                            <?= htmlspecialchars($data['nama_pelanggaran'] ?? '-'); ?>
-                                        </td>
+                                            <td>
+                                                <?= htmlspecialchars($data['nama_siswa'] ?? '-'); ?>
+                                            </td>
 
-                                        <td>
-                                            <?= htmlspecialchars($data['nama_kategori'] ?? '-'); ?>
-                                        </td>
+                                            <td>
+                                                <?= htmlspecialchars($data['nama_pelanggaran'] ?? '-'); ?>
+                                            </td>
 
-                                        <td>
-                                            <?= htmlspecialchars($data['tanggal'] ?? '-'); ?>
-                                        </td>
+                                            <td>
+                                                <?= htmlspecialchars($data['nama_kategori'] ?? '-'); ?>
+                                            </td>
 
-                                        <td>
-                                            <?= htmlspecialchars($data['poin'] ?? '0'); ?>
-                                        </td>
+                                            <td>
+                                                <?= htmlspecialchars($data['tanggal'] ?? '-'); ?>
+                                            </td>
 
-                                        <td>
-                                            <?= htmlspecialchars($data['nama_guru'] ?? '-'); ?>
-                                        </td>
+                                            <td>
+                                                <?= htmlspecialchars($data['poin'] ?? '0'); ?>
+                                            </td>
 
-                                        <td>
-                                            <?= htmlspecialchars($data['keterangan'] ?? '-'); ?>
-                                        </td>
+                                            <td>
+                                                <?= htmlspecialchars($data['nama_guru'] ?? '-'); ?>
+                                            </td>
 
-                                        <td>
-                                            <?= htmlspecialchars($data['tindakan'] ?? '-'); ?>
-                                        </td>
+                                            <td>
+                                                <?= htmlspecialchars($data['keterangan'] ?? '-'); ?>
+                                            </td>
 
-                                        <td>
-                                            <?php if (($data['status'] ?? '') == 'Selesai') { ?>
+                                            <td>
+                                                <?= htmlspecialchars($data['tindakan'] ?? '-'); ?>
+                                            </td>
 
-                                                <span class="badge bg-success">
-                                                    Selesai
-                                                </span>
+                                            <td>
 
-                                            <?php } elseif (($data['status'] ?? '') == 'Diproses') { ?>
+                                                <?php if (($data['status'] ?? '') == 'Selesai') { ?>
 
-                                                <span class="badge bg-warning text-dark">
-                                                    Diproses
-                                                </span>
+                                                    <span class="badge bg-success">
+                                                        Selesai
+                                                    </span>
 
-                                            <?php } else { ?>
+                                                <?php } elseif (($data['status'] ?? '') == 'Diproses') { ?>
 
-                                                <span class="badge bg-secondary">
-                                                    <?= htmlspecialchars($data['status'] ?? 'Belum'); ?>
-                                                </span>
+                                                    <span class="badge bg-warning text-dark">
+                                                        Diproses
+                                                    </span>
 
-                                            <?php } ?>
-                                        </td>
+                                                <?php } else { ?>
 
-                                        <td>
-                                            <a href="beri_tindakan.php?id=<?= urlencode($data['id']); ?>"
-                                               class="btn btn-primary btn-sm">
-                                                Beri Tindakan
-                                            </a>
-                                        </td>
+                                                    <span class="badge bg-secondary">
+                                                        <?= htmlspecialchars($data['status'] ?? 'Pending'); ?>
+                                                    </span>
 
-                                    </tr>
+                                                <?php } ?>
 
-                                    <?php
-                                        }
-                                    } else {
-                                    ?>
+                                            </td>
 
-                                    <tr>
-                                        <td colspan="11" class="text-center">
-                                            Belum ada data pelanggaran.
-                                        </td>
-                                    </tr>
+                                            <td>
+
+                                                <a href="beri_tindakan.php?id=<?= urlencode($data['id']); ?>"
+                                                   class="btn btn-primary btn-sm">
+                                                    Beri Tindakan
+                                                </a>
+
+                                            </td>
+
+                                        </tr>
 
                                     <?php } ?>
 
@@ -319,8 +335,10 @@ if (!$query) {
                         </div>
 
                     </div>
+
                 </div>
 
+                <!-- FOOTER -->
                 <p class="text-secondary text-center mt-4 small">
                     © 2026 Sistem Pelanggaran Siswa
                 </p>
@@ -331,25 +349,23 @@ if (!$query) {
     </div>
 </div>
 
+<!-- BOOTSTRAP JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
+<!-- DATATABLES JS -->
 <script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
 
+<!-- INISIALISASI DATATABLES -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
     new DataTable('#tabelTindakan', {
-        pageLength: 10,
-        lengthMenu: [5, 10, 25, 50, 100],
-        order: [],
 
-        layout: {
-            topStart: 'info',
-            topEnd: 'search',
-            bottom: 'paging',
-            bottomStart: null,
-            bottomEnd: null
-        },
+        pageLength: 10,
+
+        lengthMenu: [5, 10, 25, 50, 100],
+
+        order: [],
 
         language: {
             search: 'Cari:',
@@ -359,7 +375,7 @@ document.addEventListener('DOMContentLoaded', function () {
             infoEmpty: 'Tidak ada data',
             infoFiltered: '(difilter dari _MAX_ total data)',
             zeroRecords: 'Data tidak ditemukan',
-            emptyTable: 'Belum ada data pelanggaran',
+            emptyTable: 'Belum ada catatan pelanggaran',
 
             paginate: {
                 first: 'Pertama',
@@ -367,13 +383,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 next: 'Berikutnya',
                 previous: 'Sebelumnya'
             }
-        },
+        }
 
-        columnDefs: [{
-            targets: [0, 10],
-            orderable: false,
-            searchable: false
-        }]
     });
 
 });

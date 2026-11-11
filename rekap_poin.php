@@ -3,6 +3,10 @@
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
 
+// ==========================================
+// 1. CEK LOGIN DAN HAK AKSES
+// ==========================================
+
 if (!isset($_SESSION['login'])) {
     header("Location: login.php");
     exit;
@@ -16,6 +20,10 @@ if ($role != 'admin' && $role != 'guru') {
     echo "Anda tidak memiliki akses";
     exit;
 }
+
+// ==========================================
+// 2. QUERY REKAP POIN
+// ==========================================
 
 $query = mysqli_query($koneksi, "
     SELECT
@@ -43,7 +51,9 @@ if (!$query) {
     <title>Rekap Poin - Sistem Pelanggaran</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <link href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css" rel="stylesheet">
+
     <link rel="stylesheet" href="style/style.css">
 </head>
 
@@ -52,6 +62,7 @@ if (!$query) {
 <div class="container-fluid">
     <div class="row">
 
+        <!-- SIDEBAR -->
         <div class="sidebar col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto">
 
             <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
@@ -96,10 +107,6 @@ if (!$query) {
                         <a href="data_jenis_pelanggaran.php" class="nav-link text-white">Jenis Pelanggaran</a>
                     </li>
 
-                    <li class="nav-item">
-                        <a href="laporan.php" class="nav-link text-white">Laporan</a>
-                    </li>
-
                 <?php } else { ?>
 
                     <li class="nav-item">
@@ -119,7 +126,8 @@ if (!$query) {
                     </li>
 
                     <li class="nav-item">
-                        <a href="rekap_poin.php" class="nav-link <?= $halaman == 'rekap_poin.php' ? 'active' : 'text-white'; ?>">
+                        <a href="rekap_poin.php"
+                           class="nav-link <?= $halaman == 'rekap_poin.php' ? 'active' : 'text-white'; ?>">
                             Rekap Poin
                         </a>
                     </li>
@@ -127,30 +135,27 @@ if (!$query) {
                 <?php } ?>
 
                 <li class="nav-item">
-                        <a href="laporan.php" class="nav-link text-white">
-                            Laporan
-                        </a>
-                    </li>
+                    <a href="laporan.php" class="nav-link text-white">Laporan</a>
+                </li>
 
-                    <li class="nav-item">
-                        <a href="about_me.php" class="nav-link text-white">
-                            About Me
-                        </a>
-                    </li>
+                <li class="nav-item">
+                    <a href="about_me.php" class="nav-link text-white">About Me</a>
+                </li>
 
-                    <hr class="border-white">
+                <hr class="border-white">
 
-                    <li class="nav-item">
-                        <a href="logout.php" class="nav-link text-white">
-                            Logout
-                        </a>
-                    </li>
+                <li class="nav-item">
+                    <a href="logout.php" class="nav-link text-white">Logout</a>
+                </li>
+
             </ul>
         </div>
 
+        <!-- KONTEN -->
         <main class="content-main">
             <div class="page-content">
 
+                <!-- HEADER -->
                 <div class="bg-white rounded shadow-sm p-4 mb-4">
 
                     <h2 class="fw-bold">Rekap Poin Pelanggaran</h2>
@@ -162,6 +167,7 @@ if (!$query) {
 
                 </div>
 
+                <!-- TABEL REKAP -->
                 <div class="card border-0 shadow-sm">
 
                     <div class="card-body p-4">
@@ -184,10 +190,11 @@ if (!$query) {
                                 </thead>
 
                                 <tbody>
+
                                     <?php
                                     $no = 1;
 
-                                    if ($query && mysqli_num_rows($query) > 0) {
+                                    if (mysqli_num_rows($query) > 0) {
                                         while ($data = mysqli_fetch_assoc($query)) {
                                     ?>
 
@@ -225,6 +232,7 @@ if (!$query) {
                                         </tr>
 
                                     <?php } ?>
+
                                 </tbody>
 
                             </table>
@@ -244,48 +252,44 @@ if (!$query) {
     </div>
 </div>
 
+<!-- JAVASCRIPT -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
 <script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+
     new DataTable('#tabelRekapPoin', {
+
         pageLength: 10,
+
         lengthMenu: [5, 10, 25, 50, 100],
+
         order: [],
-        layout: {
-            topStart: 'info',
-            bottom: 'paging',
-            bottomStart: null,
-            bottomEnd: null
-        },
+
         language: {
             search: 'Cari:',
-            searchPlaceholder: 'Cari nama siswa...',
+            searchPlaceholder: 'Cari data...',
             lengthMenu: 'Tampilkan _MENU_ data',
             info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
             infoEmpty: 'Tidak ada data',
             infoFiltered: '(difilter dari _MAX_ total data)',
             zeroRecords: 'Data tidak ditemukan',
             emptyTable: 'Belum ada data rekap poin',
+
             paginate: {
                 first: 'Pertama',
                 last: 'Terakhir',
                 next: 'Berikutnya',
                 previous: 'Sebelumnya'
             }
-        },
-        columnDefs: [
-            {
-                targets: 0,
-                orderable: false,
-                searchable: false
-            }
-        ]
+        }
+
     });
+
 });
 </script>
 
 </body>
-</html> 
+</html>

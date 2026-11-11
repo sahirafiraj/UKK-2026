@@ -65,8 +65,15 @@ if (!$query) {
 
     <title>Riwayat Pelanggaran - Sistem Pelanggaran</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css" rel="stylesheet">
+    <!-- BOOTSTRAP -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <!-- DATATABLES CSS -->
+    <link href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css"
+          rel="stylesheet">
+
+    <!-- CSS UTAMA -->
     <link rel="stylesheet" href="style/style.css">
 </head>
 
@@ -127,7 +134,7 @@ if (!$query) {
                 <?php } else { ?>
 
                     <li class="nav-item">
-                        <a href="dashboard.php" class="nav-link <?= $halaman == 'dashboard.php' ? 'active' : 'text-white'; ?>">Dashboard</a>
+                        <a href="dashboard.php" class="nav-link text-white">Dashboard</a>
                     </li>
 
                     <li class="nav-item">
@@ -169,16 +176,21 @@ if (!$query) {
         <main class="content-main">
             <div class="page-content">
 
+                <!-- HEADER -->
                 <div class="bg-white rounded shadow-sm p-4 mb-4">
+
                     <h2 class="fw-bold">Riwayat Pelanggaran</h2>
 
                     <p class="text-secondary mb-0">
                         Selamat datang,
                         <b><?= htmlspecialchars($nama_login); ?></b>
                     </p>
+
                 </div>
 
+                <!-- CARD RIWAYAT -->
                 <div class="card border-0 shadow-sm">
+
                     <div class="card-body p-4">
 
                         <h5 class="fw-bold mb-4">Daftar Pelanggaran</h5>
@@ -207,44 +219,34 @@ if (!$query) {
                                     <?php
                                     $no = 1;
 
-                                    if (mysqli_num_rows($query) > 0) {
-                                        while ($data = mysqli_fetch_assoc($query)) {
+                                    while ($data = mysqli_fetch_assoc($query)) {
                                     ?>
 
-                                        <tr>
-                                            <td><?= $no++; ?></td>
+                                    <tr>
+                                        <td><?= $no++; ?></td>
 
-                                            <td><?= htmlspecialchars($data['nama_siswa'] ?? '-'); ?></td>
+                                        <td><?= htmlspecialchars($data['nama_siswa'] ?? '-'); ?></td>
 
-                                            <td><?= htmlspecialchars($data['nama_pelanggaran'] ?? '-'); ?></td>
+                                        <td><?= htmlspecialchars($data['nama_pelanggaran'] ?? '-'); ?></td>
 
-                                            <td><?= htmlspecialchars($data['nama_kategori'] ?? '-'); ?></td>
+                                        <td><?= htmlspecialchars($data['nama_kategori'] ?? '-'); ?></td>
 
-                                            <td><?= htmlspecialchars($data['tanggal'] ?? '-'); ?></td>
+                                        <td><?= htmlspecialchars($data['tanggal'] ?? '-'); ?></td>
 
-                                            <td><?= htmlspecialchars($data['poin'] ?? '0'); ?></td>
+                                        <td><?= htmlspecialchars($data['poin'] ?? '0'); ?></td>
 
-                                            <td><?= htmlspecialchars($data['nama_guru'] ?? '-'); ?></td>
+                                        <td><?= htmlspecialchars($data['nama_guru'] ?? '-'); ?></td>
 
-                                            <td><?= htmlspecialchars($data['keterangan'] ?? '-'); ?></td>
+                                        <td><?= htmlspecialchars($data['keterangan'] ?? '-'); ?></td>
 
-                                            <td><?= htmlspecialchars($data['tindakan'] ?? '-'); ?></td>
+                                        <td><?= htmlspecialchars($data['tindakan'] ?? '-'); ?></td>
 
-                                            <td>
-                                                <span class="badge bg-success">Selesai</span>
-                                            </td>
-                                        </tr>
-
-                                    <?php
-                                        }
-                                    } else {
-                                    ?>
-
-                                        <tr>
-                                            <td colspan="10" class="text-center">
-                                                Belum ada pelanggaran yang selesai ditindak.
-                                            </td>
-                                        </tr>
+                                        <td>
+                                            <span class="badge bg-success">
+                                                Selesai
+                                            </span>
+                                        </td>
+                                    </tr>
 
                                     <?php } ?>
 
@@ -257,6 +259,7 @@ if (!$query) {
                     </div>
                 </div>
 
+                <!-- FOOTER -->
                 <p class="text-secondary text-center mt-4 small">
                     © 2026 Sistem Pelanggaran Siswa
                 </p>
@@ -267,8 +270,13 @@ if (!$query) {
     </div>
 </div>
 
+<!-- BOOTSTRAP JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- DATATABLES JS -->
 <script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
 
+<!-- INISIALISASI DATATABLES -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -280,22 +288,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
         order: [],
 
-        layout: {
-            topStart: 'info',
-            bottom: 'paging',
-            bottomStart: null,
-            bottomEnd: null
-        },
-
         language: {
             search: 'Cari:',
-            searchPlaceholder: 'Cari riwayat pelanggaran...',
+            searchPlaceholder: 'Cari data...',
             lengthMenu: 'Tampilkan _MENU_ data',
             info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
             infoEmpty: 'Tidak ada data',
             infoFiltered: '(difilter dari _MAX_ total data)',
             zeroRecords: 'Data tidak ditemukan',
-            emptyTable: 'Belum ada data pelanggaran',
+            emptyTable: 'Belum ada catatan pelanggaran',
 
             paginate: {
                 first: 'Pertama',
@@ -303,22 +304,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 next: 'Berikutnya',
                 previous: 'Sebelumnya'
             }
-        },
-
-        columnDefs: [
-            {
-                targets: 0,
-                orderable: false,
-                searchable: false
-            }
-        ]
+        }
 
     });
 
 });
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

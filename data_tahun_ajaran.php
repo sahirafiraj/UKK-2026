@@ -3,6 +3,10 @@
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
 
+// ==========================================
+// 1. CEK LOGIN DAN HAK AKSES
+// ==========================================
+
 if (!isset($_SESSION['login'])) {
     header("Location: login.php");
     exit;
@@ -16,10 +20,20 @@ if ($_SESSION['role'] != 'admin') {
 $name = $_SESSION['name'] ?? 'Admin';
 $halaman = basename($_SERVER['PHP_SELF']);
 
+// ==========================================
+// 2. AMBIL DATA TAHUN AJARAN AKTIF
+// ==========================================
+
 $query = mysqli_query(
     $koneksi,
-    "SELECT * FROM t_tahun_ajaran ORDER BY id DESC"
+    "SELECT * FROM t_tahun_ajaran
+     WHERE status_aktif = 1
+     ORDER BY id DESC"
 );
+
+if (!$query) {
+    die("Gagal mengambil data: " . mysqli_error($koneksi));
+}
 ?>
 
 <!DOCTYPE html>
@@ -44,7 +58,7 @@ $query = mysqli_query(
 <div class="container-fluid">
     <div class="row">
 
-        <!-- SIDEBAR ADMIN -->
+        <!-- SIDEBAR -->
         <div class="sidebar col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto">
 
             <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
@@ -52,83 +66,59 @@ $query = mysqli_query(
             <ul class="nav nav-pills flex-column gap-1">
 
                 <li class="nav-item">
-                    <a href="dashboard.php" class="nav-link text-white">
-                        Dashboard
-                    </a>
+                    <a href="dashboard.php" class="nav-link text-white">Dashboard</a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_siswa.php" class="nav-link text-white">
-                        Data Siswa
-                    </a>
+                    <a href="data_siswa.php" class="nav-link text-white">Data Siswa</a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_guru.php" class="nav-link text-white">
-                        Data Guru
-                    </a>
+                    <a href="data_guru.php" class="nav-link text-white">Data Guru</a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_kelas.php" class="nav-link text-white">
-                        Data Kelas
-                    </a>
+                    <a href="data_kelas.php" class="nav-link text-white">Data Kelas</a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_tahun_ajaran.php" class="nav-link active">
-                        Tahun Ajaran
-                    </a>
+                    <a href="data_tahun_ajaran.php" class="nav-link active">Tahun Ajaran</a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_penempatan_siswa.php" class="nav-link text-white">
-                        Penempatan Siswa
-                    </a>
+                    <a href="data_penempatan_siswa.php" class="nav-link text-white">Penempatan Siswa</a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_wali_kelas.php" class="nav-link text-white">
-                        Data Wali Kelas
-                    </a>
+                    <a href="data_wali_kelas.php" class="nav-link text-white">Data Wali Kelas</a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_kategori_pelanggaran.php" class="nav-link text-white">
-                        Kategori Pelanggaran
-                    </a>
+                    <a href="data_kategori_pelanggaran.php" class="nav-link text-white">Kategori Pelanggaran</a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="data_jenis_pelanggaran.php" class="nav-link text-white">
-                        Jenis Pelanggaran
-                    </a>
+                    <a href="data_jenis_pelanggaran.php" class="nav-link text-white">Jenis Pelanggaran</a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="laporan.php" class="nav-link text-white">
-                        Laporan
-                    </a>
+                    <a href="laporan.php" class="nav-link text-white">Laporan</a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="about_me.php" class="nav-link text-white">
-                        About Me
-                    </a>
+                    <a href="about_me.php" class="nav-link text-white">About Me</a>
                 </li>
 
                 <hr class="border-white">
 
                 <li class="nav-item">
-                    <a href="logout.php" class="nav-link text-white">
-                        Logout
-                    </a>
+                    <a href="logout.php" class="nav-link text-white">Logout</a>
                 </li>
 
             </ul>
         </div>
 
-        <!-- KONTEN DATA TAHUN AJARAN -->
+        <!-- KONTEN -->
         <main class="content-main">
 
             <!-- HEADER -->
@@ -143,14 +133,14 @@ $query = mysqli_query(
 
             </div>
 
-            <!-- TABEL DATA TAHUN AJARAN -->
+            <!-- CARD TABEL -->
             <div class="card shadow-sm border-0">
 
                 <div class="card-header bg-white">
 
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
 
-                        <h5 class="mb-0 fw-bold">Daftar Data Tahun Ajaran</h5>
+                        <h5 class="mb-0 fw-bold">Daftar Tahun Ajaran Aktif</h5>
 
                         <div class="d-flex gap-2">
 
@@ -165,6 +155,7 @@ $query = mysqli_query(
                         </div>
 
                     </div>
+
                 </div>
 
                 <div class="card-body">
@@ -190,31 +181,21 @@ $query = mysqli_query(
                             <?php
                             $no = 1;
 
-                            if ($query && mysqli_num_rows($query) > 0) {
+                            if (mysqli_num_rows($query) > 0) {
                                 while ($data = mysqli_fetch_assoc($query)) {
                             ?>
 
                                 <tr>
                                     <td><?= $no++; ?></td>
 
-                                    <td>
-                                        <?= htmlspecialchars($data['nama'] ?? '-'); ?>
-                                    </td>
+                                    <td><?= htmlspecialchars($data['nama'] ?? '-'); ?></td>
+
+                                    <td><?= htmlspecialchars($data['tanggal_mulai'] ?? '-'); ?></td>
+
+                                    <td><?= htmlspecialchars($data['tanggal_selesai'] ?? '-'); ?></td>
 
                                     <td>
-                                        <?= htmlspecialchars($data['tanggal_mulai'] ?? '-'); ?>
-                                    </td>
-
-                                    <td>
-                                        <?= htmlspecialchars($data['tanggal_selesai'] ?? '-'); ?>
-                                    </td>
-
-                                    <td>
-                                        <?php if (($data['status_aktif'] ?? 0) == 1) { ?>
-                                            <span class="badge bg-success">Aktif</span>
-                                        <?php } else { ?>
-                                            <span class="badge bg-secondary">Tidak Aktif</span>
-                                        <?php } ?>
+                                        <span class="badge bg-success">Aktif</span>
                                     </td>
 
                                     <td>
@@ -242,7 +223,7 @@ $query = mysqli_query(
 
                                 <tr>
                                     <td colspan="6" class="text-center">
-                                        Belum ada data tahun ajaran.
+                                        Belum ada tahun ajaran aktif.
                                     </td>
                                 </tr>
 
@@ -276,22 +257,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
         order: [],
 
-        layout: {
-            topStart: 'info',
-            bottom: 'paging',
-            bottomStart: null,
-            bottomEnd: null
-        },
-
         language: {
             search: 'Cari:',
-            searchPlaceholder: 'Cari tahun ajaran...',
+            searchPlaceholder: 'Cari data...',
             lengthMenu: 'Tampilkan _MENU_ data',
             info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
             infoEmpty: 'Tidak ada data',
             infoFiltered: '(difilter dari _MAX_ total data)',
             zeroRecords: 'Data tidak ditemukan',
-            emptyTable: 'Belum ada data tahun ajaran',
+            emptyTable: 'Belum ada tahun ajaran aktif',
 
             paginate: {
                 first: 'Pertama',
@@ -299,13 +273,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 next: 'Berikutnya',
                 previous: 'Sebelumnya'
             }
-        },
-
-        columnDefs: [{
-            targets: 5,
-            orderable: false,
-            searchable: false
-        }]
+        }
 
     });
 

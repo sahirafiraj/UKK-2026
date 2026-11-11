@@ -701,6 +701,256 @@ a {
 }
 
 
+/* ============================= */
+/* CETAK LAPORAN PELANGGARAN */
+/* ============================= */
+
+.halaman-cetak {
+    font-family: Arial, sans-serif;
+    color: #172554;
+    background: #ffffff;
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+}
+
+.header-cetak {
+    text-align: center;
+    border-bottom: 4px solid #172554;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.header-cetak h2 {
+    font-size: 23px;
+    font-weight: bold;
+    margin: 0 0 8px;
+    color: #172554;
+}
+
+.header-cetak h3 {
+    font-size: 19px;
+    margin: 0 0 7px;
+    font-weight: bold;
+    color: #172554;
+}
+
+.header-cetak p {
+    font-size: 13px;
+    font-weight: bold;
+    margin: 0;
+    color: #172554;
+}
+
+/* PERIODE LAPORAN */
+
+.periode {
+    text-align: center;
+    font-size: 13px;
+    margin: 15px 0;
+    color: #172554;
+}
+
+/* IDENTITAS SISWA */
+
+.identitas {
+    width: 100%;
+    margin-bottom: 20px;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.identitas td {
+    padding: 7px 5px;
+}
+
+/* TABEL LAPORAN */
+
+.data {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    color: #172554;
+    font-size: 11px;
+}
+
+.data th {
+    background: #172554 !important;
+    color: #ffffff !important;
+    padding: 11px 7px;
+    border: 1px solid #172554;
+    text-align: center;
+    font-weight: bold;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+.data td {
+    padding: 10px 7px;
+    border: 1px solid #172554;
+    vertical-align: middle;
+}
+
+.data tbody tr {
+    page-break-inside: avoid;
+}
+
+.data tfoot th {
+    background: #e2efff !important;
+    color: #172554 !important;
+    border: 1px solid #172554;
+    padding: 10px;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+/* RINGKASAN JUMLAH DAN POIN */
+
+.ringkasan {
+    display: flex;
+    width: 100%;
+    margin-top: 25px;
+    border: 2px solid #172554;
+    border-radius: 8px;
+    background: #e2efff !important;
+    padding: 12px 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+.ringkasan-item {
+    width: 50%;
+    text-align: center;
+    padding: 5px;
+}
+
+.ringkasan-item:first-child {
+    border-right: 2px solid #172554;
+}
+
+.ringkasan-item h4 {
+    margin: 0 0 5px;
+    font-size: 16px;
+    color: #172554;
+}
+
+.ringkasan-item h2 {
+    margin: 0;
+    font-size: 28px;
+    color: #172554;
+}
+
+/* BAGIAN BAWAH LAPORAN */
+
+.bagian-bawah {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 35px;
+    color: #172554;
+    font-size: 13px;
+}
+
+.dicetak-oleh {
+    line-height: 1.6;
+}
+
+.tanggal-cetak {
+    text-align: right;
+    line-height: 1.8;
+}
+
+/* TANDA TANGAN */
+
+.ttd {
+    width: 100%;
+    margin-top: 30px;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.ttd td {
+    width: 33.33%;
+    text-align: center;
+    vertical-align: top;
+    padding: 5px;
+}
+
+.ttd-individu {
+    width: 100%;
+    margin-top: 35px;
+    border-collapse: collapse;
+}
+
+.ttd-individu td {
+    width: 33.33%;
+    text-align: center;
+    padding: 5px;
+    font-size: 13px;
+}
+
+.garis-bawah {
+    border-bottom: 2px solid #172554;
+    margin-top: 65px;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* TOTAL POIN INDIVIDU */
+
+.total-individu {
+    margin-top: 20px;
+    padding: 12px;
+    background: #e2efff !important;
+    border: 1px solid #172554;
+    text-align: right;
+    font-weight: bold;
+    font-size: 14px;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+/* ============================= */
+/* PENGATURAN PRINT */
+/* ============================= */
+
+@page {
+    size: A4 landscape;
+    margin: 12mm;
+}
+
+@media print {
+
+    body {
+        background: #ffffff !important;
+        margin: 0;
+        padding: 0;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .data {
+        font-size: 10px;
+    }
+
+    .header-cetak {
+        break-after: avoid;
+    }
+
+    .ringkasan {
+        break-inside: avoid;
+    }
+
+    .bagian-bawah {
+        break-inside: avoid;
+    }
+
+}
+
+
+
 /* =========================================
    18. PERBAIKAN JARAK ATAS
 ========================================= */
@@ -717,44 +967,6 @@ a {
 /* =========================================
    19. DASHBOARD
 ========================================= */
-
-/* KONTEN DASHBOARD */
-
-.dashboard-content {
-    display: block;
-    width: 100%;
-    max-width: none;
-    margin: 0;
-}
-
-/* HEADER DASHBOARD */
-
-.dashboard-header {
-    display: block;
-    width: 100%;
-    max-width: none;
-    background-color: #ffffff;
-    border: 1px solid #dce6f3;
-    border-radius: 6px;
-    padding: 21px 24px;
-    margin: 0 0 20px 0;
-    box-shadow: 0 2px 5px rgba(23, 47, 82, 0.06);
-}
-
-.dashboard-header h2 {
-    color: #172f52;
-    font-size: 32px;
-    font-weight: 700;
-    margin: 0 0 8px;
-    line-height: 1.3;
-}
-
-.dashboard-header p {
-    color: #64748b;
-    font-size: 14px;
-    margin: 0;
-    line-height: 1.5;
-}
 
 /* KARTU DASHBOARD */
 
@@ -865,4 +1077,116 @@ a {
         padding: 18px;
     }
 
+}
+
+.form-pelanggaran {
+            border: 0;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .form-pelanggaran .card-header {
+            border-bottom: 1px solid #eef1f5;
+            padding: 20px 24px;
+        }
+
+        .form-pelanggaran .card-body {
+            padding: 24px;
+        }
+
+        .form-pelanggaran .form-label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #344054;
+            margin-bottom: 8px;
+        }
+
+        .form-pelanggaran .form-control,
+        .form-pelanggaran .form-select {
+            min-height: 45px;
+            border-radius: 8px;
+            border-color: #d9dee7;
+            font-size: 14px;
+        }
+
+        .form-pelanggaran .form-control:focus,
+        .form-pelanggaran .form-select:focus {
+            border-color: #6478b8;
+            box-shadow: 0 0 0 3px rgba(23, 37, 84, .10);
+        }
+
+        .form-pelanggaran textarea.form-control {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .kelas-box {
+            background: #f8faff;
+            border: 1px solid #e5eaf5;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 22px;
+        }
+
+        .form-divider {
+            border-top: 1px solid #edf0f5;
+            margin: 8px 0 22px;
+        }
+
+        .btn-form {
+            min-height: 42px;
+            padding: 9px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .readonly-field {
+            background: #f7f8fa !important;
+            color: #667085;
+        }
+
+        @media (max-width: 576px) {
+            .form-pelanggaran .card-body {
+                padding: 16px;
+            }
+
+            .form-pelanggaran .card-header {
+                padding: 16px;
+            }
+
+            .form-actions .btn {
+                width: 100%;
+            }
+
+            .form-actions {
+                display: flex;
+                flex-direction: column-reverse;
+                gap: 8px;
+            }
+        }
+#daftarSaranSiswa {
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#daftarSaranSiswa .list-group-item {
+    width: 100%;
+    white-space: normal;
+    overflow-wrap: break-word;
+    text-align: left;
+    padding: 8px 12px;
+    font-size: 13px;
+}
+
+/* Mengatur jarak nama dengan garis tanda tangan laporan individu */
+.ttd-individu td .garis-bawah {
+    margin-top: 65px;
+    margin-bottom: 0;
+}
+
+.ttd-individu td b {
+    display: block;
+    margin-top: 10px;
 }

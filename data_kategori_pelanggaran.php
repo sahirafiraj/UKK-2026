@@ -16,6 +16,7 @@ if ($_SESSION['role'] != 'admin') {
 $nama_login = $_SESSION['name'] ?? 'Admin';
 $halaman = basename($_SERVER['PHP_SELF']);
 
+// Mengambil data kategori pelanggaran
 $data = mysqli_query(
     $koneksi,
     "SELECT * FROM t_pelanggaran_kategori ORDER BY id DESC"
@@ -35,12 +36,15 @@ if (!$data) {
 
     <title>Data Kategori Pelanggaran</title>
 
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
           rel="stylesheet">
 
+    <!-- DataTables CSS -->
     <link rel="stylesheet"
           href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css">
 
+    <!-- CSS Utama -->
     <link rel="stylesheet" href="style/style.css">
 </head>
 
@@ -153,21 +157,26 @@ if (!$data) {
                 <!-- CARD DATA KATEGORI -->
                 <div class="card shadow-sm border-0">
 
-                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div class="card-header bg-white">
 
-                        <h5 class="mb-0 fw-bold">
-                            Daftar Kategori Pelanggaran
-                        </h5>
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
 
-                        <div class="d-flex gap-2">
+                            <h5 class="mb-0 fw-bold">
+                                Daftar Data Kategori Pelanggaran
+                            </h5>
 
-                            <a href="dashboard.php" class="btn btn-secondary btn-sm">
-                                Kembali ke Dashboard
-                            </a>
+                            <div class="d-flex gap-2">
 
-                            <a href="tambah_kategori_pelanggaran.php" class="btn btn-primary btn-sm">
-                                Tambah Kategori Pelanggaran
-                            </a>
+                                <a href="dashboard.php" class="btn btn-secondary btn-sm">
+                                    Kembali ke Dashboard
+                                </a>
+
+                                <a href="tambah_kategori_pelanggaran.php"
+                                   class="btn btn-primary btn-sm">
+                                    Tambah Kategori Pelanggaran
+                                </a>
+
+                            </div>
 
                         </div>
                     </div>
@@ -178,7 +187,7 @@ if (!$data) {
                         <div class="table-responsive">
 
                             <table id="tabelKategori"
-                                   class="table table-bordered table-striped table-hover align-middle">
+                                   class="table table-bordered table-striped table-hover align-middle w-100">
 
                                 <thead class="table-primary">
                                     <tr>
@@ -192,14 +201,16 @@ if (!$data) {
 
                                 <tbody>
 
-                                    <?php
-                                    $no = 1;
+                                <?php
+                                $no = 1;
 
-                                    if (mysqli_num_rows($data) > 0) {
-                                        while ($d = mysqli_fetch_assoc($data)) {
-                                    ?>
+                                if (mysqli_num_rows($data) > 0) {
+
+                                    while ($d = mysqli_fetch_assoc($data)) {
+                                ?>
 
                                     <tr>
+
                                         <td><?= $no++; ?></td>
 
                                         <td>
@@ -242,20 +253,13 @@ if (!$data) {
 
                                             </div>
                                         </td>
+
                                     </tr>
 
-                                    <?php
-                                        }
-                                    } else {
-                                    ?>
-
-                                    <tr>
-                                        <td colspan="5" class="text-center text-secondary">
-                                            Belum ada data kategori pelanggaran.
-                                        </td>
-                                    </tr>
-
-                                    <?php } ?>
+                                <?php
+                                    }
+                                }
+                                ?>
 
                                 </tbody>
 
@@ -271,10 +275,13 @@ if (!$data) {
     </div>
 </div>
 
+<!-- Bootstrap JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
+<!-- DataTables JavaScript -->
 <script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
 
+<!-- Inisialisasi DataTables -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -286,16 +293,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         order: [],
 
-        layout: {
-            topStart: 'info',
-            bottom: 'paging',
-            bottomStart: null,
-            bottomEnd: null
-        },
-
         language: {
             search: 'Cari:',
-            searchPlaceholder: 'Cari kategori pelanggaran...',
+            searchPlaceholder: 'Cari data kategori...',
             lengthMenu: 'Tampilkan _MENU_ data',
             info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
             infoEmpty: 'Tidak ada data',
@@ -309,13 +309,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 next: 'Berikutnya',
                 previous: 'Sebelumnya'
             }
-        },
-
-        columnDefs: [{
-            targets: 4,
-            orderable: false,
-            searchable: false
-        }]
+        }
 
     });
 

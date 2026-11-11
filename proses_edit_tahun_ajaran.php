@@ -1,20 +1,21 @@
+
 <?php
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
 
-// Memeriksa login
+// CEK LOGIN
 if (!isset($_SESSION['login'])) {
     header("Location: login.php");
     exit;
 }
 
-// Memeriksa hak akses admin
+// CEK HAK AKSES
 if ($_SESSION['role'] != 'admin') {
     echo "Anda tidak memiliki akses";
     exit;
 }
 
-// Memeriksa ID tahun ajaran
+// CEK ID
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     header("Location: data_tahun_ajaran.php");
     exit;
@@ -22,166 +23,101 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 
 $id = (int) $_GET['id'];
 
-// Memastikan data tahun ajaran tersedia
-$cek_data = mysqli_query(
-    $koneksi,
-    "SELECT id FROM t_tahun_ajaran WHERE id = $id"
-);
+// CEK DATA TAHUN AJARAN
+$query = mysqli_query($koneksi, "
+    SELECT * FROM t_tahun_ajaran
+    WHERE id = $id
+");
 
-if (!$cek_data || mysqli_num_rows($cek_data) == 0) {
-    echo "Data tahun ajaran tidak ditemukan.";
+$data = mysqli_fetch_assoc($query);
+
+if (!$data) {
+    header("Location: data_tahun_ajaran.php");
     exit;
 }
 
-// Memproses tombol Simpan
-if (isset($_POST['simpan'])) {
+// PROSES UPDATE
+if (isset($_POST['update'])) {
 
-    // Mengambil data dari form
-    $nama = trim($_POST['nama']);
+    $nama = mysqli_real_escape_string($koneksi, $_POST['nama']);
     $tanggal_mulai = $_POST['tanggal_mulai'];
     $tanggal_selesai = $_POST['tanggal_selesai'];
     $status_aktif = (int) $_POST['status_aktif'];
 
-    // Validasi data
-    if ($nama == "" || $tanggal_mulai == "" || $tanggal_selesai == "") {
-
-        echo "Semua data harus diisi!";
-        echo "<br><a href='edit_tahun_ajaran.php?id=$id'>Kembali</a>";
+    // VALIDASI
+    if (
+        empty($nama) ||
+        empty($tanggal_mulai) ||
+        empty($tanggal_selesai)
+    ) {
+        echo "<script>
+            alert('Semua data wajib diisi!');
+            window.location='edit_tahun_ajaran.php?id=$id';
+        </script>";
         exit;
     }
 
-    // Memeriksa tanggal
-    if ($tanggal_mulai > $tanggal_selesai) {
-
-        echo "Tanggal mulai tidak boleh melebihi tanggal selesai.";
-        echo "<br><a href='edit_tahun_ajaran.php?id=$id'>Kembali</a>";
+    if ($tanggal_selesai < $tanggal_mulai) {
+        echo "<script>
+            alert('Tanggal selesai tidak boleh sebelum tanggal mulai!');
+            window.location='edit_tahun_ajaran.php?id=$id';
+        </script>";
         exit;
     }
 
-    // Mengubah nama menjadi angka saja untuk pengecekan
-    $nama_cek = preg_replace('/[^0-9]/', '', $nama);
+    // CEK NAMA TAHUN AJARAN DUPLIKAT
+    $cek = mysqli_query($koneksi, "
+        SELECT id FROM t_tahun_ajaran
+        WHERE nama = '$nama'
+        AND id != $id
+    ");
 
-    if ($nama_cek == "") {
-
-        echo "Nama tahun ajaran tidak valid!";
-        echo "<br><a href='edit_tahun_ajaran.php?id=$id'>Kembali</a>";
+    if (mysqli_num_rows($cek) > 0) {
+        echo "<script>
+            alert('Tahun ajaran sudah tersedia!');
+            window.location='edit_tahun_ajaran.php?id=$id';
+        </script>";
         exit;
     }
 
-    // Memeriksa duplikasi tahun ajaran
-    $query_cek = mysqli_query(
-        $koneksi,
-        "SELECT id, nama FROM t_tahun_ajaran WHERE id != $id"
-    );
-
-    if (!$query_cek) {
-
-        echo "Gagal memeriksa tahun ajaran: "
-             . mysqli_error($koneksi);
-        exit;
-    }
-
-    $duplikat = false;
-
-    while ($data_cek = mysqli_fetch_assoc($query_cek)) {
-
-        $nama_lama = preg_replace(
-            '/[^0-9]/',
-            '',
-            trim($data_cek['nama'])
-        );
-
-        if ($nama_cek == $nama_lama) {
-
-            $duplikat = true;
-            break;
-        }
-    }
-
-    if ($duplikat) {
-
-        echo "Tahun ajaran tersebut sudah terdaftar!";
-        echo "<br><a href='edit_tahun_ajaran.php?id=$id'>Kembali</a>";
-        exit;
-    }
-
-    // Mengamankan data
-    $nama_db = mysqli_real_escape_string(
-        $koneksi,
-        $nama
-    );
-
-    $tanggal_mulai_db = mysqli_real_escape_string(
-        $koneksi,
-        $tanggal_mulai
-    );
-
-    $tanggal_selesai_db = mysqli_real_escape_string(
-        $koneksi,
-        $tanggal_selesai
-    );
-
-    // Memulai transaksi database
     mysqli_begin_transaction($koneksi);
 
-    // Jika tahun ajaran diedit menjadi Aktif
+    // JIKA AKTIF, NONAKTIFKAN YANG LAIN
     if ($status_aktif == 1) {
-
-        // Menonaktifkan semua tahun ajaran lainnya
-        $nonaktifkan = mysqli_query(
-            $koneksi,
-            "UPDATE t_tahun_ajaran
-             SET status_aktif = 0
-             WHERE id != $id"
-        );
-
-    } else {
-
-        // Jika Tidak Aktif, tidak mengubah tahun ajaran lain
-        $nonaktifkan = true;
+        mysqli_query($koneksi, "
+            UPDATE t_tahun_ajaran
+            SET status_aktif = 0
+            WHERE id != $id
+        ");
     }
 
-    // Mengubah data tahun ajaran
-    if ($nonaktifkan) {
+    // UPDATE DATA
+    $update = mysqli_query($koneksi, "
+        UPDATE t_tahun_ajaran SET
+            nama = '$nama',
+            tanggal_mulai = '$tanggal_mulai',
+            tanggal_selesai = '$tanggal_selesai',
+            status_aktif = $status_aktif,
+            updated_at = NOW()
+        WHERE id = $id
+    ");
 
-        $update = mysqli_query(
-            $koneksi,
-            "UPDATE t_tahun_ajaran SET
-                nama = '$nama_db',
-                tanggal_mulai = '$tanggal_mulai_db',
-                tanggal_selesai = '$tanggal_selesai_db',
-                status_aktif = '$status_aktif'
-             WHERE id = $id"
-        );
-
-    } else {
-
-        $update = false;
-    }
-
-    // Memeriksa hasil perubahan
     if ($update) {
-
-        // Menyimpan perubahan database
         mysqli_commit($koneksi);
 
-        header("Location: data_tahun_ajaran.php");
+        echo "<script>
+            alert('Data tahun ajaran berhasil diperbarui!');
+            window.location='data_tahun_ajaran.php';
+        </script>";
         exit;
-
     } else {
-
-        // Membatalkan perubahan jika gagal
         mysqli_rollback($koneksi);
 
-        echo "Gagal mengubah data tahun ajaran: "
-             . mysqli_error($koneksi);
-
-        echo "<br><a href='edit_tahun_ajaran.php?id=$id'>Kembali</a>";
+        echo "<script>
+            alert('Gagal memperbarui data tahun ajaran!');
+            window.location='edit_tahun_ajaran.php?id=$id';
+        </script>";
+        exit;
     }
-
-} else {
-
-    header("Location: data_tahun_ajaran.php");
-    exit;
 }
 ?>

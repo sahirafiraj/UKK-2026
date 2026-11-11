@@ -291,39 +291,21 @@ $total_poin = mysqli_fetch_assoc($query_poin)['total'] ?? 0;
 
             <!-- KONTEN DASHBOARD -->
             <main class="content-main">
+            <div class="page-content">
 
-                <div class="dashboard-content">
+                <!-- HEADER -->
+                <div class="bg-white rounded shadow-sm p-4 mb-4">
 
-                    <!-- HEADER -->
-                    <div class="dashboard-header">
+                    <h2 class="fw-bold">
+                        Dashboard
+                    </h2>
 
-                        <h2>Dashboard</h2>
+                    <p class="text-secondary mb-0">
+                        Selamat datang,
+                        <b><?= htmlspecialchars($nama_login); ?></b>
+                    </p>
 
-                        <p class="text-secondary mb-0">
-                             Selamat datang,
-                            <b><?= htmlspecialchars($name); ?></b>
-                        </p>
-
-                        <?php if ($status_wali_kelas) { ?>
-
-                            <p>
-                                Kelas Wali:
-                                <b>
-                                    <?php
-                                    $nama_kelas = [];
-
-                                    foreach ($kelas_wali as $kelas) {
-                                        $nama_kelas[] = $kelas['nama_kelas'];
-                                    }
-
-                                    echo htmlspecialchars(implode(', ', $nama_kelas));
-                                    ?>
-                                </b>
-                            </p>
-
-                        <?php } ?>
-
-                    </div>
+                </div>
 
                     <!-- CARD ADMIN -->
                     <?php if ($role == 'admin') { ?>

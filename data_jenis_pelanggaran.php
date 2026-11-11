@@ -176,30 +176,23 @@ if (!$query) {
                 <!-- DAFTAR JENIS PELANGGARAN -->
                 <div class="card shadow-sm border-0">
 
-                    <div class="card-header bg-white py-3">
-
+                    <div class="card-header bg-white">
                         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
 
-                            <h5 class="mb-0 fw-bold">
-                                Daftar Jenis Pelanggaran
-                            </h5>
+                            <h5 class="mb-0 fw-bold">Daftar Data Jenis Pelanggaran</h5>
 
                             <div class="d-flex gap-2">
 
-                                <a href="dashboard.php"
-                                   class="btn btn-secondary btn-sm">
+                                <a href="dashboard.php" class="btn btn-secondary btn-sm">
                                     Kembali ke Dashboard
                                 </a>
 
-                                <a href="tambah_jenis_pelanggaran.php"
-                                   class="btn btn-primary btn-sm">
+                                <a href="tambah_jenis_pelanggaran.php" class="btn btn-primary btn-sm">
                                     Tambah Jenis Pelanggaran
                                 </a>
 
                             </div>
-
                         </div>
-
                     </div>
 
                     <!-- TABEL -->
@@ -323,22 +316,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
         order: [],
 
-        layout: {
-            topStart: 'info',
-            bottom: 'paging',
-            bottomStart: null,
-            bottomEnd: null
-        },
-
         language: {
             search: 'Cari:',
-            searchPlaceholder: 'Cari jenis pelanggaran...',
+            searchPlaceholder: 'Cari data...',
             lengthMenu: 'Tampilkan _MENU_ data',
             info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
             infoEmpty: 'Tidak ada data',
             infoFiltered: '(difilter dari _MAX_ total data)',
             zeroRecords: 'Data tidak ditemukan',
-            emptyTable: 'Belum ada data pelanggaran',
+            emptyTable: 'Belum ada catatan pelanggaran',
 
             paginate: {
                 first: 'Pertama',
@@ -346,18 +332,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 next: 'Berikutnya',
                 previous: 'Sebelumnya'
             }
-        },
-
-        columnDefs: [{
-            targets: 7,
-            orderable: false,
-            searchable: false
-        }]
+        }
 
     });
 
 });
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

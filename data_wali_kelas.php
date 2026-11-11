@@ -16,19 +16,23 @@ if ($_SESSION['role'] != 'admin') {
 $name = $_SESSION['name'] ?? 'Admin';
 $halaman = basename($_SERVER['PHP_SELF']);
 
+// Mengambil data wali kelas
 $query = mysqli_query($koneksi, "
     SELECT
-        w.*,
+        wc.*,
         ta.nama AS tahun_ajaran,
-        ta.status_aktif AS status_tahun_ajaran,
         k.nama AS nama_kelas,
         g.nama AS nama_guru
-    FROM t_wali_kelas w
-    LEFT JOIN t_tahun_ajaran ta ON w.tahun_ajaran_id = ta.id
-    LEFT JOIN t_kelas k ON w.kelas_id = k.id
-    LEFT JOIN t_guru g ON w.guru_id = g.id
-    ORDER BY w.id DESC
+    FROM t_wali_kelas wc
+    LEFT JOIN t_tahun_ajaran ta ON wc.tahun_ajaran_id = ta.id
+    LEFT JOIN t_kelas k ON wc.kelas_id = k.id
+    LEFT JOIN t_guru g ON wc.guru_id = g.id
+    ORDER BY wc.id DESC
 ");
+
+if (!$query) {
+    die("Gagal mengambil data wali kelas: " . mysqli_error($koneksi));
+}
 ?>
 
 <!DOCTYPE html>
@@ -39,10 +43,15 @@ $query = mysqli_query($koneksi, "
 
     <title>Data Wali Kelas</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet">
 
-    <link rel="stylesheet" href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet"
+          href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css">
 
+    <!-- CSS Utama -->
     <link rel="stylesheet" href="style/style.css">
 </head>
 
@@ -136,7 +145,7 @@ $query = mysqli_query($koneksi, "
             </ul>
         </div>
 
-        <!-- KONTEN UTAMA -->
+        <!-- KONTEN DATA WALI KELAS -->
         <main class="content-main">
             <div class="page-content">
 
@@ -156,6 +165,7 @@ $query = mysqli_query($koneksi, "
                 <div class="card shadow-sm border-0">
 
                     <div class="card-header bg-white">
+
                         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
 
                             <h5 class="mb-0 fw-bold">Daftar Data Wali Kelas</h5>
@@ -171,15 +181,18 @@ $query = mysqli_query($koneksi, "
                                 </a>
 
                             </div>
+
                         </div>
+
                     </div>
 
+                    <!-- TABEL -->
                     <div class="card-body">
 
                         <div class="table-responsive">
 
                             <table id="tabelWaliKelas"
-                                   class="table table-bordered table-striped table-hover align-middle">
+                                   class="table table-bordered table-striped table-hover align-middle w-100">
 
                                 <thead class="table-primary">
                                     <tr>
@@ -196,14 +209,16 @@ $query = mysqli_query($koneksi, "
 
                                 <tbody>
 
-                                    <?php
-                                    $no = 1;
+                                <?php
+                                $no = 1;
 
-                                    if ($query && mysqli_num_rows($query) > 0) {
-                                        while ($data = mysqli_fetch_assoc($query)) {
-                                    ?>
+                                if (mysqli_num_rows($query) > 0) {
+
+                                    while ($data = mysqli_fetch_assoc($query)) {
+                                ?>
 
                                     <tr>
+
                                         <td><?= $no++; ?></td>
 
                                         <td>
@@ -227,10 +242,18 @@ $query = mysqli_query($koneksi, "
                                         </td>
 
                                         <td>
-                                            <?php if (($data['status_tahun_ajaran'] ?? 0) == 1) { ?>
-                                                <span class="badge bg-success">Aktif</span>
+                                            <?php if (($data['status_aktif'] ?? 0) == 1) { ?>
+
+                                                <span class="badge bg-success">
+                                                    Aktif
+                                                </span>
+
                                             <?php } else { ?>
-                                                <span class="badge bg-secondary">Tidak Aktif</span>
+
+                                                <span class="badge bg-secondary">
+                                                    Tidak Aktif
+                                                </span>
+
                                             <?php } ?>
                                         </td>
 
@@ -250,27 +273,22 @@ $query = mysqli_query($koneksi, "
 
                                             </div>
                                         </td>
+
                                     </tr>
 
-                                    <?php
-                                        }
-                                    } else {
-                                    ?>
-
-                                    <tr>
-                                        <td colspan="8" class="text-center">
-                                            Belum ada data wali kelas.
-                                        </td>
-                                    </tr>
-
-                                    <?php } ?>
+                                <?php
+                                    }
+                                }
+                                ?>
 
                                 </tbody>
 
                             </table>
 
                         </div>
+
                     </div>
+
                 </div>
 
             </div>
@@ -279,24 +297,23 @@ $query = mysqli_query($koneksi, "
     </div>
 </div>
 
+<!-- Bootstrap JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
+<!-- DataTables JavaScript -->
 <script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
 
+<!-- Inisialisasi DataTables -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
     new DataTable('#tabelWaliKelas', {
-        pageLength: 10,
-        lengthMenu: [5, 10, 25, 50, 100],
-        order: [],
 
-        layout: {
-            topStart: 'info',
-            bottom: 'paging',
-            bottomStart: null,
-            bottomEnd: null
-        },
+        pageLength: 10,
+
+        lengthMenu: [5, 10, 25, 50, 100],
+
+        order: [],
 
         language: {
             search: 'Cari:',
@@ -314,13 +331,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 next: 'Berikutnya',
                 previous: 'Sebelumnya'
             }
-        },
+        }
 
-        columnDefs: [{
-            targets: 7,
-            orderable: false,
-            searchable: false
-        }]
     });
 
 });
