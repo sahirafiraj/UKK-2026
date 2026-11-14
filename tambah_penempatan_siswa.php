@@ -36,6 +36,46 @@ $kelas = mysqli_query($koneksi, "
     AND nama IN ('XII TKR 4', 'X TKR 4', 'XII RPL 2', 'XII RPL 1')
     ORDER BY nama ASC
 ");
+
+if (isset($_GET['ajax']) && $_GET['ajax'] == 'cari_siswa') {
+
+    header('Content-Type: application/json; charset=utf-8');
+
+    $kata_kunci = trim($_GET['q'] ?? '');
+    $kelas_cari = (int) ($_GET['kelas_id'] ?? 0);
+    $hasil = [];
+
+    if ($kata_kunci != '' && $kelas_cari > 0) {
+
+        $cari_aman = mysqli_real_escape_string($koneksi, $kata_kunci);
+
+        $query_ajax = mysqli_query($koneksi, "
+            SELECT
+                ks.id AS penempatan_id,
+                s.id AS siswa_id,
+                s.nis,
+                s.nama AS nama_siswa
+            FROM t_kelas_siswa ks
+            JOIN t_siswa s ON s.id = ks.siswa_id
+            WHERE ks.kelas_id = '$kelas_cari'
+            AND ks.tahun_ajaran_id = '$tahun_ajaran_id'
+            AND (
+                s.nama LIKE '%$cari_aman%'
+                OR s.nis LIKE '%$cari_aman%'
+            )
+            ORDER BY s.nama ASC
+        ");
+
+        if ($query_ajax) {
+            while ($siswa = mysqli_fetch_assoc($query_ajax)) {
+                $hasil[] = $siswa;
+            }
+        }
+    }
+
+    echo json_encode($hasil);
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
