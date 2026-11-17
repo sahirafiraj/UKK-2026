@@ -154,7 +154,7 @@ $halaman = basename($_SERVER['PHP_SELF']);
                                     required
                                 >
                             </div>
-
+                            
                             <div class="mb-3">
                                 <label class="form-label">Jenis Kelamin</label>
                                 <select name="jenis_kelamin" class="form-select" required>

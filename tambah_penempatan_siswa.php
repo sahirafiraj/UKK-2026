@@ -1,3 +1,4 @@
+
 <?php
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
@@ -22,6 +23,13 @@ $siswa = mysqli_query($koneksi, "
     ORDER BY nama ASC
 ");
 
+$kelas = mysqli_query($koneksi, "
+    SELECT id, nama, tingkat, jurusan
+    FROM t_kelas
+    WHERE status_aktif = 1
+    ORDER BY nama ASC
+");
+
 $tahun = mysqli_query($koneksi, "
     SELECT id, nama
     FROM t_tahun_ajaran
@@ -29,66 +37,55 @@ $tahun = mysqli_query($koneksi, "
     ORDER BY id DESC
 ");
 
-$kelas = mysqli_query($koneksi, "
-    SELECT id, nama, tingkat, jurusan
-    FROM t_kelas
-    WHERE status_aktif = 1
-    AND nama IN ('XII TKR 4', 'X TKR 4', 'XII RPL 2', 'XII RPL 1')
-    ORDER BY nama ASC
-");
-
-if (isset($_GET['ajax']) && $_GET['ajax'] == 'cari_siswa') {
-
-    header('Content-Type: application/json; charset=utf-8');
-
-    $kata_kunci = trim($_GET['q'] ?? '');
-    $kelas_cari = (int) ($_GET['kelas_id'] ?? 0);
-    $hasil = [];
-
-    if ($kata_kunci != '' && $kelas_cari > 0) {
-
-        $cari_aman = mysqli_real_escape_string($koneksi, $kata_kunci);
-
-        $query_ajax = mysqli_query($koneksi, "
-            SELECT
-                ks.id AS penempatan_id,
-                s.id AS siswa_id,
-                s.nis,
-                s.nama AS nama_siswa
-            FROM t_kelas_siswa ks
-            JOIN t_siswa s ON s.id = ks.siswa_id
-            WHERE ks.kelas_id = '$kelas_cari'
-            AND ks.tahun_ajaran_id = '$tahun_ajaran_id'
-            AND (
-                s.nama LIKE '%$cari_aman%'
-                OR s.nis LIKE '%$cari_aman%'
-            )
-            ORDER BY s.nama ASC
-        ");
-
-        if ($query_ajax) {
-            while ($siswa = mysqli_fetch_assoc($query_ajax)) {
-                $hasil[] = $siswa;
-            }
-        }
+$daftar_siswa = [];
+if ($siswa) {
+    while ($s = mysqli_fetch_assoc($siswa)) {
+        $daftar_siswa[] = $s;
     }
+}
 
-    echo json_encode($hasil);
-    exit;
+$daftar_kelas = [];
+if ($kelas) {
+    while ($k = mysqli_fetch_assoc($kelas)) {
+        $daftar_kelas[] = $k;
+    }
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Tambah Penempatan Siswa</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet">
     <link rel="stylesheet" href="style/style.css">
+
+    <style>
+        .pencarian-box {
+            position: relative;
+        }
+
+        .hasil-pencarian {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            width: 100%;
+            z-index: 99999;
+            display: none;
+            max-height: 250px;
+            overflow-y: auto;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,.15);
+            border-radius: 6px;
+        }
+
+        .hasil-pencarian .list-group-item {
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <body class="bg-light">
@@ -96,6 +93,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 'cari_siswa') {
 <div class="container-fluid">
     <div class="row">
 
+        <!-- SIDEBAR -->
         <div class="sidebar col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto">
 
             <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
@@ -158,18 +156,17 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 'cari_siswa') {
             </ul>
         </div>
 
+        <!-- KONTEN -->
         <main class="content-main">
             <div class="page-content">
 
                 <div class="bg-white rounded shadow-sm p-4 mb-4">
-
                     <h2 class="fw-bold">Tambah Penempatan Siswa</h2>
 
                     <p class="text-secondary mb-0">
                         Selamat datang,
                         <b><?= htmlspecialchars($name); ?></b>
                     </p>
-
                 </div>
 
                 <div class="card shadow-sm border-0">
@@ -184,40 +181,75 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 'cari_siswa') {
 
                             <div class="row g-3">
 
+                                <!-- PENCARIAN SISWA -->
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Nama Siswa</label>
+                                    <label class="form-label fw-semibold">
+                                        Nama Siswa
+                                    </label>
 
-                                    <select name="siswa_id" class="form-select" required>
-                                        <option value="">-- Pilih Siswa --</option>
+                                    <div class="pencarian-box">
 
-                                        <?php while ($s = mysqli_fetch_assoc($siswa)) { ?>
-                                            <option value="<?= (int) $s['id']; ?>">
-                                                <?= htmlspecialchars($s['nis'] . ' - ' . $s['nama']); ?>
-                                            </option>
-                                        <?php } ?>
+                                        <input type="text"
+                                               id="cari_siswa"
+                                               class="form-control"
+                                               placeholder="Ketik nama atau NIS siswa..."
+                                               autocomplete="off"
+                                               required>
 
-                                    </select>
+                                        <input type="hidden"
+                                               name="siswa_id"
+                                               id="siswa_id">
+
+                                        <div id="hasil_siswa"
+                                             class="list-group hasil-pencarian">
+                                        </div>
+
+                                    </div>
+
+                                    <small class="text-secondary d-block mt-2">
+                                        Ketik nama atau NIS, lalu pilih siswa dari daftar.
+                                    </small>
                                 </div>
 
+                                <!-- PENCARIAN KELAS -->
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Kelas</label>
+                                    <label class="form-label fw-semibold">
+                                        Kelas
+                                    </label>
 
-                                    <select name="kelas_id" class="form-select" required>
-                                        <option value="">-- Pilih Kelas --</option>
+                                    <div class="pencarian-box">
 
-                                        <?php while ($k = mysqli_fetch_assoc($kelas)) { ?>
-                                            <option value="<?= (int) $k['id']; ?>">
-                                                <?= htmlspecialchars($k['nama'] . ' - Tingkat ' . $k['tingkat'] . ' - ' . $k['jurusan']); ?>
-                                            </option>
-                                        <?php } ?>
+                                        <input type="text"
+                                               id="cari_kelas"
+                                               class="form-control"
+                                               placeholder="Ketik nama, tingkat, atau jurusan..."
+                                               autocomplete="off"
+                                               required>
 
-                                    </select>
+                                        <input type="hidden"
+                                               name="kelas_id"
+                                               id="kelas_id">
+
+                                        <div id="hasil_kelas"
+                                             class="list-group hasil-pencarian">
+                                        </div>
+
+                                    </div>
+
+                                    <small class="text-secondary d-block mt-2">
+                                        Ketik nama kelas, lalu pilih dari daftar.
+                                    </small>
                                 </div>
 
+                                <!-- TAHUN AJARAN -->
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Tahun Ajaran</label>
+                                    <label class="form-label fw-semibold">
+                                        Tahun Ajaran
+                                    </label>
 
-                                    <select name="tahun_ajaran_id" class="form-select" required>
+                                    <select name="tahun_ajaran_id"
+                                            class="form-select"
+                                            required>
                                         <option value="">-- Pilih Tahun Ajaran --</option>
 
                                         <?php while ($ta = mysqli_fetch_assoc($tahun)) { ?>
@@ -229,8 +261,11 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 'cari_siswa') {
                                     </select>
                                 </div>
 
+                                <!-- TANGGAL MULAI -->
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Tanggal Mulai</label>
+                                    <label class="form-label fw-semibold">
+                                        Tanggal Mulai
+                                    </label>
 
                                     <input type="date"
                                            name="tanggal_mulai"
@@ -238,8 +273,11 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 'cari_siswa') {
                                            required>
                                 </div>
 
+                                <!-- TANGGAL SELESAI -->
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Tanggal Selesai</label>
+                                    <label class="form-label fw-semibold">
+                                        Tanggal Selesai
+                                    </label>
 
                                     <input type="date"
                                            name="tanggal_selesai"
@@ -247,10 +285,15 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 'cari_siswa') {
                                            required>
                                 </div>
 
+                                <!-- STATUS -->
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Status</label>
+                                    <label class="form-label fw-semibold">
+                                        Status
+                                    </label>
 
-                                    <select name="status_aktif" class="form-select" required>
+                                    <select name="status_aktif"
+                                            class="form-select"
+                                            required>
                                         <option value="">-- Pilih Status --</option>
                                         <option value="1">Aktif</option>
                                         <option value="0">Tidak Aktif</option>
@@ -259,11 +302,12 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 'cari_siswa') {
 
                                 <div class="col-12 mt-4">
 
-                                    <button type="submit" class="btn btn-primary">
+                                    <button type="submit" name="simpan" class="btn btn-primary">
                                         Simpan Data
                                     </button>
 
-                                    <a href="data_penempatan_siswa.php" class="btn btn-secondary">
+                                    <a href="data_penempatan_siswa.php"
+                                       class="btn btn-secondary">
                                         Kembali
                                     </a>
 
@@ -283,6 +327,199 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 'cari_siswa') {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // DATA SISWA DARI PHP
+    const daftarSiswa = <?= json_encode($daftar_siswa, JSON_UNESCAPED_UNICODE); ?>;
+
+    // DATA KELAS DARI PHP
+    const daftarKelas = <?= json_encode($daftar_kelas, JSON_UNESCAPED_UNICODE); ?>;
+
+    // =========================================
+    // PENCARIAN SISWA
+    // =========================================
+
+    const cariSiswa = document.getElementById('cari_siswa');
+    const siswaId = document.getElementById('siswa_id');
+    const hasilSiswa = document.getElementById('hasil_siswa');
+
+    cariSiswa.addEventListener('input', function () {
+
+        const kataKunci = this.value.toLowerCase().trim();
+
+        // Pilihan sebelumnya dibatalkan
+        siswaId.value = '';
+
+        hasilSiswa.innerHTML = '';
+        hasilSiswa.style.display = 'none';
+
+        if (kataKunci === '') {
+            return;
+        }
+
+        let ditemukan = 0;
+
+        daftarSiswa.forEach(function (siswa) {
+
+            const teksSiswa = (siswa.nis + ' - ' + siswa.nama).toLowerCase();
+
+            if (teksSiswa.includes(kataKunci)) {
+
+                ditemukan++;
+
+                const pilihan = document.createElement('button');
+
+                pilihan.type = 'button';
+                pilihan.className = 'list-group-item list-group-item-action';
+
+                pilihan.textContent = siswa.nis + ' - ' + siswa.nama;
+
+                pilihan.addEventListener('click', function () {
+
+                    cariSiswa.value = siswa.nis + ' - ' + siswa.nama;
+                    siswaId.value = siswa.id;
+
+                    hasilSiswa.style.display = 'none';
+
+                });
+
+                hasilSiswa.appendChild(pilihan);
+            }
+
+        });
+
+        if (ditemukan === 0) {
+            hasilSiswa.innerHTML =
+                '<div class="list-group-item text-secondary">Siswa tidak ditemukan</div>';
+        }
+
+        hasilSiswa.style.display = 'block';
+
+    });
+
+    // =========================================
+    // PENCARIAN KELAS
+    // =========================================
+
+    const cariKelas = document.getElementById('cari_kelas');
+    const kelasId = document.getElementById('kelas_id');
+    const hasilKelas = document.getElementById('hasil_kelas');
+
+    cariKelas.addEventListener('input', function () {
+
+        const kataKunci = this.value.toLowerCase().trim();
+
+        // Pilihan sebelumnya dibatalkan
+        kelasId.value = '';
+
+        hasilKelas.innerHTML = '';
+        hasilKelas.style.display = 'none';
+
+        if (kataKunci === '') {
+            return;
+        }
+
+        let ditemukan = 0;
+
+        daftarKelas.forEach(function (kelas) {
+
+            const teksKelas = (
+                kelas.nama + ' - Tingkat ' +
+                kelas.tingkat + ' - ' +
+                kelas.jurusan
+            ).toLowerCase();
+
+            if (teksKelas.includes(kataKunci)) {
+
+                ditemukan++;
+
+                const pilihan = document.createElement('button');
+
+                pilihan.type = 'button';
+                pilihan.className = 'list-group-item list-group-item-action';
+
+                pilihan.textContent =
+                    kelas.nama + ' - Tingkat ' +
+                    kelas.tingkat + ' - ' +
+                    kelas.jurusan;
+
+                pilihan.addEventListener('click', function () {
+
+                    cariKelas.value =
+                        kelas.nama + ' - Tingkat ' +
+                        kelas.tingkat + ' - ' +
+                        kelas.jurusan;
+
+                    kelasId.value = kelas.id;
+
+                    hasilKelas.style.display = 'none';
+
+                });
+
+                hasilKelas.appendChild(pilihan);
+            }
+
+        });
+
+        if (ditemukan === 0) {
+            hasilKelas.innerHTML =
+                '<div class="list-group-item text-secondary">Kelas tidak ditemukan</div>';
+        }
+
+        hasilKelas.style.display = 'block';
+
+    });
+
+    // =========================================
+    // TUTUP DROPDOWN KETIKA KLIK DI LUAR
+    // =========================================
+
+    document.addEventListener('click', function (event) {
+
+        if (
+            !cariSiswa.contains(event.target) &&
+            !hasilSiswa.contains(event.target)
+        ) {
+            hasilSiswa.style.display = 'none';
+        }
+
+        if (
+            !cariKelas.contains(event.target) &&
+            !hasilKelas.contains(event.target)
+        ) {
+            hasilKelas.style.display = 'none';
+        }
+
+    });
+
+    // =========================================
+    // VALIDASI SEBELUM SIMPAN
+    // =========================================
+
+    const form = document.querySelector('form');
+
+    form.addEventListener('submit', function (event) {
+
+        if (siswaId.value === '') {
+            event.preventDefault();
+            alert('Silakan pilih siswa dari daftar pencarian.');
+            cariSiswa.focus();
+            return;
+        }
+
+        if (kelasId.value === '') {
+            event.preventDefault();
+            alert('Silakan pilih kelas dari daftar pencarian.');
+            cariKelas.focus();
+            return;
+        }
+
+    });
+
+});
+</script>
 
 </body>
 </html>

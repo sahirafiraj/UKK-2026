@@ -68,9 +68,25 @@ if (isset($_POST['update'])) {
     ");
 
     if ($query) {
+
+        // Jika siswa dinonaktifkan,
+        // penempatan aktif ikut dinonaktifkan
+        if ($status == 0) {
+
+            mysqli_query($koneksi, "
+                UPDATE t_kelas_siswa
+                SET status_aktif = 0
+                WHERE siswa_id = $id
+                AND status_aktif = 1
+            ");
+
+        }
+
         header("Location: data_siswa.php");
         exit;
+
     } else {
+
         $_SESSION['pesan_error'] = "Gagal memperbarui data siswa. Silakan coba lagi.";
         header("Location: edit_siswa.php?id=" . $id);
         exit;

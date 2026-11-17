@@ -3,10 +3,7 @@
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
 
-// ==========================================
-// 1. CEK LOGIN DAN HAK AKSES
-// ==========================================
-
+// CEK LOGIN DAN HAK AKSES
 if (!isset($_SESSION['login'])) {
     header("Location: login.php");
     exit;
@@ -14,6 +11,7 @@ if (!isset($_SESSION['login'])) {
 
 $nama_login = $_SESSION['name'] ?? 'Pengguna';
 $role = strtolower(trim($_SESSION['role'] ?? ''));
+$id_user = (int) ($_SESSION['id'] ?? 0);
 $halaman = basename($_SERVER['PHP_SELF']);
 
 if ($role != 'admin' && $role != 'guru') {
@@ -21,10 +19,55 @@ if ($role != 'admin' && $role != 'guru') {
     exit;
 }
 
-// ==========================================
-// 2. QUERY REKAP POIN
-// ==========================================
+// CEK STATUS WALI KELAS
+$status_wali_kelas = false;
 
+if ($role == 'guru') {
+
+    $query_guru = mysqli_query($koneksi, "
+        SELECT id
+        FROM t_guru
+        WHERE user_id = '$id_user'
+        AND status_aktif = 1
+        LIMIT 1
+    ");
+
+    if ($query_guru && mysqli_num_rows($query_guru) > 0) {
+
+        $data_guru = mysqli_fetch_assoc($query_guru);
+        $guru_id = $data_guru['id'];
+
+        // CEK TAHUN AJARAN AKTIF
+        $query_tahun_ajaran = mysqli_query($koneksi, "
+            SELECT id
+            FROM t_tahun_ajaran
+            WHERE status_aktif = 1
+            LIMIT 1
+        ");
+
+        if ($query_tahun_ajaran && mysqli_num_rows($query_tahun_ajaran) > 0) {
+
+            $data_tahun_ajaran = mysqli_fetch_assoc($query_tahun_ajaran);
+            $tahun_ajaran_id = $data_tahun_ajaran['id'];
+
+            // CEK APAKAH GURU MERUPAKAN WALI KELAS
+            $query_wali_kelas = mysqli_query($koneksi, "
+                SELECT id
+                FROM t_wali_kelas
+                WHERE guru_id = '$guru_id'
+                AND tahun_ajaran_id = '$tahun_ajaran_id'
+                AND status_aktif = 1
+                LIMIT 1
+            ");
+
+            if ($query_wali_kelas && mysqli_num_rows($query_wali_kelas) > 0) {
+                $status_wali_kelas = true;
+            }
+        }
+    }
+}
+
+// QUERY REKAP POIN
 $query = mysqli_query($koneksi, "
     SELECT
         siswa_id,
@@ -44,16 +87,22 @@ if (!$query) {
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Rekap Poin - Sistem Pelanggaran</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- BOOTSTRAP -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet">
 
-    <link href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css" rel="stylesheet">
+    <!-- DATATABLES CSS -->
+    <link href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css"
+          rel="stylesheet">
 
+    <!-- CSS UTAMA -->
     <link rel="stylesheet" href="style/style.css">
 </head>
 
@@ -65,14 +114,20 @@ if (!$query) {
         <!-- SIDEBAR -->
         <div class="sidebar col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto">
 
-            <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
+            <h4 class="text-white mb-4">
+                Sistem Pelanggaran
+            </h4>
 
             <ul class="nav nav-pills flex-column gap-1">
 
                 <?php if ($role == 'admin') { ?>
 
+                    <!-- MENU ADMIN -->
                     <li class="nav-item">
-                        <a href="dashboard.php" class="nav-link text-white">Dashboard</a>
+                        <a href="dashboard.php"
+                           class="nav-link <?= $halaman == 'dashboard.php' ? 'active' : 'text-white'; ?>">
+                            Dashboard
+                        </a>
                     </li>
 
                     <li class="nav-item">
@@ -107,10 +162,22 @@ if (!$query) {
                         <a href="data_jenis_pelanggaran.php" class="nav-link text-white">Jenis Pelanggaran</a>
                     </li>
 
+                    <!-- LAPORAN ADMIN -->
+                    <li class="nav-item">
+                        <a href="laporan.php"
+                           class="nav-link <?= $halaman == 'laporan.php' ? 'active' : 'text-white'; ?>">
+                            Laporan
+                        </a>
+                    </li>
+
                 <?php } else { ?>
 
+                    <!-- MENU GURU -->
                     <li class="nav-item">
-                        <a href="dashboard.php" class="nav-link text-white">Dashboard</a>
+                        <a href="dashboard.php"
+                           class="nav-link <?= $halaman == 'dashboard.php' ? 'active' : 'text-white'; ?>">
+                            Dashboard
+                        </a>
                     </li>
 
                     <li class="nav-item">
@@ -132,18 +199,29 @@ if (!$query) {
                         </a>
                     </li>
 
+                    <!-- LAPORAN KHUSUS WALI KELAS -->
+                    <?php if ($status_wali_kelas) { ?>
+                    <li class="nav-item">
+                        <a href="laporan.php"
+                           class="nav-link <?= $halaman == 'laporan.php' ? 'active' : 'text-white'; ?>">
+                            Laporan
+                        </a>
+                    </li>
+                    <?php } ?>
+
                 <?php } ?>
 
+                <!-- ABOUT ME -->
                 <li class="nav-item">
-                    <a href="laporan.php" class="nav-link text-white">Laporan</a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="about_me.php" class="nav-link text-white">About Me</a>
+                    <a href="about_me.php"
+                       class="nav-link <?= $halaman == 'about_me.php' ? 'active' : 'text-white'; ?>">
+                        About Me
+                    </a>
                 </li>
 
                 <hr class="border-white">
 
+                <!-- LOGOUT -->
                 <li class="nav-item">
                     <a href="logout.php" class="nav-link text-white">Logout</a>
                 </li>
@@ -158,7 +236,9 @@ if (!$query) {
                 <!-- HEADER -->
                 <div class="bg-white rounded shadow-sm p-4 mb-4">
 
-                    <h2 class="fw-bold">Rekap Poin Pelanggaran</h2>
+                    <h2 class="fw-bold mb-2">
+                        Rekap Poin Pelanggaran
+                    </h2>
 
                     <p class="text-secondary mb-0">
                         Selamat datang,
@@ -167,12 +247,18 @@ if (!$query) {
 
                 </div>
 
-                <!-- TABEL REKAP -->
+                <!-- CARD REKAP -->
                 <div class="card border-0 shadow-sm">
 
-                    <div class="card-body p-4">
+                    <div class="card-header bg-white p-3">
 
-                        <h5 class="fw-bold mb-4">Data Rekap Poin Siswa</h5>
+                        <h5 class="fw-bold mb-0">
+                            Data Rekap Poin Siswa
+                        </h5>
+
+                    </div>
+
+                    <div class="card-body p-4">
 
                         <div class="table-responsive">
 
@@ -199,6 +285,7 @@ if (!$query) {
                                     ?>
 
                                         <tr>
+
                                             <td><?= $no++; ?></td>
 
                                             <td>
@@ -218,6 +305,7 @@ if (!$query) {
                                                     <?= htmlspecialchars($data['total_poin'] ?? '0'); ?> poin
                                                 </span>
                                             </td>
+
                                         </tr>
 
                                     <?php
@@ -240,8 +328,10 @@ if (!$query) {
                         </div>
 
                     </div>
+
                 </div>
 
+                <!-- FOOTER -->
                 <p class="text-secondary text-center mt-4 small">
                     © 2026 Sistem Pelanggaran Siswa
                 </p>
@@ -252,11 +342,13 @@ if (!$query) {
     </div>
 </div>
 
-<!-- JAVASCRIPT -->
+<!-- BOOTSTRAP JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
+<!-- DATATABLES JS -->
 <script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
 
+<!-- INISIALISASI DATATABLES -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
