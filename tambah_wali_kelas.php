@@ -1,3 +1,4 @@
+
 <?php
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
@@ -20,13 +21,33 @@ $query_tahun = mysqli_query($koneksi, "
 $query_kelas = mysqli_query($koneksi, "
     SELECT * FROM t_kelas
     WHERE status_aktif = 1
+    ORDER BY nama ASC
 ");
 
 // Data guru aktif
 $query_guru = mysqli_query($koneksi, "
     SELECT * FROM t_guru
     WHERE status_aktif = 1
+    ORDER BY nama ASC
 ");
+
+// Menyimpan data kelas ke array
+$daftar_kelas = [];
+
+if ($query_kelas) {
+    while ($kelas = mysqli_fetch_assoc($query_kelas)) {
+        $daftar_kelas[] = $kelas;
+    }
+}
+
+// Menyimpan data guru ke array
+$daftar_guru = [];
+
+if ($query_guru) {
+    while ($guru = mysqli_fetch_assoc($query_guru)) {
+        $daftar_guru[] = $guru;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -147,8 +168,10 @@ $query_guru = mysqli_query($koneksi, "
 
                     <form action="proses_tambah_wali_kelas.php" method="POST">
 
+                        <!-- TAHUN AJARAN -->
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Tahun Ajaran</label>
+
                             <select name="tahun_ajaran_id" class="form-select" required>
                                 <option value="">-- Pilih Tahun Ajaran --</option>
 
@@ -161,51 +184,113 @@ $query_guru = mysqli_query($koneksi, "
                             </select>
                         </div>
 
+                        <!-- PENCARIAN KELAS -->
                         <div class="mb-3">
+
                             <label class="form-label fw-semibold">Kelas</label>
-                            <select name="kelas_id" class="form-select" required>
-                                <option value="">-- Pilih Kelas --</option>
 
-                                <?php while ($kelas = mysqli_fetch_assoc($query_kelas)) { ?>
-                                    <option value="<?= $kelas['id']; ?>">
-                                        <?= htmlspecialchars($kelas['nama']); ?>
-                                    </option>
-                                <?php } ?>
+                            <div style="position: relative;">
 
-                            </select>
+                                <input type="text"
+                                       id="cari_kelas"
+                                       class="form-control"
+                                       placeholder="Ketik nama kelas..."
+                                       autocomplete="off"
+                                       required>
+
+                                <input type="hidden"
+                                       name="kelas_id"
+                                       id="kelas_id">
+
+                                <div id="hasil_kelas"
+                                     class="list-group"
+                                     style="
+                                        position:absolute;
+                                        top:calc(100% + 4px);
+                                        left:0;
+                                        width:100%;
+                                        z-index:99999;
+                                        display:none;
+                                        max-height:250px;
+                                        overflow-y:auto;
+                                        background:white;
+                                        box-shadow:0 4px 12px rgba(0,0,0,.15);
+                                     ">
+                                </div>
+
+                            </div>
+
+                            <small class="text-secondary d-block mt-2">
+                                Ketik nama kelas, lalu pilih kelas dari daftar yang muncul.
+                            </small>
+
                         </div>
 
+                        <!-- PENCARIAN GURU -->
                         <div class="mb-3">
+
                             <label class="form-label fw-semibold">Guru</label>
-                            <select name="guru_id" class="form-select" required>
-                                <option value="">-- Pilih Guru --</option>
 
-                                <?php while ($guru = mysqli_fetch_assoc($query_guru)) { ?>
-                                    <option value="<?= $guru['id']; ?>">
-                                        <?= htmlspecialchars($guru['nama']); ?>
-                                    </option>
-                                <?php } ?>
+                            <div style="position: relative;">
 
-                            </select>
+                                <input type="text"
+                                       id="cari_guru"
+                                       class="form-control"
+                                       placeholder="Ketik nama guru..."
+                                       autocomplete="off"
+                                       required>
+
+                                <input type="hidden"
+                                       name="guru_id"
+                                       id="guru_id">
+
+                                <div id="hasil_guru"
+                                     class="list-group"
+                                     style="
+                                        position:absolute;
+                                        top:calc(100% + 4px);
+                                        left:0;
+                                        width:100%;
+                                        z-index:99999;
+                                        display:none;
+                                        max-height:250px;
+                                        overflow-y:auto;
+                                        background:white;
+                                        box-shadow:0 4px 12px rgba(0,0,0,.15);
+                                     ">
+                                </div>
+
+                            </div>
+
+                            <small class="text-secondary d-block mt-2">
+                                Ketik nama guru, lalu pilih guru dari daftar yang muncul.
+                            </small>
+
                         </div>
 
+                        <!-- TANGGAL MULAI -->
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Tanggal Mulai</label>
+
                             <input type="date"
                                    name="tanggal_mulai"
                                    class="form-control"
                                    required>
                         </div>
 
+                        <!-- TANGGAL SELESAI -->
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Tanggal Selesai</label>
+
                             <input type="date"
                                    name="tanggal_selesai"
                                    class="form-control">
                         </div>
 
+                        <!-- STATUS -->
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Status</label>
+
                             <select name="status_aktif" class="form-select" required>
                                 <option value="1">Aktif</option>
                                 <option value="0">Tidak Aktif</option>
@@ -215,13 +300,18 @@ $query_guru = mysqli_query($koneksi, "
                         <hr>
 
                         <div class="d-flex gap-2 mt-3">
-                            <button type="submit" name="simpan" class="btn btn-primary">
+
+                            <button type="submit"
+                                    name="simpan"
+                                    class="btn btn-primary">
                                 Simpan
                             </button>
 
-                            <a href="data_wali_kelas.php" class="btn btn-secondary">
+                            <a href="data_wali_kelas.php"
+                               class="btn btn-secondary">
                                 Batal
                             </a>
+
                         </div>
 
                     </form>
@@ -233,6 +323,157 @@ $query_guru = mysqli_query($koneksi, "
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // DATA KELAS DARI DATABASE
+        const dataKelas = <?= json_encode($daftar_kelas); ?>;
+
+        // DATA GURU DARI DATABASE
+        const dataGuru = <?= json_encode($daftar_guru); ?>;
+
+
+        // PENCARIAN KELAS
+        const cariKelas = document.getElementById('cari_kelas');
+        const kelasId = document.getElementById('kelas_id');
+        const hasilKelas = document.getElementById('hasil_kelas');
+
+        cariKelas.addEventListener('input', function () {
+
+            const kata = this.value.toLowerCase().trim();
+
+            // Kosongkan ID jika pencarian diubah
+            kelasId.value = '';
+
+            hasilKelas.innerHTML = '';
+            hasilKelas.style.display = 'none';
+
+            if (kata == '') {
+                return;
+            }
+
+            let ditemukan = 0;
+
+            dataKelas.forEach(function (kelas) {
+
+                if (kelas.nama.toLowerCase().includes(kata)) {
+
+                    ditemukan++;
+
+                    const pilihan = document.createElement('button');
+
+                    pilihan.type = 'button';
+                    pilihan.className = 'list-group-item list-group-item-action';
+                    pilihan.textContent = kelas.nama;
+
+                    pilihan.addEventListener('click', function () {
+
+                        cariKelas.value = kelas.nama;
+                        kelasId.value = kelas.id;
+
+                        hasilKelas.style.display = 'none';
+
+                    });
+
+                    hasilKelas.appendChild(pilihan);
+                }
+
+            });
+
+            if (ditemukan == 0) {
+
+                const pesan = document.createElement('div');
+
+                pesan.className = 'list-group-item text-secondary';
+                pesan.textContent = 'Kelas tidak ditemukan';
+
+                hasilKelas.appendChild(pesan);
+            }
+
+            hasilKelas.style.display = 'block';
+
+        });
+
+
+        // PENCARIAN GURU
+        const cariGuru = document.getElementById('cari_guru');
+        const guruId = document.getElementById('guru_id');
+        const hasilGuru = document.getElementById('hasil_guru');
+
+        cariGuru.addEventListener('input', function () {
+
+            const kata = this.value.toLowerCase().trim();
+
+            // Kosongkan ID jika pencarian diubah
+            guruId.value = '';
+
+            hasilGuru.innerHTML = '';
+            hasilGuru.style.display = 'none';
+
+            if (kata == '') {
+                return;
+            }
+
+            let ditemukan = 0;
+
+            dataGuru.forEach(function (guru) {
+
+                if (guru.nama.toLowerCase().includes(kata)) {
+
+                    ditemukan++;
+
+                    const pilihan = document.createElement('button');
+
+                    pilihan.type = 'button';
+                    pilihan.className = 'list-group-item list-group-item-action';
+                    pilihan.textContent = guru.nama;
+
+                    pilihan.addEventListener('click', function () {
+
+                        cariGuru.value = guru.nama;
+                        guruId.value = guru.id;
+
+                        hasilGuru.style.display = 'none';
+
+                    });
+
+                    hasilGuru.appendChild(pilihan);
+                }
+
+            });
+
+            if (ditemukan == 0) {
+
+                const pesan = document.createElement('div');
+
+                pesan.className = 'list-group-item text-secondary';
+                pesan.textContent = 'Guru tidak ditemukan';
+
+                hasilGuru.appendChild(pesan);
+            }
+
+            hasilGuru.style.display = 'block';
+
+        });
+
+
+        // TUTUP HASIL PENCARIAN JIKA KLIK DI LUAR
+        document.addEventListener('click', function (event) {
+
+            if (!cariKelas.contains(event.target) &&
+                !hasilKelas.contains(event.target)) {
+
+                hasilKelas.style.display = 'none';
+            }
+
+            if (!cariGuru.contains(event.target) &&
+                !hasilGuru.contains(event.target)) {
+
+                hasilGuru.style.display = 'none';
+            }
+
+        });
+
+    </script>
 
 </body>
 </html>

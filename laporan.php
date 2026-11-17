@@ -1,3 +1,4 @@
+
 <?php
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
@@ -65,11 +66,10 @@ if ($role == 'guru') {
         }
     }
 
+    // GURU BIASA TIDAK BOLEH MENGAKSES LAPORAN
+
     if (count($id_kelas_wali) == 0) {
-        echo "<script>
-            alert('Akses ditolak! Anda bukan wali kelas pada tahun ajaran aktif.');
-            window.location.href = 'dashboard.php';
-        </script>";
+        header("Location: dashboard.php");
         exit;
     }
 
@@ -441,16 +441,22 @@ if (isset($_GET['cetak'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $judul_cetak; ?></title>
-    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="style/style.css?v=2026111601">
 </head>
 
 <body class="<?= $kelas_cetak; ?> halaman-cetak">
 
-    <div class="header-cetak">
-        <h2>SMK MUHAMMADIYAH TASIKMALAYA</h2>
-        <h3><?= $judul_cetak; ?></h3>
-        <p>SISTEM INFORMASI PELANGGARAN SISWA</p>
+    <div class="kop-cetak">
+        <div class="logo-cetak">
+            <img src="img/logo_smk_muhammadiyah.png" alt="Logo SMK Muhammadiyah Tasikmalaya">
+        </div>
+        <div class="identitas-sekolah">
+            <h2>SMK MUHAMMADIYAH TASIKMALAYA</h2>
+            <h3><?= $judul_cetak; ?></h3>
+            <p>SISTEM INFORMASI PELANGGARAN SISWA</p>
+        </div>
     </div>
+    <div class="garis-kop-cetak"></div>
 
     <?php if ($jenis_cetak == 'individu' && $data_siswa) { ?>
 
@@ -632,6 +638,7 @@ if (isset($_GET['cetak'])) {
 <div class="container-fluid">
     <div class="row">
 
+        <!-- SIDEBAR -->
         <div class="sidebar col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto">
 
             <h4 class="text-white mb-4">
@@ -737,12 +744,18 @@ if (isset($_GET['cetak'])) {
 
                 <?php } ?>
 
-                <li class="nav-item">
-                    <a href="laporan.php"
-                       class="nav-link <?= $halaman == 'laporan.php' ? 'active' : 'text-white'; ?>">
-                        Laporan
-                    </a>
-                </li>
+                <!-- LAPORAN KHUSUS ADMIN DAN WALI KELAS -->
+
+                <?php if ($role == 'admin' || ($role == 'guru' && count($id_kelas_wali) > 0)) { ?>
+
+                    <li class="nav-item">
+                        <a href="laporan.php"
+                           class="nav-link <?= $halaman == 'laporan.php' ? 'active' : 'text-white'; ?>">
+                            Laporan
+                        </a>
+                    </li>
+
+                <?php } ?>
 
                 <li class="nav-item">
                     <a href="about_me.php"
@@ -762,8 +775,12 @@ if (isset($_GET['cetak'])) {
             </ul>
         </div>
 
+        <!-- KONTEN LAPORAN -->
+
         <main class="content-main">
             <div class="page-content">
+
+                <!-- HEADER -->
 
                 <div class="bg-white rounded shadow-sm p-4 mb-4">
                     <h2 class="fw-bold">
@@ -775,6 +792,8 @@ if (isset($_GET['cetak'])) {
                         <b><?= htmlspecialchars($nama_login); ?></b>
                     </p>
                 </div>
+
+                <!-- FILTER LAPORAN -->
 
                 <div class="card-data filter-card mb-4"
                      style="overflow: visible !important; position: relative; z-index: 10;">
@@ -855,6 +874,8 @@ if (isset($_GET['cetak'])) {
                     </div>
                 </div>
 
+                <!-- REKAP SISWA -->
+
                 <div class="card-data rekap-card mb-4">
 
                     <div class="card-header">
@@ -883,7 +904,7 @@ if (isset($_GET['cetak'])) {
                     </div>
 
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table class="table table-hover table-bordered">
                             <thead>
                                 <tr>
                                     <th width="50">No</th>
@@ -945,6 +966,8 @@ if (isset($_GET['cetak'])) {
                         </table>
                     </div>
                 </div>
+
+                <!-- DETAIL LAPORAN -->
 
                 <?php if ($data_siswa && $jumlah_detail > 0) { ?>
 
@@ -1077,6 +1100,8 @@ if (isset($_GET['cetak'])) {
     </div>
 </div>
 
+<!-- FRAME CETAK -->
+
 <iframe id="frameCetak"
         title="Dokumen cetak"
         style="
@@ -1088,6 +1113,8 @@ if (isset($_GET['cetak'])) {
             border: 0;
         ">
 </iframe>
+
+<!-- JAVASCRIPT -->
 
 <script>
 const inputSiswa = document.getElementById('cari_siswa');

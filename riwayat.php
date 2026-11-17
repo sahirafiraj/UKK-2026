@@ -10,6 +10,7 @@ if (!isset($_SESSION['login'])) {
 
 $nama_login = $_SESSION['name'] ?? 'Pengguna';
 $role = strtolower(trim($_SESSION['role'] ?? ''));
+$id_user = (int) ($_SESSION['id'] ?? 0);
 $halaman = basename($_SERVER['PHP_SELF']);
 
 if ($role != 'admin' && $role != 'guru') {
@@ -17,7 +18,55 @@ if ($role != 'admin' && $role != 'guru') {
     exit;
 }
 
-// ADMIN: semua pelanggaran yang selesai
+// CEK STATUS WALI KELAS
+$status_wali_kelas = false;
+
+if ($role == 'guru') {
+
+    $query_guru = mysqli_query($koneksi, "
+        SELECT id
+        FROM t_guru
+        WHERE user_id = '$id_user'
+        AND status_aktif = 1
+        LIMIT 1
+    ");
+
+    if ($query_guru && mysqli_num_rows($query_guru) > 0) {
+
+        $data_guru = mysqli_fetch_assoc($query_guru);
+        $guru_id = $data_guru['id'];
+
+        // CEK TAHUN AJARAN AKTIF
+        $query_tahun_ajaran = mysqli_query($koneksi, "
+            SELECT id
+            FROM t_tahun_ajaran
+            WHERE status_aktif = 1
+            LIMIT 1
+        ");
+
+        if ($query_tahun_ajaran && mysqli_num_rows($query_tahun_ajaran) > 0) {
+
+            $data_tahun_ajaran = mysqli_fetch_assoc($query_tahun_ajaran);
+            $tahun_ajaran_id = $data_tahun_ajaran['id'];
+
+            // CEK APAKAH GURU MERUPAKAN WALI KELAS
+            $query_wali_kelas = mysqli_query($koneksi, "
+                SELECT id
+                FROM t_wali_kelas
+                WHERE guru_id = '$guru_id'
+                AND tahun_ajaran_id = '$tahun_ajaran_id'
+                AND status_aktif = 1
+                LIMIT 1
+            ");
+
+            if ($query_wali_kelas && mysqli_num_rows($query_wali_kelas) > 0) {
+                $status_wali_kelas = true;
+            }
+        }
+    }
+}
+
+// ADMIN: SEMUA PELANGGARAN SELESAI
 if ($role == 'admin') {
 
     $query = mysqli_query($koneksi, "
@@ -33,11 +82,8 @@ if ($role == 'admin') {
 
 } else {
 
-    // GURU: hanya pelanggaran milik guru login yang selesai
-    $nama_guru_login = mysqli_real_escape_string(
-        $koneksi,
-        $nama_login
-    );
+    // GURU: PELANGGARAN MILIK GURU LOGIN
+    $nama_guru_login = mysqli_real_escape_string($koneksi, $nama_login);
 
     $query = mysqli_query($koneksi, "
         SELECT
@@ -59,6 +105,7 @@ if (!$query) {
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -91,8 +138,12 @@ if (!$query) {
 
                 <?php if ($role == 'admin') { ?>
 
+                    <!-- MENU ADMIN -->
                     <li class="nav-item">
-                        <a href="dashboard.php" class="nav-link <?= $halaman == 'dashboard.php' ? 'active' : 'text-white'; ?>">Dashboard</a>
+                        <a href="dashboard.php"
+                           class="nav-link <?= $halaman == 'dashboard.php' ? 'active' : 'text-white'; ?>">
+                            Dashboard
+                        </a>
                     </li>
 
                     <li class="nav-item">
@@ -128,13 +179,20 @@ if (!$query) {
                     </li>
 
                     <li class="nav-item">
-                        <a href="laporan.php" class="nav-link text-white">Laporan</a>
+                        <a href="laporan.php"
+                           class="nav-link <?= $halaman == 'laporan.php' ? 'active' : 'text-white'; ?>">
+                            Laporan
+                        </a>
                     </li>
 
                 <?php } else { ?>
 
+                    <!-- MENU GURU -->
                     <li class="nav-item">
-                        <a href="dashboard.php" class="nav-link text-white">Dashboard</a>
+                        <a href="dashboard.php"
+                           class="nav-link <?= $halaman == 'dashboard.php' ? 'active' : 'text-white'; ?>">
+                            Dashboard
+                        </a>
                     </li>
 
                     <li class="nav-item">
@@ -146,25 +204,39 @@ if (!$query) {
                     </li>
 
                     <li class="nav-item">
-                        <a href="riwayat.php" class="nav-link <?= $halaman == 'riwayat.php' ? 'active' : 'text-white'; ?>">Riwayat</a>
+                        <a href="riwayat.php"
+                           class="nav-link <?= $halaman == 'riwayat.php' ? 'active' : 'text-white'; ?>">
+                            Riwayat
+                        </a>
                     </li>
 
                     <li class="nav-item">
                         <a href="rekap_poin.php" class="nav-link text-white">Rekap Poin</a>
                     </li>
 
+                    <!-- LAPORAN KHUSUS WALI KELAS -->
+                    <?php if ($status_wali_kelas) { ?>
+                    <li class="nav-item">
+                        <a href="laporan.php"
+                           class="nav-link <?= $halaman == 'laporan.php' ? 'active' : 'text-white'; ?>">
+                            Laporan
+                        </a>
+                    </li>
+                    <?php } ?>
+
                 <?php } ?>
 
+                <!-- ABOUT ME -->
                 <li class="nav-item">
-                    <a href="laporan.php" class="nav-link text-white">Laporan</a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="about_me.php" class="nav-link text-white">About Me</a>
+                    <a href="about_me.php"
+                       class="nav-link <?= $halaman == 'about_me.php' ? 'active' : 'text-white'; ?>">
+                        About Me
+                    </a>
                 </li>
 
                 <hr class="border-white">
 
+                <!-- LOGOUT -->
                 <li class="nav-item">
                     <a href="logout.php" class="nav-link text-white">Logout</a>
                 </li>
@@ -179,7 +251,9 @@ if (!$query) {
                 <!-- HEADER -->
                 <div class="bg-white rounded shadow-sm p-4 mb-4">
 
-                    <h2 class="fw-bold">Riwayat Pelanggaran</h2>
+                    <h2 class="fw-bold mb-2">
+                        Riwayat Pelanggaran
+                    </h2>
 
                     <p class="text-secondary mb-0">
                         Selamat datang,
@@ -191,13 +265,20 @@ if (!$query) {
                 <!-- CARD RIWAYAT -->
                 <div class="card border-0 shadow-sm">
 
-                    <div class="card-body p-4">
+                    <div class="card-header bg-white p-3">
 
-                        <h5 class="fw-bold mb-4">Daftar Pelanggaran</h5>
+                        <h5 class="fw-bold mb-0">
+                            Daftar Pelanggaran
+                        </h5>
+
+                    </div>
+
+                    <div class="card-body p-4">
 
                         <div class="table-responsive">
 
-                            <table class="table table-bordered table-hover align-middle" id="tabelRiwayat">
+                            <table class="table table-bordered table-hover align-middle"
+                                   id="tabelRiwayat">
 
                                 <thead class="table-primary">
                                     <tr>
@@ -223,29 +304,47 @@ if (!$query) {
                                     ?>
 
                                     <tr>
+
                                         <td><?= $no++; ?></td>
 
-                                        <td><?= htmlspecialchars($data['nama_siswa'] ?? '-'); ?></td>
+                                        <td>
+                                            <?= htmlspecialchars($data['nama_siswa'] ?? '-'); ?>
+                                        </td>
 
-                                        <td><?= htmlspecialchars($data['nama_pelanggaran'] ?? '-'); ?></td>
+                                        <td>
+                                            <?= htmlspecialchars($data['nama_pelanggaran'] ?? '-'); ?>
+                                        </td>
 
-                                        <td><?= htmlspecialchars($data['nama_kategori'] ?? '-'); ?></td>
+                                        <td>
+                                            <?= htmlspecialchars($data['nama_kategori'] ?? '-'); ?>
+                                        </td>
 
-                                        <td><?= htmlspecialchars($data['tanggal'] ?? '-'); ?></td>
+                                        <td>
+                                            <?= htmlspecialchars($data['tanggal'] ?? '-'); ?>
+                                        </td>
 
-                                        <td><?= htmlspecialchars($data['poin'] ?? '0'); ?></td>
+                                        <td>
+                                            <?= htmlspecialchars($data['poin'] ?? '0'); ?>
+                                        </td>
 
-                                        <td><?= htmlspecialchars($data['nama_guru'] ?? '-'); ?></td>
+                                        <td>
+                                            <?= htmlspecialchars($data['nama_guru'] ?? '-'); ?>
+                                        </td>
 
-                                        <td><?= htmlspecialchars($data['keterangan'] ?? '-'); ?></td>
+                                        <td>
+                                            <?= htmlspecialchars($data['keterangan'] ?? '-'); ?>
+                                        </td>
 
-                                        <td><?= htmlspecialchars($data['tindakan'] ?? '-'); ?></td>
+                                        <td>
+                                            <?= htmlspecialchars($data['tindakan'] ?? '-'); ?>
+                                        </td>
 
                                         <td>
                                             <span class="badge bg-success">
                                                 Selesai
                                             </span>
                                         </td>
+
                                     </tr>
 
                                     <?php } ?>
@@ -257,6 +356,7 @@ if (!$query) {
                         </div>
 
                     </div>
+
                 </div>
 
                 <!-- FOOTER -->

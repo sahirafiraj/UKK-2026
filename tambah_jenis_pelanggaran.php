@@ -39,6 +39,29 @@ if (isset($_POST['simpan'])) {
         $pesan = "Gagal menyimpan data: " . mysqli_error($koneksi);
     }
 }
+
+// MENGAMBIL DATA KATEGORI
+$kategori_query = mysqli_query($koneksi, "
+    SELECT * FROM t_pelanggaran_kategori
+    ORDER BY id DESC
+");
+
+$daftar_kategori = [];
+
+if ($kategori_query) {
+    while ($kat = mysqli_fetch_assoc($kategori_query)) {
+
+        $nama_kategori = $kat['nama']
+            ?? $kat['kategori']
+            ?? $kat['nama_kategori']
+            ?? 'Kategori ' . $kat['id'];
+
+        $daftar_kategori[] = [
+            'id' => $kat['id'],
+            'nama' => $nama_kategori
+        ];
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -60,6 +83,7 @@ if (isset($_POST['simpan'])) {
 <div class="container-fluid">
     <div class="row">
 
+        <!-- SIDEBAR -->
         <div class="sidebar col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto">
 
             <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
@@ -119,6 +143,7 @@ if (isset($_POST['simpan'])) {
             </ul>
         </div>
 
+        <!-- KONTEN -->
         <main class="content-main">
             <div class="page-content">
 
@@ -145,62 +170,60 @@ if (isset($_POST['simpan'])) {
                             </div>
                         <?php } ?>
 
-                        <form method="POST">
+                        <form method="POST" id="formPelanggaran">
 
                             <div class="mb-3">
                                 <label class="form-label">Kode Pelanggaran</label>
-                                <input type="text" name="kode"
+
+                                <input type="text"
+                                       name="kode"
                                        class="form-control"
-                                       placeholder=""
                                        required>
                             </div>
 
                             <div class="mb-3">
                                 <label class="form-label">Nama Pelanggaran</label>
-                                <input type="text" name="nama"
+
+                                <input type="text"
+                                       name="nama"
                                        class="form-control"
-                                       placeholder=""
                                        required>
                             </div>
 
+                            <!-- PENCARIAN KATEGORI -->
                             <div class="mb-3">
                                 <label class="form-label">Kategori Pelanggaran</label>
 
-                                <select name="kategori" class="form-select" required>
-                                    <option value="">-- Pilih Kategori --</option>
+                                <input type="text"
+                                       id="cari_kategori"
+                                       class="form-control"
+                                       placeholder="Cari nama kategori..."
+                                       autocomplete="off"
+                                       required>
 
-                                    <?php
-                                    $kategori_query = mysqli_query(
-                                        $koneksi,
-                                        "SELECT * FROM t_pelanggaran_kategori ORDER BY id DESC"
-                                    );
+                                <input type="hidden"
+                                       name="kategori"
+                                       id="kategori_id">
 
-                                    if ($kategori_query) {
-                                        while ($kat = mysqli_fetch_assoc($kategori_query)) {
-                                            $nama_kategori = $kat['nama']
-                                                ?? $kat['kategori']
-                                                ?? $kat['nama_kategori']
-                                                ?? 'Kategori ' . $kat['id'];
-                                    ?>
-                                        <option value="<?= $kat['id']; ?>">
-                                            <?= htmlspecialchars($nama_kategori); ?>
-                                        </option>
-                                    <?php
-                                        }
-                                    }
-                                    ?>
-                                </select>
+                                <div id="hasil_kategori"
+                                     class="list-group mt-1"
+                                     style="position: relative; z-index: 10;">
+                                </div>
                             </div>
 
                             <div class="mb-3">
                                 <label class="form-label">Poin Pelanggaran</label>
-                                <input type="number" name="poin"
+
+                                <input type="number"
+                                       name="poin"
                                        class="form-control"
-                                       min="0" required>
+                                       min="0"
+                                       required>
                             </div>
 
                             <div class="mb-3">
                                 <label class="form-label">Deskripsi</label>
+
                                 <textarea name="deskripsi"
                                           class="form-control"
                                           rows="3"
@@ -218,18 +241,18 @@ if (isset($_POST['simpan'])) {
                             </div>
 
                             <hr>
-                            
-                        <div class="d-flex gap-2 mt-3">
 
-                            <button type="submit" name="simpan" class="btn btn-primary">
-                                Simpan Data
-                            </button>
+                            <div class="d-flex gap-2 mt-3">
 
-                            <a href="data_jenis_pelanggaran.php" class="btn btn-secondary">
-                                Kembali
-                            </a>
+                                <button type="submit" name="simpan" class="btn btn-primary">
+                                    Simpan Data
+                                </button>
 
-                        </div>
+                                <a href="data_jenis_pelanggaran.php" class="btn btn-secondary">
+                                    Kembali
+                                </a>
+
+                            </div>
 
                         </form>
 
@@ -241,6 +264,79 @@ if (isset($_POST['simpan'])) {
 
     </div>
 </div>
+
+<script>
+    // DATA KATEGORI DARI DATABASE
+    const dataKategori = <?= json_encode($daftar_kategori, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>;
+
+    const cariKategori = document.getElementById('cari_kategori');
+    const hasilKategori = document.getElementById('hasil_kategori');
+    const kategoriId = document.getElementById('kategori_id');
+
+    // PENCARIAN KATEGORI
+    cariKategori.addEventListener('input', function () {
+
+        const kata = this.value.toLowerCase();
+
+        kategoriId.value = '';
+        hasilKategori.innerHTML = '';
+
+        if (kata === '') {
+            return;
+        }
+
+        const hasil = dataKategori.filter(function (kategori) {
+            return (kategori.nama || '').toLowerCase().includes(kata);
+        });
+
+        if (hasil.length === 0) {
+            hasilKategori.innerHTML = `
+                <div class="list-group-item text-secondary">
+                    Kategori tidak ditemukan
+                </div>
+            `;
+            return;
+        }
+
+        hasil.forEach(function (kategori) {
+
+            const tombol = document.createElement('button');
+
+            tombol.type = 'button';
+            tombol.className = 'list-group-item list-group-item-action';
+            tombol.textContent = kategori.nama;
+
+            tombol.addEventListener('click', function () {
+                cariKategori.value = kategori.nama;
+                kategoriId.value = kategori.id;
+                hasilKategori.innerHTML = '';
+            });
+
+            hasilKategori.appendChild(tombol);
+        });
+    });
+
+    // CEK KATEGORI SEBELUM FORM DIKIRIM
+    document.getElementById('formPelanggaran').addEventListener('submit', function (e) {
+
+        if (kategoriId.value === '') {
+            e.preventDefault();
+
+            alert('Silakan pilih kategori dari hasil pencarian!');
+            cariKategori.focus();
+        }
+
+    });
+
+    // TUTUP HASIL PENCARIAN JIKA KLIK DI LUAR
+    document.addEventListener('click', function (e) {
+
+        if (!cariKategori.contains(e.target) && !hasilKategori.contains(e.target)) {
+            hasilKategori.innerHTML = '';
+        }
+
+    });
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
