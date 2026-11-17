@@ -1,3 +1,4 @@
+
 <?php
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
@@ -9,7 +10,7 @@ if (!isset($_SESSION['login'])) {
 
 $nama_login = $_SESSION['name'] ?? 'Pengguna';
 $role = strtolower(trim($_SESSION['role'] ?? ''));
-$id_user = $_SESSION['id'] ?? 0;
+$id_user = (int) ($_SESSION['id'] ?? 0);
 
 if (!in_array($role, ['admin', 'guru'])) {
     echo "Anda tidak memiliki akses";
@@ -17,6 +18,8 @@ if (!in_array($role, ['admin', 'guru'])) {
 }
 
 $name = $_SESSION['name'] ?? 'Admin';
+
+// TAHUN AJARAN AKTIF
 
 $query_tahun = mysqli_query($koneksi, "
     SELECT id
@@ -27,6 +30,8 @@ $query_tahun = mysqli_query($koneksi, "
 
 $data_tahun = mysqli_fetch_assoc($query_tahun);
 $id_tahun = $data_tahun['id'] ?? 0;
+
+// DATA GURU DAN WALI KELAS
 
 $id_guru = 0;
 $status_wali_kelas = false;
@@ -64,7 +69,8 @@ if ($role == 'guru') {
         }
     }
 }
-/* DASHBOARD ADMIN */
+
+// DASHBOARD ADMIN
 
 $query_siswa = mysqli_query($koneksi, "
     SELECT COUNT(*) AS total
@@ -97,13 +103,14 @@ $query_kategori = mysqli_query($koneksi, "
 
 $total_kategori = mysqli_fetch_assoc($query_kategori)['total'] ?? 0;
 
-/* DASHBOARD GURU DAN WALI KELAS */
+// DASHBOARD GURU DAN WALI KELAS
 
 $filter_pelanggaran = "";
 
 if ($role == 'guru' && $id_guru > 0) {
 
     if ($status_wali_kelas) {
+
         $filter_pelanggaran = "
             WHERE kelas_id IN (
                 SELECT kelas_id
@@ -113,15 +120,20 @@ if ($role == 'guru' && $id_guru > 0) {
                 AND status_aktif = 1
             )
         ";
+
     } else {
+
         $filter_pelanggaran = "
             WHERE guru_id = '$id_guru'
         ";
     }
 
 } else {
+
     $filter_pelanggaran = "WHERE 1 = 0";
 }
+
+// TOTAL PELANGGARAN
 
 $query_total_guru = mysqli_query($koneksi, "
     SELECT COUNT(*) AS total
@@ -130,6 +142,8 @@ $query_total_guru = mysqli_query($koneksi, "
 ");
 
 $total_pelanggaran_guru = mysqli_fetch_assoc($query_total_guru)['total'] ?? 0;
+
+// BELUM DITINDAKLANJUTI
 
 $query_belum = mysqli_query($koneksi, "
     SELECT COUNT(*) AS total
@@ -140,6 +154,8 @@ $query_belum = mysqli_query($koneksi, "
 
 $total_belum = mysqli_fetch_assoc($query_belum)['total'] ?? 0;
 
+// SELESAI DITINDAKLANJUTI
+
 $query_selesai = mysqli_query($koneksi, "
     SELECT COUNT(*) AS total
     FROM t_pelanggaran_siswa
@@ -148,6 +164,8 @@ $query_selesai = mysqli_query($koneksi, "
 ");
 
 $total_selesai = mysqli_fetch_assoc($query_selesai)['total'] ?? 0;
+
+// TOTAL POIN
 
 $query_poin = mysqli_query($koneksi, "
     SELECT COALESCE(SUM(poin), 0) AS total
@@ -174,99 +192,112 @@ $total_poin = mysqli_fetch_assoc($query_poin)['total'] ?? 0;
 
 <body>
 
-    <div class="container-fluid">
-        <div class="row">
+<div class="container-fluid">
+    <div class="row">
 
-            <!-- SIDEBAR -->
-            <div class="sidebar col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto">
+        <!-- SIDEBAR -->
 
-                <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
+        <div class="sidebar col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto">
 
-                <ul class="nav nav-pills flex-column gap-1">
+            <h4 class="text-white mb-4">
+                Sistem Pelanggaran
+            </h4>
+
+            <ul class="nav nav-pills flex-column gap-1">
+
+                <!-- DASHBOARD -->
+
+                <li class="nav-item">
+                    <a href="dashboard.php" class="nav-link active">
+                        Dashboard
+                    </a>
+                </li>
+
+                <?php if ($role == 'admin') { ?>
+
+                    <!-- MENU ADMIN -->
 
                     <li class="nav-item">
-                        <a href="dashboard.php" class="nav-link active">
-                            Dashboard
+                        <a href="data_siswa.php" class="nav-link text-white">
+                            Data Siswa
                         </a>
                     </li>
 
-                    <?php if ($role == 'admin') { ?>
+                    <li class="nav-item">
+                        <a href="data_guru.php" class="nav-link text-white">
+                            Data Guru
+                        </a>
+                    </li>
 
-                        <li class="nav-item">
-                            <a href="data_siswa.php" class="nav-link text-white">
-                                Data Siswa
-                            </a>
-                        </li>
+                    <li class="nav-item">
+                        <a href="data_kelas.php" class="nav-link text-white">
+                            Data Kelas
+                        </a>
+                    </li>
 
-                        <li class="nav-item">
-                            <a href="data_guru.php" class="nav-link text-white">
-                                Data Guru
-                            </a>
-                        </li>
+                    <li class="nav-item">
+                        <a href="data_tahun_ajaran.php" class="nav-link text-white">
+                            Tahun Ajaran
+                        </a>
+                    </li>
 
-                        <li class="nav-item">
-                            <a href="data_kelas.php" class="nav-link text-white">
-                                Data Kelas
-                            </a>
-                        </li>
+                    <li class="nav-item">
+                        <a href="data_penempatan_siswa.php" class="nav-link text-white">
+                            Penempatan Siswa
+                        </a>
+                    </li>
 
-                        <li class="nav-item">
-                            <a href="data_tahun_ajaran.php" class="nav-link text-white">
-                                Tahun Ajaran
-                            </a>
-                        </li>
+                    <li class="nav-item">
+                        <a href="data_wali_kelas.php" class="nav-link text-white">
+                            Data Wali Kelas
+                        </a>
+                    </li>
 
-                        <li class="nav-item">
-                            <a href="data_penempatan_siswa.php" class="nav-link text-white">
-                                Penempatan Siswa
-                            </a>
-                        </li>
+                    <li class="nav-item">
+                        <a href="data_kategori_pelanggaran.php" class="nav-link text-white">
+                            Kategori Pelanggaran
+                        </a>
+                    </li>
 
-                        <li class="nav-item">
-                            <a href="data_wali_kelas.php" class="nav-link text-white">
-                                Data Wali Kelas
-                            </a>
-                        </li>
+                    <li class="nav-item">
+                        <a href="data_jenis_pelanggaran.php" class="nav-link text-white">
+                            Jenis Pelanggaran
+                        </a>
+                    </li>
 
-                        <li class="nav-item">
-                            <a href="data_kategori_pelanggaran.php" class="nav-link text-white">
-                                Kategori Pelanggaran
-                            </a>
-                        </li>
+                <?php } else { ?>
 
-                        <li class="nav-item">
-                            <a href="data_jenis_pelanggaran.php" class="nav-link text-white">
-                                Jenis Pelanggaran
-                            </a>
-                        </li>
+                    <!-- MENU GURU -->
 
-                    <?php } else { ?>
+                    <li class="nav-item">
+                        <a href="catat_pelanggaran.php" class="nav-link text-white">
+                            Catat Pelanggaran
+                        </a>
+                    </li>
 
-                        <li class="nav-item">
-                            <a href="catat_pelanggaran.php" class="nav-link text-white">
-                                Catat Pelanggaran
-                            </a>
-                        </li>
+                    <li class="nav-item">
+                        <a href="tindakan.php" class="nav-link text-white">
+                            Tindakan
+                        </a>
+                    </li>
 
-                        <li class="nav-item">
-                            <a href="tindakan.php" class="nav-link text-white">
-                                Tindakan
-                            </a>
-                        </li>
+                    <li class="nav-item">
+                        <a href="riwayat.php" class="nav-link text-white">
+                            Riwayat
+                        </a>
+                    </li>
 
-                        <li class="nav-item">
-                            <a href="riwayat.php" class="nav-link text-white">
-                                Riwayat
-                            </a>
-                        </li>
+                    <li class="nav-item">
+                        <a href="rekap_poin.php" class="nav-link text-white">
+                            Rekap Poin
+                        </a>
+                    </li>
 
-                        <li class="nav-item">
-                            <a href="rekap_poin.php" class="nav-link text-white">
-                                Rekap Poin
-                            </a>
-                        </li>
+                <?php } ?>
 
-                    <?php } ?>
+                <!-- LAPORAN KHUSUS ADMIN DAN WALI KELAS -->
+
+                <?php if ($role == 'admin' || ($role == 'guru' && $status_wali_kelas)) { ?>
 
                     <li class="nav-item">
                         <a href="laporan.php" class="nav-link text-white">
@@ -274,28 +305,36 @@ $total_poin = mysqli_fetch_assoc($query_poin)['total'] ?? 0;
                         </a>
                     </li>
 
-                    <li class="nav-item">
-                        <a href="about_me.php" class="nav-link text-white">
-                            About Me
-                        </a>
-                    </li>
+                <?php } ?>
 
-                    <hr class="border-white">
+                <!-- ABOUT ME -->
 
-                    <li class="nav-item">
-                        <a href="logout.php" class="nav-link text-white">
-                            Logout
-                        </a>
-                    </li>
+                <li class="nav-item">
+                    <a href="about_me.php" class="nav-link text-white">
+                        About Me
+                    </a>
+                </li>
 
-                </ul>
-            </div>
+                <hr class="border-white">
 
-            <!-- KONTEN DASHBOARD -->
-            <main class="content-main">
+                <!-- LOGOUT -->
+
+                <li class="nav-item">
+                    <a href="logout.php" class="nav-link text-white">
+                        Logout
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+
+        <!-- KONTEN DASHBOARD -->
+
+        <main class="content-main">
             <div class="page-content">
 
                 <!-- HEADER -->
+
                 <div class="bg-white rounded shadow-sm p-4 mb-4">
 
                     <h2 class="fw-bold">
@@ -309,11 +348,11 @@ $total_poin = mysqli_fetch_assoc($query_poin)['total'] ?? 0;
 
                 </div>
 
-                    <!-- CARD ADMIN -->
-                    <?php if ($role == 'admin') { ?>
+                <!-- DASHBOARD ADMIN -->
 
-                        <div class="dashboard-cards">
+                <?php if ($role == 'admin') { ?>
 
+<<<<<<< Updated upstream
                             <div class="dashboard-card">
                                 <p>Total Siswa</p>
                                 <h2><?= $total_siswa; ?></h2>
@@ -337,50 +376,93 @@ $total_poin = mysqli_fetch_assoc($query_poin)['total'] ?? 0;
                                 <h2><?= $total_kategori; ?></h2>
                                 <a href="data_kategori_pelanggaran.php" class="btn btn-primary">Lihat Data</a>
                             </div>
+=======
+                    <div class="dashboard-cards">
+>>>>>>> Stashed changes
 
+                        <div class="dashboard-card">
+                            <p>Total Siswa</p>
+                            <h2><?= $total_siswa; ?></h2>
+                            <a href="data_siswa.php" class="btn btn-primary">
+                                Lihat Data
+                            </a>
                         </div>
 
-                    <?php } else { ?>
-
-                        <!-- CARD GURU DAN WALI KELAS -->
-                        <div class="dashboard-cards">
-
-                            <div class="dashboard-card">
-                                <p>Total Pelanggaran</p>
-                                <h2><?= $total_pelanggaran_guru; ?></h2>
-                                <a href="riwayat.php" class="btn btn-primary">Lihat Data</a>
-                            </div>
-
-                            <div class="dashboard-card">
-                                <p>Belum Ditindaklanjuti</p>
-                                <h2><?= $total_belum; ?></h2>
-                                <a href="tindakan.php" class="btn btn-primary">Lihat Data</a>
-                            </div>
-
-                            <div class="dashboard-card">
-                                <p>Selesai Ditindaklanjuti</p>
-                                <h2><?= $total_selesai; ?></h2>
-                                <a href="tindakan.php" class="btn btn-primary">Lihat Data</a>
-                            </div>
-
-                            <div class="dashboard-card">
-                                <p>Total Poin Pelanggaran</p>
-                                <h2><?= $total_poin; ?></h2>
-                                <a href="rekap_poin.php" class="btn btn-primary">Lihat Data</a>
-                            </div>
-
+                        <div class="dashboard-card">
+                            <p>Total Guru</p>
+                            <h2><?= $total_guru; ?></h2>
+                            <a href="data_guru.php" class="btn btn-primary">
+                                Lihat Data
+                            </a>
                         </div>
 
-                    <?php } ?>
+                        <div class="dashboard-card">
+                            <p>Data Jenis Pelanggaran</p>
+                            <h2><?= $total_pelanggaran; ?></h2>
+                            <a href="data_jenis_pelanggaran.php" class="btn btn-primary">
+                                Lihat Data
+                            </a>
+                        </div>
 
-                </div>
+                        <div class="dashboard-card">
+                            <p>Kategori Pelanggaran</p>
+                            <h2><?= $total_kategori; ?></h2>
+                            <a href="data_kategori_pelanggaran.php" class="btn btn-primary">
+                                Lihat Data
+                            </a>
+                        </div>
 
-            </main>
+                    </div>
 
-        </div>
+                <?php } else { ?>
+
+                    <!-- DASHBOARD GURU DAN WALI KELAS -->
+
+                    <div class="dashboard-cards">
+
+                        <div class="dashboard-card">
+                            <p>Total Pelanggaran</p>
+                            <h2><?= $total_pelanggaran_guru; ?></h2>
+                            <a href="riwayat.php" class="btn btn-primary">
+                                Lihat Data
+                            </a>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <p>Belum Ditindaklanjuti</p>
+                            <h2><?= $total_belum; ?></h2>
+                            <a href="tindakan.php" class="btn btn-primary">
+                                Lihat Data
+                            </a>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <p>Selesai Ditindaklanjuti</p>
+                            <h2><?= $total_selesai; ?></h2>
+                            <a href="tindakan.php" class="btn btn-primary">
+                                Lihat Data
+                            </a>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <p>Total Poin Pelanggaran</p>
+                            <h2><?= $total_poin; ?></h2>
+                            <a href="rekap_poin.php" class="btn btn-primary">
+                                Lihat Data
+                            </a>
+                        </div>
+
+                    </div>
+
+                <?php } ?>
+
+            </div>
+        </main>
+
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

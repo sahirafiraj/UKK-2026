@@ -60,15 +60,37 @@ if (!$data_tahun) {
 $tahun_ajaran_id = (int) $data_tahun['id'];
 $nama_tahun = $data_tahun['nama'];
 
+// STATUS WALI KELAS
+
+$query_status_wali = mysqli_query($koneksi, "
+    SELECT id
+    FROM t_wali_kelas
+    WHERE guru_id = '$guru_id'
+    AND tahun_ajaran_id = '$tahun_ajaran_id'
+    AND status_aktif = 1
+    LIMIT 1
+");
+
+$status_wali_kelas = false;
+
+if ($query_status_wali) {
+    $status_wali_kelas = mysqli_num_rows($query_status_wali) > 0;
+}
+
 // PILIHAN KELAS
+// HANYA KELAS YANG MEMILIKI PENEMPATAN AKTIF DAN SISWA AKTIF
 
 $kelas_id = (int) ($_GET['kelas_id'] ?? $_POST['kelas_id'] ?? 0);
 
 $query_kelas = mysqli_query($koneksi, "
     SELECT DISTINCT k.id, k.nama
     FROM t_kelas_siswa ks
-    JOIN t_kelas k ON ks.kelas_id = k.id
+    JOIN t_siswa s ON s.id = ks.siswa_id
+    JOIN t_kelas k ON k.id = ks.kelas_id
     WHERE ks.tahun_ajaran_id = '$tahun_ajaran_id'
+    AND ks.status_aktif = 1
+    AND s.status_aktif = 1
+    AND k.status_aktif = 1
     ORDER BY k.nama ASC
 ");
 
@@ -115,6 +137,7 @@ if ($query_pelanggaran) {
 }
 
 // PENCARIAN SISWA AJAX
+// SISWA NONAKTIF DAN PENEMPATAN NONAKTIF TIDAK DITAMPILKAN
 
 if (isset($_GET['ajax']) && $_GET['ajax'] == 'cari_siswa') {
 
@@ -136,8 +159,14 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 'cari_siswa') {
                 s.nama AS nama_siswa
             FROM t_kelas_siswa ks
             JOIN t_siswa s ON s.id = ks.siswa_id
+            JOIN t_kelas k ON k.id = ks.kelas_id
+            JOIN t_tahun_ajaran ta ON ta.id = ks.tahun_ajaran_id
             WHERE ks.kelas_id = '$kelas_cari'
             AND ks.tahun_ajaran_id = '$tahun_ajaran_id'
+            AND ks.status_aktif = 1
+            AND s.status_aktif = 1
+            AND k.status_aktif = 1
+            AND ta.status_aktif = 1
             AND (
                 s.nama LIKE '%$cari_aman%'
                 OR s.nis LIKE '%$cari_aman%'
@@ -183,6 +212,9 @@ if (isset($_POST['simpan'])) {
         $status = 'Pending';
     }
 
+    // VALIDASI SISWA
+    // SISWA HARUS AKTIF DAN PENEMPATAN HARUS AKTIF
+
     $query_siswa_pilih = mysqli_query($koneksi, "
         SELECT
             ks.siswa_id,
@@ -193,9 +225,14 @@ if (isset($_POST['simpan'])) {
         FROM t_kelas_siswa ks
         JOIN t_siswa s ON s.id = ks.siswa_id
         JOIN t_kelas k ON k.id = ks.kelas_id
+        JOIN t_tahun_ajaran ta ON ta.id = ks.tahun_ajaran_id
         WHERE ks.id = '$penempatan_id'
         AND ks.kelas_id = '$kelas_id'
         AND ks.tahun_ajaran_id = '$tahun_ajaran_id'
+        AND ks.status_aktif = 1
+        AND s.status_aktif = 1
+        AND k.status_aktif = 1
+        AND ta.status_aktif = 1
         LIMIT 1
     ");
 
@@ -210,7 +247,7 @@ if (isset($_POST['simpan'])) {
         mysqli_num_rows($query_siswa_pilih) == 0
     ) {
 
-        $pesan = "Silakan pilih siswa dari daftar pencarian.";
+        $pesan = "Siswa tidak ditemukan, sudah nonaktif, atau penempatannya tidak aktif.";
         $jenis_pesan = "danger";
 
     } elseif ($tanggal == "") {
@@ -495,11 +532,16 @@ $query_terbaru = mysqli_query($koneksi, "
                     </a>
                 </li>
 
-                <li class="nav-item">
-                    <a href="laporan.php" class="nav-link text-white">
-                        Laporan
-                    </a>
-                </li>
+                <!-- LAPORAN KHUSUS WALI KELAS -->
+
+                <?php if ($status_wali_kelas) { ?>
+                    <li class="nav-item">
+                        <a href="laporan.php"
+                           class="nav-link <?= $halaman == 'laporan.php' ? 'active' : 'text-white'; ?>">
+                            Laporan
+                        </a>
+                    </li>
+                <?php } ?>
 
                 <li class="nav-item">
                     <a href="about_me.php" class="nav-link text-white">
@@ -703,39 +745,61 @@ $query_terbaru = mysqli_query($koneksi, "
 
                                 <div class="col-md-6" id="box_pelanggaran">
 
-                                    <label class="form-label" for="pelanggaran_id">
+                                    <label class="form-label" for="cari_pelanggaran">
                                         Daftar Jenis Pelanggaran
                                     </label>
 
-                                    <select name="pelanggaran_id"
-                                            id="pelanggaran_id"
-                                            class="form-select">
+                                    <div style="position:relative;">
 
-                                        <option value="">
-                                            -- Pilih Jenis Pelanggaran --
-                                        </option>
+                                        <input type="text"
+                                               id="cari_pelanggaran"
+                                               class="form-control"
+                                               placeholder="Ketik nama jenis pelanggaran..."
+                                               autocomplete="off">
 
-                                        <?php foreach ($daftar_pelanggaran as $item) { ?>
+                                        <select name="pelanggaran_id"
+                                                id="pelanggaran_id"
+                                                style="display:none;">
+                                            <option value="">-- Pilih Jenis Pelanggaran --</option>
 
-                                            <option
-                                                value="<?= $item['id']; ?>"
-                                                data-poin="<?= $item['poin']; ?>"
-                                                data-kategori="<?= $item['pelanggaran_kategori_id']; ?>">
+                                            <?php foreach ($daftar_pelanggaran as $item) { ?>
+                                                <option
+                                                    value="<?= $item['id']; ?>"
+                                                    data-poin="<?= $item['poin']; ?>"
+                                                    data-kategori="<?= $item['pelanggaran_kategori_id']; ?>">
+                                                    <?= htmlspecialchars(
+                                                        $item['nama'] .
+                                                        ' - ' .
+                                                        $item['nama_kategori'] .
+                                                        ' (' .
+                                                        $item['poin'] .
+                                                        ' poin)'
+                                                    ); ?>
+                                                </option>
+                                            <?php } ?>
+                                        </select>
 
-                                                <?= htmlspecialchars(
-                                                    $item['nama'] .
-                                                    ' - ' .
-                                                    $item['nama_kategori'] .
-                                                    ' (' .
-                                                    $item['poin'] .
-                                                    ' poin)'
-                                                ); ?>
+                                        <div id="hasil_pelanggaran"
+                                             class="list-group"
+                                             style="
+                                                position:absolute;
+                                                top:calc(100% + 4px);
+                                                left:0;
+                                                width:100%;
+                                                z-index:99999;
+                                                display:none;
+                                                max-height:250px;
+                                                overflow-y:auto;
+                                                background:white;
+                                                box-shadow:0 4px 12px rgba(0,0,0,.15);
+                                             ">
+                                        </div>
 
-                                            </option>
+                                    </div>
 
-                                        <?php } ?>
-
-                                    </select>
+                                    <small class="text-secondary d-block mt-2">
+                                        Ketik nama pelanggaran, lalu pilih dari daftar yang muncul.
+                                    </small>
 
                                 </div>
 
@@ -1075,7 +1139,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (data.length === 0) {
 
                         hasilSiswa.innerHTML =
-                            '<div class="list-group-item text-secondary">Siswa tidak ditemukan</div>';
+                            '<div class="list-group-item text-secondary">Siswa tidak ditemukan atau tidak aktif</div>';
 
                         hasilSiswa.style.display = 'block';
                         return;
@@ -1133,6 +1197,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const boxKategori = document.getElementById('box_kategori');
 
     const selectPelanggaran = document.getElementById('pelanggaran_id');
+    const cariPelanggaran = document.getElementById('cari_pelanggaran');
+    const hasilPelanggaran = document.getElementById('hasil_pelanggaran');
     const namaCustom = document.getElementById('nama_custom');
     const kategoriCustom = document.getElementById('kategori_custom');
     const inputPoin = document.getElementById('poin');
@@ -1146,6 +1212,7 @@ document.addEventListener('DOMContentLoaded', function () {
             boxKategori.style.display = 'block';
 
             selectPelanggaran.required = false;
+            cariPelanggaran.required = false;
             namaCustom.required = true;
             kategoriCustom.required = true;
 
@@ -1155,7 +1222,8 @@ document.addEventListener('DOMContentLoaded', function () {
             boxCustom.style.display = 'none';
             boxKategori.style.display = 'none';
 
-            selectPelanggaran.required = true;
+            selectPelanggaran.required = false;
+            cariPelanggaran.required = true;
             namaCustom.required = false;
             kategoriCustom.required = false;
 
@@ -1166,19 +1234,75 @@ document.addEventListener('DOMContentLoaded', function () {
 
         aturJenisPelanggaran();
         inputPoin.value = '';
+        selectPelanggaran.value = '';
+        cariPelanggaran.value = '';
+        hasilPelanggaran.innerHTML = '';
+        hasilPelanggaran.style.display = 'none';
 
     });
 
-    selectPelanggaran.addEventListener('change', function () {
+    // PENCARIAN JENIS PELANGGARAN
 
-        const pilihan = this.options[this.selectedIndex];
+    cariPelanggaran.addEventListener('input', function () {
 
-        if (pilihan && pilihan.value !== '' && pilihan.dataset.poin !== undefined) {
-            inputPoin.value = pilihan.dataset.poin;
-        } else {
-            inputPoin.value = '';
+        const kataKunci = this.value.toLowerCase().trim();
+
+        selectPelanggaran.value = '';
+        inputPoin.value = '';
+        hasilPelanggaran.innerHTML = '';
+        hasilPelanggaran.style.display = 'none';
+
+        if (kataKunci.length === 0) {
+            return;
         }
 
+        let ditemukan = 0;
+
+        Array.from(selectPelanggaran.options).forEach(function (option) {
+
+            if (option.value === '') {
+                return;
+            }
+
+            if (option.text.toLowerCase().includes(kataKunci)) {
+
+                ditemukan++;
+
+                const pilihan = document.createElement('button');
+                pilihan.type = 'button';
+                pilihan.className = 'list-group-item list-group-item-action';
+                pilihan.textContent = option.text.trim();
+
+                pilihan.addEventListener('click', function () {
+
+                    selectPelanggaran.value = option.value;
+                    cariPelanggaran.value = option.text.trim();
+                    inputPoin.value = option.dataset.poin || '';
+                    hasilPelanggaran.style.display = 'none';
+
+                });
+
+                hasilPelanggaran.appendChild(pilihan);
+            }
+        });
+
+        if (ditemukan === 0) {
+            hasilPelanggaran.innerHTML =
+                '<div class="list-group-item text-secondary">Jenis pelanggaran tidak ditemukan</div>';
+        }
+
+        hasilPelanggaran.style.display = 'block';
+
+    });
+
+    document.addEventListener('click', function (event) {
+
+        if (
+            !cariPelanggaran.contains(event.target) &&
+            !hasilPelanggaran.contains(event.target)
+        ) {
+            hasilPelanggaran.style.display = 'none';
+        }
     });
 
     kategoriCustom.addEventListener('change', function () {
@@ -1214,6 +1338,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 jenisInput.value = 'tersedia';
 
                 selectPelanggaran.value = '';
+                cariPelanggaran.value = '';
+                hasilPelanggaran.innerHTML = '';
+                hasilPelanggaran.style.display = 'none';
                 inputPoin.value = '';
 
                 aturJenisPelanggaran();

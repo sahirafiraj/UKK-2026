@@ -17,28 +17,39 @@ $name = $_SESSION['name'] ?? 'Admin';
 $halaman = basename($_SERVER['PHP_SELF']);
 
 // ==========================================
-// 1. MENGAMBIL DATA SISWA DAN KELAS
+// 1. SINKRONISASI STATUS PENEMPATAN SISWA
+// ==========================================
+
+mysqli_query(
+    $koneksi,
+    "UPDATE t_kelas_siswa ks
+     JOIN t_siswa s ON s.id = ks.siswa_id
+     SET ks.status_aktif = 0
+     WHERE s.status_aktif = 0
+     AND ks.status_aktif = 1"
+);
+
+// ==========================================
+// 2. MENGAMBIL DATA SISWA DAN KELAS
 // ==========================================
 
 $query = mysqli_query(
     $koneksi,
-    "SELECT 
+    "SELECT
         s.*,
         k.nama AS nama_kelas
     FROM t_siswa s
 
-    LEFT JOIN t_kelas_siswa ks 
+    LEFT JOIN t_kelas_siswa ks
         ON ks.siswa_id = s.id
         AND ks.status_aktif = 1
 
-    LEFT JOIN t_tahun_ajaran ta 
+    LEFT JOIN t_tahun_ajaran ta
         ON ta.id = ks.tahun_ajaran_id
         AND ta.status_aktif = 1
 
-    LEFT JOIN t_kelas k 
+    LEFT JOIN t_kelas k
         ON k.id = ks.kelas_id
-
-    WHERE s.status_aktif = 1
 
     ORDER BY s.id DESC"
 );
@@ -56,11 +67,9 @@ if (!$query) {
 
     <title>Data Siswa</title>
 
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
           rel="stylesheet">
 
-    <!-- DataTables CSS -->
     <link rel="stylesheet"
           href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css">
 
@@ -189,7 +198,6 @@ if (!$query) {
                                         <th>NIS</th>
                                         <th>NISN</th>
                                         <th>Nama Siswa</th>
-                                        <th>Kelas</th>
                                         <th>Jenis Kelamin</th>
                                         <th>Tanggal Lahir</th>
                                         <th>Alamat</th>
@@ -219,17 +227,10 @@ if (!$query) {
                                             <?= htmlspecialchars($data['nisn'] ?? '-'); ?>
                                         </td>
 
-                                        <!-- NAMA SISWA -->
                                         <td>
                                             <?= htmlspecialchars($data['nama'] ?? '-'); ?>
                                         </td>
 
-                                        <!-- KELAS SESUAI PENEMPATAN -->
-                                        <td>
-                                            <?= htmlspecialchars($data['nama_kelas'] ?? '-'); ?>
-                                        </td>
-
-                                        <!-- JENIS KELAMIN -->
                                         <td>
                                             <?php
                                             if (($data['jenis_kelamin'] ?? '') == 'L') {
@@ -242,17 +243,15 @@ if (!$query) {
                                             ?>
                                         </td>
 
-                                        <!-- TANGGAL LAHIR -->
                                         <td>
                                             <?= htmlspecialchars($data['tanggal_lahir'] ?? '-'); ?>
                                         </td>
 
-                                        <!-- ALAMAT -->
                                         <td>
                                             <?= htmlspecialchars($data['alamat'] ?? '-'); ?>
                                         </td>
 
-                                        <!-- STATUS -->
+                                        <!-- STATUS SISWA -->
                                         <td>
                                             <?php if (($data['status_aktif'] ?? 0) == 1) { ?>
 
@@ -260,7 +259,7 @@ if (!$query) {
 
                                             <?php } else { ?>
 
-                                                <span class="badge bg-secondary">Tidak Aktif</span>
+                                                <span class="badge bg-secondary">Tidak aktif</span>
 
                                             <?php } ?>
                                         </td>
@@ -291,7 +290,7 @@ if (!$query) {
                                 ?>
 
                                     <tr>
-                                        <td colspan="10" class="text-center">
+                                        <td colspan="9" class="text-center">
                                             Belum ada data siswa.
                                         </td>
                                     </tr>
@@ -314,10 +313,8 @@ if (!$query) {
     </div>
 </div>
 
-<!-- Bootstrap JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- DataTables JavaScript -->
 <script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
 
 <script>

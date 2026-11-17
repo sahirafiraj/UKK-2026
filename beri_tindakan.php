@@ -40,14 +40,19 @@ if (!$data) {
 $error = '';
 
 $pilihan_status = [
-    'Belum',
+    'Pending',
     'Diproses',
     'Selesai'
 ];
 
 $keterangan_saat_ini = $data['keterangan'] ?? '';
 $tindakan_saat_ini = $data['tindakan'] ?? '';
-$status_saat_ini = $data['status'] ?? 'Belum';
+$status_saat_ini = $data['status'] ?? 'Pending';
+
+// Jika data lama masih Belum, tampilkan sebagai Pending
+if ($status_saat_ini == 'Belum') {
+    $status_saat_ini = 'Pending';
+}
 
 if (isset($_POST['simpan'])) {
 
@@ -394,4 +399,4 @@ if (isset($_POST['simpan'])) {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
-</html
+</html>

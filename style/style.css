@@ -26,7 +26,6 @@ a {
     text-decoration: none;
 }
 
-
 /* =========================================
    2. SIDEBAR
 ========================================= */
@@ -99,7 +98,6 @@ a {
     margin: 0;
 }
 
-
 /* =========================================
    3. HEADER ATAS
 ========================================= */
@@ -131,7 +129,6 @@ a {
     font-weight: 700;
 }
 
-
 /* =========================================
    4. KONTEN UTAMA
 ========================================= */
@@ -141,6 +138,7 @@ a {
     position: relative;
     width: calc(100% - 260px) !important;
     max-width: none !important;
+    min-width: 0;
     min-height: 100vh;
     margin-left: 260px !important;
     margin-right: 0 !important;
@@ -149,13 +147,16 @@ a {
     overflow-x: hidden;
 }
 
-/* Mengatasi offset Bootstrap */
-
 .content-main.offset-md-3,
 .content-main.offset-lg-2 {
     margin-left: 260px !important;
 }
 
+.page-content {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
 
 /* =========================================
    5. JUDUL HALAMAN
@@ -184,9 +185,8 @@ a {
     line-height: 1.5;
 }
 
-
 /* =========================================
-   6. CARD DATA - POSISI TENGAH
+   6. CARD DATA
 ========================================= */
 
 .card-data {
@@ -204,15 +204,12 @@ a {
     box-shadow: 0 4px 18px rgba(23,47,82,0.07);
 }
 
-/* Memastikan card berada di tengah */
-
 .content-main > .card-data,
 .content-main > .row > .card-data,
 .content-main .card-data {
     margin-left: auto !important;
     margin-right: auto !important;
 }
-
 
 /* =========================================
    7. HEADER CARD
@@ -259,7 +256,6 @@ a {
     gap: 8px;
 }
 
-
 /* =========================================
    8. BODY CARD
 ========================================= */
@@ -271,7 +267,6 @@ a {
     padding: 24px;
     background-color: #ffffff;
 }
-
 
 /* =========================================
    9. TOMBOL
@@ -341,7 +336,6 @@ a {
     color: #ffffff;
 }
 
-
 /* =========================================
    10. TABEL UMUM
 ========================================= */
@@ -351,6 +345,7 @@ a {
     width: 100%;
     max-width: 100%;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .card-data table {
@@ -368,6 +363,7 @@ a {
     padding: 13px 12px;
     white-space: nowrap;
     vertical-align: middle;
+    text-align: center;
 }
 
 .card-data table tbody td {
@@ -381,7 +377,6 @@ a {
 .card-data table tbody tr:hover td {
     background-color: #f3f7fc;
 }
-
 
 /* =========================================
    11. AKSI TABEL
@@ -401,7 +396,6 @@ a {
     font-size: 12px;
 }
 
-
 /* =========================================
    12. BADGE
 ========================================= */
@@ -413,7 +407,6 @@ a {
     font-size: 11px;
     font-weight: 600;
 }
-
 
 /* =========================================
    13. DATATABLES
@@ -513,7 +506,6 @@ a {
     opacity: 0.4;
 }
 
-
 /* =========================================
    14. FORM
 ========================================= */
@@ -538,172 +530,14 @@ a {
     box-shadow: 0 0 0 3px rgba(65,107,156,0.12);
 }
 
-
 /* =========================================
-   15. RESPONSIVE TABLET
-========================================= */
-
-@media (max-width: 1100px) and (min-width: 768px) {
-
-    .sidebar {
-        width: 230px !important;
-        max-width: 230px !important;
-    }
-
-    .topbar {
-        left: 230px;
-    }
-
-    .content-main {
-        width: calc(100% - 230px) !important;
-        margin-left: 230px !important;
-        padding: 25px 22px 35px !important;
-    }
-
-}
-
-
-/* =========================================
-   16. RESPONSIVE HP
-========================================= */
-
-@media (max-width: 767px) {
-
-    .sidebar {
-        position: relative !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        height: auto;
-        max-height: none;
-        padding: 20px 15px;
-    }
-
-    .sidebar h4 {
-        font-size: 20px;
-        margin-bottom: 20px;
-    }
-
-    .sidebar .nav-link {
-        padding: 11px 14px;
-    }
-
-    .topbar {
-        position: relative;
-        left: 0;
-        right: auto;
-        width: 100%;
-        height: 65px;
-        padding: 0 18px;
-    }
-
-    .content-main {
-        display: block !important;
-        width: 100% !important;
-        margin-left: 0 !important;
-        padding: 25px 15px !important;
-    }
-
-    .content-main > * {
-        max-width: 100%;
-    }
-
-    .header-halaman h3 {
-        font-size: 25px;
-    }
-
-    .card-data {
-        width: 100% !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-    }
-
-    .card-data .card-header,
-    .card-data .card-body {
-        padding: 16px;
-    }
-
-    .card-header-content {
-        align-items: flex-start;
-    }
-
-    .card-actions {
-        width: 100%;
-        justify-content: flex-start;
-    }
-
-    .dt-container .dt-layout-row {
-        align-items: flex-start;
-    }
-
-    .dt-container .dt-search input {
-        max-width: 150px;
-    }
-
-    .dt-container .dt-paging {
-        justify-content: flex-start;
-    }
-
-}
-
-
-/* =========================================
-   17. PENGATURAN CETAK
+   15. CETAK LAPORAN
 ========================================= */
 
 @page {
     size: A4 landscape;
     margin: 12mm;
 }
-
-@media print {
-
-    body {
-        background: #ffffff !important;
-        color: #000000 !important;
-    }
-
-    .sidebar,
-    .topbar,
-    .header-halaman,
-    .card-header,
-    .btn,
-    .dt-container .dt-layout-row {
-        display: none !important;
-    }
-
-    .content-main {
-        display: block !important;
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        background: #ffffff !important;
-    }
-
-    .card-data {
-        width: 100% !important;
-        max-width: 100% !important;
-        border: none !important;
-        box-shadow: none !important;
-    }
-
-    .card-data .card-body {
-        padding: 0 !important;
-    }
-
-    .table-responsive {
-        overflow: visible !important;
-    }
-
-    .card-data table {
-        width: 100% !important;
-    }
-
-}
-
-
-/* ============================= */
-/* CETAK LAPORAN PELANGGARAN */
-/* ============================= */
 
 .halaman-cetak {
     font-family: Arial, sans-serif;
@@ -742,16 +576,12 @@ a {
     color: #172554;
 }
 
-/* PERIODE LAPORAN */
-
 .periode {
     text-align: center;
     font-size: 13px;
     margin: 15px 0;
     color: #172554;
 }
-
-/* IDENTITAS SISWA */
 
 .identitas {
     width: 100%;
@@ -763,8 +593,6 @@ a {
 .identitas td {
     padding: 7px 5px;
 }
-
-/* TABEL LAPORAN */
 
 .data {
     width: 100%;
@@ -804,8 +632,6 @@ a {
     print-color-adjust: exact;
 }
 
-/* RINGKASAN JUMLAH DAN POIN */
-
 .ringkasan {
     display: flex;
     width: 100%;
@@ -840,8 +666,6 @@ a {
     color: #172554;
 }
 
-/* BAGIAN BAWAH LAPORAN */
-
 .bagian-bawah {
     display: flex;
     justify-content: space-between;
@@ -858,8 +682,6 @@ a {
     text-align: right;
     line-height: 1.8;
 }
-
-/* TANDA TANGAN */
 
 .ttd {
     width: 100%;
@@ -896,8 +718,6 @@ a {
     margin-right: auto;
 }
 
-/* TOTAL POIN INDIVIDU */
-
 .total-individu {
     margin-top: 20px;
     padding: 12px;
@@ -910,65 +730,19 @@ a {
     print-color-adjust: exact;
 }
 
-/* ============================= */
-/* PENGATURAN PRINT */
-/* ============================= */
-
-@page {
-    size: A4 landscape;
-    margin: 12mm;
+.ttd-individu td .garis-bawah {
+    margin-top: 65px;
+    margin-bottom: 0;
 }
 
-@media print {
-
-    body {
-        background: #ffffff !important;
-        margin: 0;
-        padding: 0;
-    }
-
-    .no-print {
-        display: none !important;
-    }
-
-    .data {
-        font-size: 10px;
-    }
-
-    .header-cetak {
-        break-after: avoid;
-    }
-
-    .ringkasan {
-        break-inside: avoid;
-    }
-
-    .bagian-bawah {
-        break-inside: avoid;
-    }
-
+.ttd-individu td b {
+    display: block;
+    margin-top: 10px;
 }
-
-
 
 /* =========================================
-   18. PERBAIKAN JARAK ATAS
+   16. DASHBOARD
 ========================================= */
-
-@media (min-width: 768px) {
-
-    .content-main {
-        padding-top: 25px !important;
-    }
-
-}
-
-
-/* =========================================
-   19. DASHBOARD
-========================================= */
-
-/* KARTU DASHBOARD */
 
 .dashboard-cards {
     display: grid;
@@ -996,8 +770,6 @@ a {
     box-shadow: 0 4px 12px rgba(23, 47, 82, 0.09);
 }
 
-/* JUDUL CARD */
-
 .dashboard-card p {
     color: #64748b;
     font-size: 13px;
@@ -1011,8 +783,6 @@ a {
     font-weight: 700;
     margin: 0 0 12px;
 }
-
-/* TOMBOL LIHAT DATA */
 
 .dashboard-card .btn {
     display: inline-flex;
@@ -1036,9 +806,124 @@ a {
     transform: translateY(-1px);
 }
 
-/* RESPONSIVE TABLET */
+/* =========================================
+   17. FORM PELANGGARAN
+========================================= */
 
-@media (max-width: 1100px) and (min-width: 768px) {
+.form-pelanggaran {
+    border: 0;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.form-pelanggaran .card-header {
+    border-bottom: 1px solid #eef1f5;
+    padding: 20px 24px;
+}
+
+.form-pelanggaran .card-body {
+    padding: 24px;
+}
+
+.form-pelanggaran .form-label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #344054;
+    margin-bottom: 8px;
+}
+
+.form-pelanggaran .form-control,
+.form-pelanggaran .form-select {
+    min-height: 45px;
+    border-radius: 8px;
+    border-color: #d9dee7;
+    font-size: 14px;
+}
+
+.form-pelanggaran .form-control:focus,
+.form-pelanggaran .form-select:focus {
+    border-color: #6478b8;
+    box-shadow: 0 0 0 3px rgba(23, 37, 84, .10);
+}
+
+.form-pelanggaran textarea.form-control {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.kelas-box {
+    background: #f8faff;
+    border: 1px solid #e5eaf5;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 22px;
+}
+
+.form-divider {
+    border-top: 1px solid #edf0f5;
+    margin: 8px 0 22px;
+}
+
+.btn-form {
+    min-height: 42px;
+    padding: 9px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.readonly-field {
+    background: #f7f8fa !important;
+    color: #667085;
+}
+
+#daftarSaranSiswa {
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#daftarSaranSiswa .list-group-item {
+    width: 100%;
+    white-space: normal;
+    overflow-wrap: break-word;
+    text-align: left;
+    padding: 8px 12px;
+    font-size: 13px;
+}
+
+/* =========================================
+   18. RESPONSIVE TABLET
+========================================= */
+
+@media (min-width: 768px) and (max-width: 1100px) {
+
+    .sidebar {
+        width: 230px !important;
+        max-width: 230px !important;
+    }
+
+    .topbar {
+        left: 230px;
+    }
+
+    .content-main {
+        width: calc(100% - 230px) !important;
+        margin-left: 230px !important;
+        padding: 22px 18px 30px !important;
+    }
+
+    .content-main .page-content {
+        width: 100%;
+    }
+
+    .header-halaman h3 {
+        font-size: 27px;
+    }
+
+    .card-data {
+        max-width: 100% !important;
+    }
 
     .dashboard-content {
         width: 100%;
@@ -1049,11 +934,241 @@ a {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
+    .filter-card form {
+        row-gap: 14px;
+    }
+
+    .filter-card form > div {
+        min-width: 0;
+    }
+
+    .rekap-card table {
+        min-width: 750px;
+    }
+
+    #detail-laporan table {
+        min-width: 950px;
+    }
 }
 
-/* RESPONSIVE HP */
+/* =========================================
+   19. RESPONSIVE HP
+========================================= */
 
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
+
+    html,
+    body {
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    .sidebar {
+        position: relative !important;
+        top: auto;
+        left: auto;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0;
+        height: auto !important;
+        max-height: none;
+        padding: 15px !important;
+        overflow: visible !important;
+    }
+
+    .sidebar h4 {
+        font-size: 19px;
+        margin: 0 0 15px !important;
+        padding: 0 5px;
+    }
+
+    .sidebar .nav {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap;
+        gap: 5px !important;
+    }
+
+    .sidebar .nav-item {
+        width: auto;
+        max-width: 100%;
+        flex: 0 0 auto;
+    }
+
+    .sidebar .nav-link {
+        width: auto;
+        padding: 9px 11px;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+
+    .sidebar hr {
+        display: none;
+    }
+
+    .topbar {
+        position: relative;
+        top: auto;
+        left: auto;
+        right: auto;
+        width: 100%;
+        height: auto;
+        min-height: 55px;
+        padding: 12px 15px;
+    }
+
+    .content-main,
+    .content-main.offset-md-3,
+    .content-main.offset-lg-2 {
+        display: block !important;
+        position: relative;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0;
+        min-height: auto;
+        margin: 0 !important;
+        padding: 16px 12px 25px !important;
+        overflow-x: hidden;
+    }
+
+    .content-main .page-content {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .header-halaman {
+        width: 100%;
+        margin-bottom: 18px !important;
+    }
+
+    .header-halaman h3 {
+        font-size: 22px;
+    }
+
+    .page-content > .bg-white {
+        padding: 17px !important;
+        margin-bottom: 18px !important;
+    }
+
+    .page-content > .bg-white h2 {
+        font-size: 21px;
+        line-height: 1.4;
+    }
+
+    .page-content > .bg-white p {
+        font-size: 13px;
+    }
+
+    .card-data,
+    .filter-card,
+    .rekap-card,
+    #detail-laporan {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    .card-data .card-header {
+        padding: 16px !important;
+    }
+
+    .card-data .card-body {
+        padding: 16px !important;
+    }
+
+    .card-header-content {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .card-title h5 {
+        font-size: 16px;
+    }
+
+    .card-title p {
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .filter-card form {
+        display: flex;
+        flex-direction: column;
+        gap: 13px;
+    }
+
+    .filter-card form > div {
+        width: 100%;
+        max-width: 100%;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .filter-card .form-control {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .filter-card form .d-flex {
+        display: flex;
+        width: 100%;
+        gap: 8px;
+    }
+
+    .filter-card form .d-flex .btn {
+        flex: 1;
+    }
+
+    .card-actions {
+        display: flex;
+        width: 100%;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        gap: 8px;
+    }
+
+    .card-actions .btn {
+        flex: 1 1 0;
+        min-width: 0;
+        padding: 9px 7px;
+        font-size: 11px;
+        white-space: nowrap;
+    }
+
+    .table-responsive {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto !important;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .rekap-card table {
+        min-width: 750px;
+    }
+
+    #detail-laporan table {
+        min-width: 950px;
+    }
+
+    #detail-laporan .row {
+        width: 100%;
+    }
+
+    #detail-laporan .row > div {
+        width: 100%;
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    #detail-laporan .card-body {
+        padding: 15px !important;
+    }
 
     .dashboard-content {
         width: 100%;
@@ -1077,116 +1192,1317 @@ a {
         padding: 18px;
     }
 
+    .dt-container .dt-layout-row {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .dt-container .dt-search input {
+        max-width: 150px;
+    }
+
+    .dt-container .dt-paging {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .form-pelanggaran .card-body,
+    .form-pelanggaran .card-header {
+        padding: 16px;
+    }
+
+    .form-actions {
+        display: flex;
+        flex-direction: column-reverse;
+        gap: 8px;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+    }
 }
 
-.form-pelanggaran {
-            border: 0;
-            border-radius: 14px;
-            overflow: hidden;
-        }
+/* =========================================
+   20. RESPONSIVE HP KECIL
+========================================= */
 
-        .form-pelanggaran .card-header {
-            border-bottom: 1px solid #eef1f5;
-            padding: 20px 24px;
-        }
+@media (max-width: 400px) {
 
-        .form-pelanggaran .card-body {
-            padding: 24px;
-        }
+    .sidebar {
+        padding: 12px !important;
+    }
 
-        .form-pelanggaran .form-label {
-            font-weight: 600;
-            font-size: 14px;
-            color: #344054;
-            margin-bottom: 8px;
-        }
+    .sidebar h4 {
+        font-size: 17px;
+    }
 
-        .form-pelanggaran .form-control,
-        .form-pelanggaran .form-select {
-            min-height: 45px;
-            border-radius: 8px;
-            border-color: #d9dee7;
-            font-size: 14px;
-        }
+    .sidebar .nav-link {
+        padding: 8px 9px;
+        font-size: 11px;
+    }
 
-        .form-pelanggaran .form-control:focus,
-        .form-pelanggaran .form-select:focus {
-            border-color: #6478b8;
-            box-shadow: 0 0 0 3px rgba(23, 37, 84, .10);
-        }
+    .content-main {
+        padding: 12px 9px 20px !important;
+    }
 
-        .form-pelanggaran textarea.form-control {
-            min-height: 110px;
-            resize: vertical;
-        }
+    .page-content > .bg-white h2 {
+        font-size: 19px;
+    }
 
-        .kelas-box {
-            background: #f8faff;
-            border: 1px solid #e5eaf5;
-            border-radius: 10px;
-            padding: 16px;
-            margin-bottom: 22px;
-        }
+    .card-data .card-header,
+    .card-data .card-body {
+        padding: 13px !important;
+    }
 
-        .form-divider {
-            border-top: 1px solid #edf0f5;
-            margin: 8px 0 22px;
-        }
-
-        .btn-form {
-            min-height: 42px;
-            padding: 9px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-        }
-
-        .readonly-field {
-            background: #f7f8fa !important;
-            color: #667085;
-        }
-
-        @media (max-width: 576px) {
-            .form-pelanggaran .card-body {
-                padding: 16px;
-            }
-
-            .form-pelanggaran .card-header {
-                padding: 16px;
-            }
-
-            .form-actions .btn {
-                width: 100%;
-            }
-
-            .form-actions {
-                display: flex;
-                flex-direction: column-reverse;
-                gap: 8px;
-            }
-        }
-#daftarSaranSiswa {
-    width: 100%;
-    max-height: 200px;
-    overflow-y: auto;
-    overflow-x: hidden;
+    .card-actions .btn {
+        font-size: 10px;
+        padding: 8px 5px;
+    }
 }
 
-#daftarSaranSiswa .list-group-item {
+/* =========================================
+   21. PENGATURAN CETAK
+========================================= */
+
+@media print {
+
+    body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        margin: 0;
+        padding: 0;
+    }
+
+    .sidebar,
+    .topbar,
+    .header-halaman,
+    .card-header,
+    .btn,
+    .dt-container .dt-layout-row,
+    .no-print {
+        display: none !important;
+    }
+
+    .content-main {
+        display: block !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+    }
+
+    .card-data {
+        width: 100% !important;
+        max-width: 100% !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    .card-data .card-body {
+        padding: 0 !important;
+    }
+
+    .table-responsive {
+        overflow: visible !important;
+    }
+
+    .card-data table {
+        width: 100% !important;
+    }
+
+    .data {
+        font-size: 10px;
+    }
+
+    .header-cetak {
+        break-after: avoid;
+    }
+
+    .ringkasan,
+    .bagian-bawah {
+        break-inside: avoid;
+    }
+}
+
+/* PERBAIKAN KONTEN LAPORAN */
+
+.content-main {
+    display: block !important;
+    position: relative !important;
+    flex: 0 0 calc(100% - 260px) !important;
+    width: calc(100% - 260px) !important;
+    max-width: calc(100% - 260px) !important;
+    min-width: 0 !important;
+    min-height: 100vh;
+    margin-left: 260px !important;
+    padding: 25px 32px 35px !important;
+}
+
+.page-content {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+}
+
+.content-main .container-fluid {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+.content-main .card-data,
+.content-main .filter-card,
+.content-main .rekap-card,
+.content-main #detail-laporan {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+.content-main .card-header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.content-main .table-responsive {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+}
+
+.content-main table {
+    width: 100% !important;
+}
+
+@media (max-width: 1100px) {
+    .content-main {
+        flex: 0 0 calc(100% - 230px) !important;
+        width: calc(100% - 230px) !important;
+        max-width: calc(100% - 230px) !important;
+        margin-left: 230px !important;
+        padding: 22px 20px 30px !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .content-main {
+        flex: 0 0 100% !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        padding: 16px 12px 25px !important;
+    }
+
+    .content-main .card-header-content {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .content-main .card-actions {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        gap: 8px;
+    }
+
+    .content-main .card-actions .btn {
+        flex: 1;
+    }
+
+    .content-main .table-responsive {
+        overflow-x: auto !important;
+    }
+
+    .content-main .table {
+        min-width: 750px;
+    }
+
+    .content-main #detail-laporan .table {
+        min-width: 950px;
+    }
+}
+
+@media print {
+    .content-main {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+}
+
+
+/* HEADER */
+.about-header {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(23, 37, 84, 0.08);
+    margin-bottom: 24px;
+}
+
+.about-header h2 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #172554;
+    margin-bottom: 8px;
+}
+
+.about-header p {
+    color: #64748b;
+    margin-bottom: 0;
+    font-size: 16px;
+}
+
+/* PROFIL */
+.about-profile {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 45px 35px;
+    box-shadow: 0 4px 15px rgba(23, 37, 84, 0.08);
+    margin-bottom: 25px;
+}
+
+.about-profile-content {
+    max-width: 850px;
+    margin: auto;
+    text-align: center;
+}
+
+.about-photo-wrapper {
+    width: 145px;
+    height: 145px;
+    margin: 0 auto 20px;
+    padding: 5px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #172554, #60a5fa);
+    box-shadow: 0 8px 20px rgba(23, 37, 84, 0.18);
+}
+
+.about-photo {
     width: 100%;
-    white-space: normal;
-    overflow-wrap: break-word;
-    text-align: left;
-    padding: 8px 12px;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid white;
+}
+
+.about-profile h2 {
+    color: #172554;
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.about-subtitle {
+    color: #64748b;
+    font-size: 18px;
+    margin-bottom: 16px;
+}
+
+.about-school {
+    display: inline-block;
+    background: #172554;
+    color: white;
+    padding: 10px 22px;
+    border-radius: 30px;
     font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 22px;
 }
 
-/* Mengatur jarak nama dengan garis tanda tangan laporan individu */
-.ttd-individu td .garis-bawah {
-    margin-top: 65px;
+.about-description {
+    max-width: 760px;
+    margin: auto;
+    color: #64748b;
+    line-height: 1.9;
+    font-size: 17px;
+}
+
+/* INFORMASI PERSONAL */
+.about-information {
+    background: linear-gradient(135deg, #e8efff, #dce6f7);
+    padding: 30px;
+    border-radius: 18px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 12px rgba(23, 37, 84, 0.06);
+}
+
+.about-information h3,
+.about-skills h3 {
+    color: #172554;
+    font-size: 25px;
+    font-weight: 700;
+    margin-bottom: 28px;
+}
+
+.about-information-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+}
+
+.about-information-item {
+    padding: 18px 20px;
+    background: rgba(255, 255, 255, 0.65);
+    border-radius: 12px;
+    border: 1px solid rgba(23, 37, 84, 0.06);
+}
+
+.about-information-item span {
+    display: block;
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.about-information-item strong {
+    display: block;
+    color: #172554;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+/* SKILLS */
+.about-skills {
+    background: white;
+    padding: 30px;
+    border-radius: 18px;
+    border: 1px solid #dce4ff;
+    box-shadow: 0 4px 12px rgba(23, 37, 84, 0.06);
+    margin-bottom: 25px;
+}
+
+.about-skill-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.about-skill-list span {
+    display: inline-block;
+    background: #edf3ff;
+    color: #172554;
+    border: 1px solid #d5e2ff;
+    padding: 11px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.about-skill-list span:hover {
+    background: #172554;
+    color: white;
+    transform: translateY(-3px);
+}
+
+.about-skills hr {
+    border-color: #e5e7eb;
+}
+
+.about-skills p {
+    color: #64748b;
+    line-height: 1.8;
     margin-bottom: 0;
 }
 
-.ttd-individu td b {
+/* FOOTER */
+.about-footer {
+    text-align: center;
+    color: #64748b;
+    padding: 20px 10px;
+    font-size: 14px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .about-header {
+        padding: 22px;
+    }
+
+    .about-header h2 {
+        font-size: 26px;
+    }
+
+    .about-profile {
+        padding: 35px 22px;
+    }
+
+    .about-profile h2 {
+        font-size: 25px;
+    }
+
+    .about-description {
+        font-size: 15px;
+    }
+
+    .about-information,
+    .about-skills {
+        padding: 22px;
+    }
+
+    .about-information h3,
+    .about-skills h3 {
+        font-size: 21px;
+    }
+
+    .about-information-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .about-photo-wrapper {
+        width: 120px;
+        height: 120px;
+    }
+
+    .about-school {
+        font-size: 11px;
+        padding: 9px 15px;
+    }
+
+    .about-skill-list span {
+        padding: 9px 14px;
+        font-size: 13px;
+    }
+}
+
+
+/* =========================================
+   22. ABOUT ME
+========================================= */
+
+.about-profile {
+    background: #ffffff;
+    border: 1px solid #e1e8f0;
+    border-radius: 20px;
+    box-shadow: 0 5px 20px rgba(23, 47, 82, 0.07);
+    overflow: hidden;
+}
+
+.about-profile .card-body {
+    padding: 45px 30px;
+}
+
+.about-profile img {
     display: block;
-    margin-top: 10px;
+    width: 130px !important;
+    height: 130px !important;
+    max-width: 130px !important;
+    object-fit: cover;
+    border-radius: 50% !important;
+    margin: 0 auto 20px;
+    border: 4px solid #ffffff;
+    box-shadow: 0 4px 15px rgba(23, 47, 82, 0.15);
+}
+
+.about-profile h3 {
+    color: #172f52;
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.about-profile p {
+    line-height: 1.8;
+}
+
+/* INFORMASI PERSONAL */
+
+.about-information {
+    background: #dce6f7;
+    border: 1px solid #d2def0;
+    border-radius: 18px;
+    box-shadow: 0 4px 15px rgba(23, 47, 82, 0.06);
+}
+
+.about-information .card-body {
+    padding: 30px;
+}
+
+.about-information h4 {
+    color: #172f52;
+    font-size: 23px;
+    font-weight: 700;
+    margin-bottom: 28px;
+}
+
+.about-information .info-item {
+    background: rgba(255,255,255,0.65);
+    border: 1px solid rgba(255,255,255,0.8);
+    border-radius: 12px;
+    padding: 17px 20px;
+    height: 100%;
+}
+
+.about-information .info-item small {
+    color: #64748b;
+    font-size: 13px;
+}
+
+.about-information .info-item h6 {
+    color: #172f52;
+    font-size: 16px;
+    font-weight: 700;
+    margin-top: 7px;
+    margin-bottom: 0;
+}
+
+/* BIDANG YANG DIPELAJARI */
+
+.about-skills {
+    background: #ffffff;
+    border: 1px solid #dce6f3;
+    border-radius: 18px;
+    box-shadow: 0 4px 15px rgba(23,47,82,0.06);
+}
+
+.about-skills .card-body {
+    padding: 30px;
+}
+
+.about-skills h5 {
+    color: #172f52;
+    font-size: 21px;
+    font-weight: 700;
+    margin-bottom: 22px;
+}
+
+.about-skills .skill-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #e8effa;
+    border: 1px solid #d5e2f5;
+    color: #193b65;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 9px;
+    padding: 10px 16px;
+    transition: 0.2s ease;
+}
+
+.about-skills .skill-badge:hover {
+    background: #193b65;
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+/* RESPONSIVE ABOUT ME */
+
+@media (max-width: 767.98px) {
+
+    .about-profile .card-body {
+        padding: 30px 20px;
+    }
+
+    .about-profile img {
+        width: 110px !important;
+        height: 110px !important;
+        max-width: 110px !important;
+    }
+
+    .about-profile h3 {
+        font-size: 24px;
+    }
+
+    .about-information .card-body,
+    .about-skills .card-body {
+        padding: 20px;
+    }
+
+    .about-information h4 {
+        font-size: 20px;
+    }
+
+    .about-information .info-item {
+        padding: 15px;
+    }
+
+    .about-information .info-item h6 {
+        font-size: 14px;
+    }
+}
+
+/* =========================================
+   SURAT PEMANGGILAN ORANG TUA
+========================================= */
+
+.surat-pemanggilan {
+    width: 100%;
+    max-width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    padding: 12mm 15mm;
+    background: #fff;
+    color: #000;
+    font-family: "Times New Roman", serif;
+    font-size: 12pt;
+    line-height: 1.45;
+    box-sizing: border-box;
+}
+
+/* KOP SURAT */
+.surat-pemanggilan .kop-surat {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    text-align: center;
+}
+
+.surat-pemanggilan .logo {
+    width: 75px;
+    height: 75px;
+    object-fit: contain;
+}
+
+.surat-pemanggilan .kop-text {
+    flex: 1;
+}
+
+.surat-pemanggilan .kop-text h3 {
+    margin: 0;
+    font-size: 15pt;
+    font-weight: bold;
+}
+
+.surat-pemanggilan .kop-text p {
+    margin: 2px 0;
+    font-size: 10pt;
+}
+
+.surat-pemanggilan .garis-kop {
+    border-top: 3px solid #000;
+    border-bottom: 1px solid #000;
+    height: 5px;
+    margin: 10px 0 20px;
+}
+
+/* JUDUL */
+.surat-pemanggilan .judul-surat {
+    text-align: center;
+    margin: 15px 0 5px;
+    font-size: 14pt;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.surat-pemanggilan .nomor-surat {
+    text-align: center;
+    margin-bottom: 22px;
+}
+
+/* ISI */
+.surat-pemanggilan .isi-surat {
+    text-align: justify;
+    margin-top: 15px;
+}
+
+.surat-pemanggilan .isi-surat p {
+    margin: 8px 0;
+}
+
+.surat-pemanggilan .tabel-siswa,
+.surat-pemanggilan .tabel-pelanggaran {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 11pt;
+}
+
+.surat-pemanggilan .tabel-siswa td {
+    padding: 3px 5px;
+    vertical-align: top;
+}
+
+.surat-pemanggilan .tabel-pelanggaran th,
+.surat-pemanggilan .tabel-pelanggaran td {
+    border: 1px solid #000;
+    padding: 6px;
+    text-align: center;
+}
+
+.surat-pemanggilan .tabel-pelanggaran th {
+    font-weight: bold;
+}
+
+/* TANDA TANGAN */
+.surat-pemanggilan .tanda-tangan {
+    width: 250px;
+    margin-left: auto;
+    margin-top: 25px;
+    text-align: center;
+    page-break-inside: avoid;
+}
+
+.surat-pemanggilan .nama-ttd {
+    margin-top: 65px;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+/* TOMBOL */
+.surat-pemanggilan .tombol {
+    margin-bottom: 20px;
+}
+
+/* CETAK A4 */
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 10mm;
+    }
+
+    body {
+        background: #fff !important;
+    }
+
+    .sidebar,
+    .topbar,
+    .tombol,
+    .btn,
+    nav,
+    footer {
+        display: none !important;
+    }
+
+    .content-main {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: none !important;
+    }
+
+    .surat-pemanggilan {
+        width: 100%;
+        max-width: none;
+        min-height: 277mm;
+        padding: 0;
+        margin: 0;
+        box-shadow: none;
+        border: none;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .surat-pemanggilan .isi-surat {
+        flex: 0 0 auto;
+    }
+
+    .surat-pemanggilan .tanda-tangan {
+        margin-top: auto;
+        padding-top: 15mm;
+        page-break-inside: avoid;
+    }
+
+    .surat-pemanggilan .kop-surat,
+    .surat-pemanggilan .tabel-pelanggaran,
+    .surat-pemanggilan .tanda-tangan {
+        page-break-inside: avoid;
+    }
+}
+
+
+/* ==========================================
+   SURAT PEMANGGILAN ORANG TUA / WALI SISWA
+========================================== */
+
+.container-surat {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 20px auto;
+    padding: 15mm 18mm;
+    background: #ffffff;
+    color: #000000;
+    font-family: "Times New Roman", serif;
+    font-size: 12pt;
+    line-height: 1.4;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+/* KOP SURAT */
+.container-surat .kop-surat {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    text-align: center;
+}
+
+.container-surat .logo {
+    width: 75px;
+    height: 75px;
+    object-fit: contain;
+}
+
+.container-surat .kop-text {
+    flex: 1;
+    text-align: center;
+}
+
+.container-surat .kop-text h4 {
+    font-size: 12pt;
+    margin: 0;
+    font-weight: normal;
+}
+
+.container-surat .kop-text h3 {
+    font-size: 16pt;
+    margin: 3px 0;
+    font-weight: bold;
+}
+
+.container-surat .kop-text p {
+    font-size: 10pt;
+    margin: 2px 0;
+}
+
+.container-surat .garis-kop {
+    border-top: 3px solid #000;
+    border-bottom: 1px solid #000;
+    height: 5px;
+    margin: 10px 0 18px;
+}
+
+/* JUDUL SURAT */
+.container-surat .judul-surat {
+    text-align: center;
+    font-size: 14pt;
+    font-weight: bold;
+    text-decoration: underline;
+    margin: 12px 0 5px;
+}
+
+.container-surat .nomor-surat {
+    text-align: center;
+    margin-bottom: 18px;
+}
+
+/* ISI SURAT */
+.container-surat .isi-surat {
+    text-align: justify;
+}
+
+.container-surat .isi-surat p {
+    margin: 8px 0;
+}
+
+/* IDENTITAS SISWA */
+.container-surat .tabel-siswa {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0;
+}
+
+.container-surat .tabel-siswa td {
+    padding: 2px 4px;
+    vertical-align: top;
+}
+
+/* TABEL PELANGGARAN */
+.container-surat .tabel-pelanggaran {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 10.5pt;
+}
+
+.container-surat .tabel-pelanggaran th,
+.container-surat .tabel-pelanggaran td {
+    border: 1px solid #000;
+    padding: 5px;
+    vertical-align: middle;
+}
+
+.container-surat .tabel-pelanggaran th {
+    text-align: center;
+    font-weight: bold;
+}
+
+.container-surat .tabel-pelanggaran tfoot th {
+    text-align: right;
+}
+
+/* JADWAL PEMANGGILAN */
+.container-surat .jadwal {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0;
+}
+
+.container-surat .jadwal td {
+    padding: 2px 4px;
+    vertical-align: top;
+}
+
+/* TANDA TANGAN WALI KELAS */
+.container-surat .tanda-tangan {
+    width: 250px;
+    margin-left: auto;
+    margin-top: auto;
+    padding-top: 15mm;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.container-surat .nama-ttd {
+    margin-top: 65px;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+/* TOMBOL CETAK */
+.tombol {
+    margin: 15px;
+}
+
+/* ==========================================
+   PRINT A4 PORTRAIT
+========================================== */
+
+@media print {
+
+    @page {
+        size: A4 portrait;
+        margin: 10mm;
+    }
+
+    html,
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+        color: #000 !important;
+    }
+
+    .tombol {
+        display: none !important;
+    }
+
+    .container-surat {
+        width: 190mm !important;
+        min-height: 277mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+        box-shadow: none !important;
+        border: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .container-surat .isi-surat {
+        flex: 0 0 auto;
+    }
+
+    .container-surat .tanda-tangan {
+        margin-top: auto !important;
+        padding-top: 12mm !important;
+        page-break-inside: avoid;
+    }
+
+    .container-surat .kop-surat,
+    .container-surat .tabel-pelanggaran,
+    .container-surat .tanda-tangan {
+        page-break-inside: avoid;
+    }
+
+    .container-surat p {
+        orphans: 2;
+        widows: 2;
+    }
+}
+
+
+
+/* =========================================
+   PERBAIKAN CETAK LAPORAN
+========================================= */
+
+@page {
+    size: A4 landscape;
+    margin: 10mm 9mm;
+}
+
+@media print {
+    html, body.halaman-cetak {
+        width: 100% !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        color: #172554 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    body.halaman-cetak {
+        font-family: Arial, Helvetica, sans-serif !important;
+        font-size: 10px !important;
+    }
+
+    .kop-cetak {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 18px !important;
+        width: 100% !important;
+        min-height: 82px !important;
+        text-align: center !important;
+        break-after: avoid !important;
+        page-break-after: avoid !important;
+    }
+
+    .logo-cetak {
+        width: 78px !important;
+        height: 78px !important;
+        flex: 0 0 78px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .logo-cetak img {
+        display: block !important;
+        width: 76px !important;
+        height: 76px !important;
+        object-fit: contain !important;
+    }
+
+    .identitas-sekolah {
+        flex: 1 1 auto !important;
+        text-align: center !important;
+        padding-right: 92px !important;
+    }
+
+    .identitas-sekolah h2 {
+        margin: 0 0 4px !important;
+        color: #172554 !important;
+        font-size: 18px !important;
+        font-weight: 800 !important;
+        letter-spacing: .3px !important;
+    }
+
+    .identitas-sekolah h3 {
+        margin: 0 0 3px !important;
+        color: #172554 !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
+    }
+
+    .identitas-sekolah p {
+        margin: 0 !important;
+        color: #334155 !important;
+        font-size: 9px !important;
+        font-weight: 600 !important;
+    }
+
+    .garis-kop-cetak {
+        width: 100% !important;
+        margin: 7px 0 12px !important;
+        border-top: 3px solid #172554 !important;
+        border-bottom: 1px solid #172554 !important;
+        height: 4px !important;
+    }
+
+    .periode {
+        margin: 8px 0 10px !important;
+        text-align: center !important;
+        font-size: 10px !important;
+        line-height: 1.5 !important;
+    }
+
+    .identitas {
+        margin: 5px 0 12px !important;
+        font-size: 10px !important;
+    }
+
+    .identitas td {
+        padding: 3px 5px !important;
+    }
+
+    table.data {
+        width: 100% !important;
+        table-layout: fixed !important;
+        border-collapse: collapse !important;
+        margin: 8px 0 0 !important;
+        font-size: 9px !important;
+        color: #172554 !important;
+    }
+
+    .data thead {
+        display: table-header-group !important;
+    }
+
+    .data tfoot {
+        display: table-row-group !important;
+    }
+
+    .data th {
+        padding: 6px 4px !important;
+        border: 1px solid #172554 !important;
+        background: #172554 !important;
+        color: #ffffff !important;
+        font-size: 8.5px !important;
+        line-height: 1.25 !important;
+        white-space: normal !important;
+        overflow-wrap: anywhere !important;
+    }
+
+    .data td {
+        padding: 5px 4px !important;
+        border: 1px solid #64748b !important;
+        color: #172554 !important;
+        font-size: 8.5px !important;
+        line-height: 1.3 !important;
+        vertical-align: middle !important;
+        overflow-wrap: anywhere !important;
+        word-break: normal !important;
+    }
+
+    .data tr {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+    }
+
+    .data tfoot th {
+        background: #e2efff !important;
+        color: #172554 !important;
+    }
+
+    .ringkasan {
+        display: flex !important;
+        width: 100% !important;
+        margin-top: 13px !important;
+        padding: 8px 0 !important;
+        border: 1.5px solid #172554 !important;
+        border-radius: 5px !important;
+        background: #e2efff !important;
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+    }
+
+    .ringkasan-item {
+        width: 50% !important;
+        padding: 3px !important;
+        text-align: center !important;
+    }
+
+    .ringkasan-item:first-child {
+        border-right: 1.5px solid #172554 !important;
+    }
+
+    .ringkasan-item h4 {
+        margin: 0 0 3px !important;
+        font-size: 10px !important;
+    }
+
+    .ringkasan-item h2 {
+        margin: 0 !important;
+        font-size: 19px !important;
+    }
+
+    .bagian-bawah {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: flex-start !important;
+        margin-top: 18px !important;
+        font-size: 10px !important;
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+    }
+
+    .tanggal-cetak {
+        min-width: 220px !important;
+        text-align: center !important;
+        line-height: 1.5 !important;
+    }
+
+    .ttd-individu {
+        width: 100% !important;
+        margin-top: 22px !important;
+        table-layout: fixed !important;
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+    }
+
+    .ttd-individu td {
+        width: 33.33% !important;
+        padding: 4px !important;
+        font-size: 10px !important;
+    }
+
+    .ttd-individu td .garis-bawah {
+        width: 65% !important;
+        margin-top: 48px !important;
+    }
+
+    .ttd-individu td b {
+        margin-top: 6px !important;
+        font-size: 9px !important;
+    }
+
+    .print-individu .data {
+        font-size: 8px !important;
+    }
+
+    .print-individu .data th,
+    .print-individu .data td {
+        padding: 5px 3px !important;
+        font-size: 8px !important;
+    }
+}
+
+@media screen {
+    .kop-cetak {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        text-align: center;
+    }
+
+    .logo-cetak {
+        width: 78px;
+        height: 78px;
+        flex: 0 0 78px;
+    }
+
+    .logo-cetak img {
+        width: 76px;
+        height: 76px;
+        object-fit: contain;
+    }
+
+    .identitas-sekolah {
+        flex: 1;
+        text-align: center;
+        padding-right: 96px;
+    }
+
+    .identitas-sekolah h2,
+    .identitas-sekolah h3,
+    .identitas-sekolah p {
+        margin: 3px 0;
+        color: #172554;
+    }
+
+    .garis-kop-cetak {
+        border-top: 3px solid #172554;
+        border-bottom: 1px solid #172554;
+        height: 4px;
+        margin: 7px 0 12px;
+    }
 }
