@@ -88,6 +88,8 @@ $query_pelanggaran = mysqli_query($koneksi, "
 
 $total_pelanggaran = mysqli_fetch_assoc($query_pelanggaran)['total'] ?? 0;
 
+
+
 $query_kategori = mysqli_query($koneksi, "
     SELECT COUNT(*) AS total
     FROM t_pelanggaran_kategori
@@ -325,9 +327,9 @@ $total_poin = mysqli_fetch_assoc($query_poin)['total'] ?? 0;
                             </div>
 
                             <div class="dashboard-card">
-                                <p>Data Pelanggaran</p>
+                                <p>Data Jenis Pelanggaran</p>
                                 <h2><?= $total_pelanggaran; ?></h2>
-                                <a href="riwayat.php" class="btn btn-primary">Lihat Data</a>
+                                <a href="data_jenis_pelanggaran.php" class="btn btn-primary">Lihat Data</a>
                             </div>
 
                             <div class="dashboard-card">
