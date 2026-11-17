@@ -121,8 +121,12 @@ if (!$query) {
 
                 <?php if ($role == 'admin') { ?>
 
+                    <!-- MENU ADMIN -->
                     <li class="nav-item">
-                        <a href="dashboard.php" class="nav-link text-white">Dashboard</a>
+                        <a href="dashboard.php"
+                           class="nav-link <?= $halaman == 'dashboard.php' ? 'active' : 'text-white'; ?>">
+                            Dashboard
+                        </a>
                     </li>
 
                     <li class="nav-item">
@@ -159,8 +163,12 @@ if (!$query) {
 
                 <?php } else { ?>
 
+                    <!-- MENU GURU -->
                     <li class="nav-item">
-                        <a href="dashboard.php" class="nav-link text-white">Dashboard</a>
+                        <a href="dashboard.php"
+                           class="nav-link <?= $halaman == 'dashboard.php' ? 'active' : 'text-white'; ?>">
+                            Dashboard
+                        </a>
                     </li>
 
                     <li class="nav-item">
@@ -185,7 +193,6 @@ if (!$query) {
                 <?php } ?>
 
                 <!-- LAPORAN KHUSUS ADMIN DAN WALI KELAS -->
-
                 <?php if ($role == 'admin' || ($role == 'guru' && $status_wali_kelas)) { ?>
 
                     <li class="nav-item">
@@ -197,12 +204,21 @@ if (!$query) {
 
                 <?php } ?>
 
-                <li class="nav-item">
-                    <a href="about_me.php" class="nav-link text-white">About Me</a>
-                </li>
+                <!-- ABOUT ME KHUSUS ADMIN -->
+                <?php if ($role == 'admin') { ?>
+
+                    <li class="nav-item">
+                        <a href="about_me.php"
+                           class="nav-link <?= $halaman == 'about_me.php' ? 'active' : 'text-white'; ?>">
+                            About Me
+                        </a>
+                    </li>
+
+                <?php } ?>
 
                 <hr class="border-white">
 
+                <!-- LOGOUT -->
                 <li class="nav-item">
                     <a href="logout.php" class="nav-link text-white">Logout</a>
                 </li>
@@ -214,12 +230,10 @@ if (!$query) {
         <main class="content-main">
             <div class="page-content">
 
-                <!-- HEADER SAMA SEPERTI RIWAYAT -->
+                <!-- HEADER -->
                 <div class="bg-white rounded shadow-sm p-4 mb-4">
 
-                    <h2 class="fw-bold mb-2">
-                        Tindakan
-                    </h2>
+                    <h2 class="fw-bold mb-2">Tindakan</h2>
 
                     <p class="text-secondary mb-0">
                         Selamat datang,
@@ -228,7 +242,7 @@ if (!$query) {
 
                 </div>
 
-                <!-- CARD SAMA SEPERTI RIWAYAT -->
+                <!-- CARD DAFTAR PELANGGARAN -->
                 <div class="card border-0 shadow-sm">
 
                     <div class="card-header bg-white p-3">

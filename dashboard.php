@@ -11,13 +11,12 @@ if (!isset($_SESSION['login'])) {
 $nama_login = $_SESSION['name'] ?? 'Pengguna';
 $role = strtolower(trim($_SESSION['role'] ?? ''));
 $id_user = (int) ($_SESSION['id'] ?? 0);
+$halaman = basename($_SERVER['PHP_SELF']);
 
 if (!in_array($role, ['admin', 'guru'])) {
     echo "Anda tidak memiliki akses";
     exit;
 }
-
-$name = $_SESSION['name'] ?? 'Admin';
 
 // TAHUN AJARAN AKTIF
 
@@ -94,8 +93,6 @@ $query_pelanggaran = mysqli_query($koneksi, "
 
 $total_pelanggaran = mysqli_fetch_assoc($query_pelanggaran)['total'] ?? 0;
 
-
-
 $query_kategori = mysqli_query($koneksi, "
     SELECT COUNT(*) AS total
     FROM t_pelanggaran_kategori
@@ -103,9 +100,9 @@ $query_kategori = mysqli_query($koneksi, "
 
 $total_kategori = mysqli_fetch_assoc($query_kategori)['total'] ?? 0;
 
-// DASHBOARD GURU DAN WALI KELAS
+// FILTER PELANGGARAN GURU
 
-$filter_pelanggaran = "";
+$filter_pelanggaran = "WHERE 1 = 0";
 
 if ($role == 'guru' && $id_guru > 0) {
 
@@ -127,10 +124,6 @@ if ($role == 'guru' && $id_guru > 0) {
             WHERE guru_id = '$id_guru'
         ";
     }
-
-} else {
-
-    $filter_pelanggaran = "WHERE 1 = 0";
 }
 
 // TOTAL PELANGGARAN
@@ -204,8 +197,6 @@ $total_poin = mysqli_fetch_assoc($query_poin)['total'] ?? 0;
             </h4>
 
             <ul class="nav nav-pills flex-column gap-1">
-
-                <!-- DASHBOARD -->
 
                 <li class="nav-item">
                     <a href="dashboard.php" class="nav-link active">
@@ -295,7 +286,7 @@ $total_poin = mysqli_fetch_assoc($query_poin)['total'] ?? 0;
 
                 <?php } ?>
 
-                <!-- LAPORAN KHUSUS ADMIN DAN WALI KELAS -->
+                <!-- LAPORAN ADMIN DAN WALI KELAS -->
 
                 <?php if ($role == 'admin' || ($role == 'guru' && $status_wali_kelas)) { ?>
 
@@ -307,13 +298,18 @@ $total_poin = mysqli_fetch_assoc($query_poin)['total'] ?? 0;
 
                 <?php } ?>
 
-                <!-- ABOUT ME -->
+                <!-- ABOUT ME KHUSUS ADMIN -->
 
-                <li class="nav-item">
-                    <a href="about_me.php" class="nav-link text-white">
-                        About Me
-                    </a>
-                </li>
+                <?php if ($role == 'admin') { ?>
+
+                    <li class="nav-item">
+                        <a href="about_me.php"
+                           class="nav-link text-white">
+                            About Me
+                        </a>
+                    </li>
+
+                <?php } ?>
 
                 <hr class="border-white">
 
@@ -333,8 +329,6 @@ $total_poin = mysqli_fetch_assoc($query_poin)['total'] ?? 0;
         <main class="content-main">
             <div class="page-content">
 
-                <!-- HEADER -->
-
                 <div class="bg-white rounded shadow-sm p-4 mb-4">
 
                     <h2 class="fw-bold">
@@ -352,33 +346,7 @@ $total_poin = mysqli_fetch_assoc($query_poin)['total'] ?? 0;
 
                 <?php if ($role == 'admin') { ?>
 
-<<<<<<< Updated upstream
-                            <div class="dashboard-card">
-                                <p>Total Siswa</p>
-                                <h2><?= $total_siswa; ?></h2>
-                                <a href="data_siswa.php" class="btn btn-primary">Lihat Data</a>
-                            </div>
-
-                            <div class="dashboard-card">
-                                <p>Total Guru</p>
-                                <h2><?= $total_guru; ?></h2>
-                                <a href="data_guru.php" class="btn btn-primary">Lihat Data</a>
-                            </div>
-
-                            <div class="dashboard-card">
-                                <p>Data Jenis Pelanggaran</p>
-                                <h2><?= $total_pelanggaran; ?></h2>
-                                <a href="data_jenis_pelanggaran.php" class="btn btn-primary">Lihat Data</a>
-                            </div>
-
-                            <div class="dashboard-card">
-                                <p>Kategori Pelanggaran</p>
-                                <h2><?= $total_kategori; ?></h2>
-                                <a href="data_kategori_pelanggaran.php" class="btn btn-primary">Lihat Data</a>
-                            </div>
-=======
                     <div class="dashboard-cards">
->>>>>>> Stashed changes
 
                         <div class="dashboard-card">
                             <p>Total Siswa</p>

@@ -10,6 +10,7 @@ if (!isset($_SESSION['login'])) {
 
 $nama_login = $_SESSION['name'] ?? 'Pengguna';
 $role = strtolower(trim($_SESSION['role'] ?? ''));
+$id_user = (int) ($_SESSION['id'] ?? 0);
 $halaman = basename($_SERVER['PHP_SELF']);
 
 if ($role != 'admin' && $role != 'guru') {
@@ -17,6 +18,42 @@ if ($role != 'admin' && $role != 'guru') {
     exit;
 }
 
+// CEK APAKAH GURU MERUPAKAN WALI KELAS
+$is_wali_kelas = false;
+
+if ($role == 'guru') {
+
+    $query_guru = mysqli_query($koneksi, "
+        SELECT id
+        FROM t_guru
+        WHERE user_id = $id_user
+        LIMIT 1
+    ");
+
+    $data_guru = mysqli_fetch_assoc($query_guru);
+
+    if ($data_guru) {
+
+        $id_guru = (int) $data_guru['id'];
+
+        $query_wali = mysqli_query($koneksi, "
+            SELECT w.id
+            FROM t_wali_kelas w
+            INNER JOIN t_tahun_ajaran ta
+                ON ta.id = w.tahun_ajaran_id
+            WHERE w.guru_id = $id_guru
+            AND w.status_aktif = 1
+            AND ta.status_aktif = 1
+            LIMIT 1
+        ");
+
+        if ($query_wali && mysqli_num_rows($query_wali) > 0) {
+            $is_wali_kelas = true;
+        }
+    }
+}
+
+// AMBIL ID PELANGGARAN
 $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 
 if ($id <= 0) {
@@ -49,11 +86,11 @@ $keterangan_saat_ini = $data['keterangan'] ?? '';
 $tindakan_saat_ini = $data['tindakan'] ?? '';
 $status_saat_ini = $data['status'] ?? 'Pending';
 
-// Jika data lama masih Belum, tampilkan sebagai Pending
 if ($status_saat_ini == 'Belum') {
     $status_saat_ini = 'Pending';
 }
 
+// SIMPAN TINDAKAN
 if (isset($_POST['simpan'])) {
 
     $keterangan = mysqli_real_escape_string(
@@ -164,7 +201,10 @@ if (isset($_POST['simpan'])) {
                     </li>
 
                     <li class="nav-item">
-                        <a href="laporan.php" class="nav-link text-white">Laporan</a>
+                        <a href="laporan.php"
+                           class="nav-link <?= $halaman == 'laporan.php' ? 'active' : 'text-white'; ?>">
+                            Laporan
+                        </a>
                     </li>
 
                 <?php } else { ?>
@@ -190,26 +230,40 @@ if (isset($_POST['simpan'])) {
                     </li>
 
                     <li class="nav-item">
-                        <a href="riwayat.php" class="nav-link text-white">Riwayat</a>
+                        <a href="riwayat.php" class="nav-link text-white">
+                            Riwayat
+                        </a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="rekap_poin.php" class="nav-link text-white">Rekap Poin</a>
+                        <a href="rekap_poin.php" class="nav-link text-white">
+                            Rekap Poin
+                        </a>
                     </li>
+
+                    <?php if ($is_wali_kelas) { ?>
+
+                        <li class="nav-item">
+                            <a href="laporan.php"
+                               class="nav-link <?= $halaman == 'laporan.php' ? 'active' : 'text-white'; ?>">
+                                Laporan
+                            </a>
+                        </li>
+
+                    <?php } ?>
 
                 <?php } ?>
 
-                <li class="nav-item">
-                    <a href="laporan.php" class="nav-link text-white">
-                        Laporan
-                    </a>
-                </li>
+                <!-- ABOUT ME KHUSUS ADMIN -->
+                <?php if ($role == 'admin') { ?>
 
-                <li class="nav-item">
-                    <a href="about_me.php" class="nav-link text-white">
-                        About Me
-                    </a>
-                </li>
+                    <li class="nav-item">
+                        <a href="about_me.php" class="nav-link text-white">
+                            About Me
+                        </a>
+                    </li>
+
+                <?php } ?>
 
                 <hr class="border-white">
 
@@ -256,7 +310,6 @@ if (isset($_POST['simpan'])) {
 
                             <div class="row">
 
-                                <!-- NAMA SISWA -->
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Nama Siswa</label>
 
@@ -268,7 +321,6 @@ if (isset($_POST['simpan'])) {
                                     >
                                 </div>
 
-                                <!-- KELAS -->
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Kelas</label>
 
@@ -280,7 +332,6 @@ if (isset($_POST['simpan'])) {
                                     >
                                 </div>
 
-                                <!-- PELANGGARAN -->
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Pelanggaran</label>
 
@@ -292,7 +343,6 @@ if (isset($_POST['simpan'])) {
                                     >
                                 </div>
 
-                                <!-- POIN -->
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Poin</label>
 
@@ -304,7 +354,6 @@ if (isset($_POST['simpan'])) {
                                     >
                                 </div>
 
-                                <!-- KETERANGAN -->
                                 <div class="col-12 mb-3">
                                     <label for="keterangan" class="form-label">
                                         Keterangan
@@ -319,7 +368,6 @@ if (isset($_POST['simpan'])) {
                                     ><?= htmlspecialchars($keterangan_saat_ini); ?></textarea>
                                 </div>
 
-                                <!-- TINDAKAN -->
                                 <div class="col-md-6 mb-3">
 
                                     <label for="tindakan" class="form-label">
@@ -337,7 +385,6 @@ if (isset($_POST['simpan'])) {
 
                                 </div>
 
-                                <!-- STATUS -->
                                 <div class="col-md-6 mb-4">
 
                                     <label for="status" class="form-label">

@@ -178,13 +178,6 @@ if (!$query) {
                         <a href="data_jenis_pelanggaran.php" class="nav-link text-white">Jenis Pelanggaran</a>
                     </li>
 
-                    <li class="nav-item">
-                        <a href="laporan.php"
-                           class="nav-link <?= $halaman == 'laporan.php' ? 'active' : 'text-white'; ?>">
-                            Laporan
-                        </a>
-                    </li>
-
                 <?php } else { ?>
 
                     <!-- MENU GURU -->
@@ -214,25 +207,31 @@ if (!$query) {
                         <a href="rekap_poin.php" class="nav-link text-white">Rekap Poin</a>
                     </li>
 
-                    <!-- LAPORAN KHUSUS WALI KELAS -->
-                    <?php if ($status_wali_kelas) { ?>
+                <?php } ?>
+
+                <!-- LAPORAN KHUSUS ADMIN DAN WALI KELAS -->
+                <?php if ($role == 'admin' || ($role == 'guru' && $status_wali_kelas)) { ?>
+
                     <li class="nav-item">
                         <a href="laporan.php"
                            class="nav-link <?= $halaman == 'laporan.php' ? 'active' : 'text-white'; ?>">
                             Laporan
                         </a>
                     </li>
-                    <?php } ?>
 
                 <?php } ?>
 
-                <!-- ABOUT ME -->
-                <li class="nav-item">
-                    <a href="about_me.php"
-                       class="nav-link <?= $halaman == 'about_me.php' ? 'active' : 'text-white'; ?>">
-                        About Me
-                    </a>
-                </li>
+                <!-- ABOUT ME KHUSUS ADMIN -->
+                <?php if ($role == 'admin') { ?>
+
+                    <li class="nav-item">
+                        <a href="about_me.php"
+                           class="nav-link <?= $halaman == 'about_me.php' ? 'active' : 'text-white'; ?>">
+                            About Me
+                        </a>
+                    </li>
+
+                <?php } ?>
 
                 <hr class="border-white">
 
@@ -376,7 +375,6 @@ if (!$query) {
 <!-- DATATABLES JS -->
 <script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
 
-<!-- INISIALISASI DATATABLES -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 

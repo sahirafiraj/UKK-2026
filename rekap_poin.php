@@ -1,4 +1,3 @@
-
 <?php
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
@@ -94,15 +93,12 @@ if (!$query) {
 
     <title>Rekap Poin - Sistem Pelanggaran</title>
 
-    <!-- BOOTSTRAP -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
           rel="stylesheet">
 
-    <!-- DATATABLES CSS -->
     <link href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css"
           rel="stylesheet">
 
-    <!-- CSS UTAMA -->
     <link rel="stylesheet" href="style/style.css">
 </head>
 
@@ -162,7 +158,6 @@ if (!$query) {
                         <a href="data_jenis_pelanggaran.php" class="nav-link text-white">Jenis Pelanggaran</a>
                     </li>
 
-                    <!-- LAPORAN ADMIN -->
                     <li class="nav-item">
                         <a href="laporan.php"
                            class="nav-link <?= $halaman == 'laporan.php' ? 'active' : 'text-white'; ?>">
@@ -199,31 +194,34 @@ if (!$query) {
                         </a>
                     </li>
 
-                    <!-- LAPORAN KHUSUS WALI KELAS -->
                     <?php if ($status_wali_kelas) { ?>
-                    <li class="nav-item">
-                        <a href="laporan.php"
-                           class="nav-link <?= $halaman == 'laporan.php' ? 'active' : 'text-white'; ?>">
-                            Laporan
-                        </a>
-                    </li>
+                        <li class="nav-item">
+                            <a href="laporan.php"
+                               class="nav-link <?= $halaman == 'laporan.php' ? 'active' : 'text-white'; ?>">
+                                Laporan
+                            </a>
+                        </li>
                     <?php } ?>
 
                 <?php } ?>
 
-                <!-- ABOUT ME -->
-                <li class="nav-item">
-                    <a href="about_me.php"
-                       class="nav-link <?= $halaman == 'about_me.php' ? 'active' : 'text-white'; ?>">
-                        About Me
-                    </a>
-                </li>
+                <!-- ABOUT ME KHUSUS ADMIN -->
+                <?php if ($role == 'admin') { ?>
+                    <li class="nav-item">
+                        <a href="about_me.php"
+                           class="nav-link <?= $halaman == 'about_me.php' ? 'active' : 'text-white'; ?>">
+                            About Me
+                        </a>
+                    </li>
+                <?php } ?>
 
                 <hr class="border-white">
 
                 <!-- LOGOUT -->
                 <li class="nav-item">
-                    <a href="logout.php" class="nav-link text-white">Logout</a>
+                    <a href="logout.php" class="nav-link text-white">
+                        Logout
+                    </a>
                 </li>
 
             </ul>
@@ -233,7 +231,6 @@ if (!$query) {
         <main class="content-main">
             <div class="page-content">
 
-                <!-- HEADER -->
                 <div class="bg-white rounded shadow-sm p-4 mb-4">
 
                     <h2 class="fw-bold mb-2">
@@ -247,7 +244,6 @@ if (!$query) {
 
                 </div>
 
-                <!-- CARD REKAP -->
                 <div class="card border-0 shadow-sm">
 
                     <div class="card-header bg-white p-3">
@@ -331,7 +327,6 @@ if (!$query) {
 
                 </div>
 
-                <!-- FOOTER -->
                 <p class="text-secondary text-center mt-4 small">
                     © 2026 Sistem Pelanggaran Siswa
                 </p>
@@ -342,13 +337,9 @@ if (!$query) {
     </div>
 </div>
 
-<!-- BOOTSTRAP JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- DATATABLES JS -->
 <script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
 
-<!-- INISIALISASI DATATABLES -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
