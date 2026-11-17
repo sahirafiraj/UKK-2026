@@ -3,7 +3,6 @@
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
 
-// CEK LOGIN DAN HAK AKSES
 if (!isset($_SESSION['login'])) {
     header("Location: login.php");
     exit;
@@ -21,7 +20,6 @@ if ($role != 'admin' && $role != 'guru') {
 
 // CEK STATUS WALI KELAS
 $status_wali_kelas = false;
-<<<<<<< HEAD
 
 if ($role == 'guru') {
 
@@ -70,71 +68,35 @@ if ($role == 'guru') {
 
 // ADMIN: SEMUA PELANGGARAN SELESAI
 if ($role == 'admin') {
-=======
->>>>>>> b21012ec88879e0955064b556fa42916a769c862
 
-if ($role == 'guru') {
-
-    $query_guru = mysqli_query($koneksi, "
-        SELECT id
-        FROM t_guru
-        WHERE user_id = '$id_user'
-        AND status_aktif = 1
-        LIMIT 1
+    $query = mysqli_query($koneksi, "
+        SELECT
+            ps.*,
+            pk.nama AS nama_kategori
+        FROM t_pelanggaran_siswa ps
+        LEFT JOIN t_pelanggaran_kategori pk
+            ON ps.pelanggaran_kategori_id = pk.id
+        WHERE ps.status = 'Selesai'
+        ORDER BY ps.tanggal DESC, ps.id DESC
     ");
 
-    if ($query_guru && mysqli_num_rows($query_guru) > 0) {
+} else {
 
-<<<<<<< HEAD
     // GURU: PELANGGARAN MILIK GURU LOGIN
     $nama_guru_login = mysqli_real_escape_string($koneksi, $nama_login);
-=======
-        $data_guru = mysqli_fetch_assoc($query_guru);
-        $guru_id = $data_guru['id'];
->>>>>>> b21012ec88879e0955064b556fa42916a769c862
 
-        // CEK TAHUN AJARAN AKTIF
-        $query_tahun_ajaran = mysqli_query($koneksi, "
-            SELECT id
-            FROM t_tahun_ajaran
-            WHERE status_aktif = 1
-            LIMIT 1
-        ");
-
-        if ($query_tahun_ajaran && mysqli_num_rows($query_tahun_ajaran) > 0) {
-
-            $data_tahun_ajaran = mysqli_fetch_assoc($query_tahun_ajaran);
-            $tahun_ajaran_id = $data_tahun_ajaran['id'];
-
-            // CEK APAKAH GURU MERUPAKAN WALI KELAS
-            $query_wali_kelas = mysqli_query($koneksi, "
-                SELECT id
-                FROM t_wali_kelas
-                WHERE guru_id = '$guru_id'
-                AND tahun_ajaran_id = '$tahun_ajaran_id'
-                AND status_aktif = 1
-                LIMIT 1
-            ");
-
-            if ($query_wali_kelas && mysqli_num_rows($query_wali_kelas) > 0) {
-                $status_wali_kelas = true;
-            }
-        }
-    }
+    $query = mysqli_query($koneksi, "
+        SELECT
+            ps.*,
+            pk.nama AS nama_kategori
+        FROM t_pelanggaran_siswa ps
+        LEFT JOIN t_pelanggaran_kategori pk
+            ON ps.pelanggaran_kategori_id = pk.id
+        WHERE ps.nama_guru = '$nama_guru_login'
+        AND ps.status = 'Selesai'
+        ORDER BY ps.tanggal DESC, ps.id DESC
+    ");
 }
-
-// QUERY REKAP POIN
-$query = mysqli_query($koneksi, "
-    SELECT
-        siswa_id,
-        nama_siswa,
-        nama_kelas,
-        SUM(poin) AS total_poin,
-        COUNT(*) AS jumlah_pelanggaran
-    FROM t_pelanggaran_siswa
-    GROUP BY siswa_id, nama_siswa, nama_kelas
-    ORDER BY total_poin DESC
-");
 
 if (!$query) {
     die("Query gagal: " . htmlspecialchars(mysqli_error($koneksi)));
@@ -148,7 +110,7 @@ if (!$query) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Rekap Poin - Sistem Pelanggaran</title>
+    <title>Riwayat Pelanggaran - Sistem Pelanggaran</title>
 
     <!-- BOOTSTRAP -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
@@ -170,9 +132,7 @@ if (!$query) {
         <!-- SIDEBAR -->
         <div class="sidebar col-md-3 col-lg-2 position-fixed top-0 start-0 vh-100 p-3 overflow-auto">
 
-            <h4 class="text-white mb-4">
-                Sistem Pelanggaran
-            </h4>
+            <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
 
             <ul class="nav nav-pills flex-column gap-1">
 
@@ -218,7 +178,6 @@ if (!$query) {
                         <a href="data_jenis_pelanggaran.php" class="nav-link text-white">Jenis Pelanggaran</a>
                     </li>
 
-                    <!-- LAPORAN ADMIN -->
                     <li class="nav-item">
                         <a href="laporan.php"
                            class="nav-link <?= $halaman == 'laporan.php' ? 'active' : 'text-white'; ?>">
@@ -245,21 +204,14 @@ if (!$query) {
                     </li>
 
                     <li class="nav-item">
-<<<<<<< HEAD
                         <a href="riwayat.php"
                            class="nav-link <?= $halaman == 'riwayat.php' ? 'active' : 'text-white'; ?>">
                             Riwayat
                         </a>
-=======
-                        <a href="riwayat.php" class="nav-link text-white">Riwayat</a>
->>>>>>> b21012ec88879e0955064b556fa42916a769c862
                     </li>
 
                     <li class="nav-item">
-                        <a href="rekap_poin.php"
-                           class="nav-link <?= $halaman == 'rekap_poin.php' ? 'active' : 'text-white'; ?>">
-                            Rekap Poin
-                        </a>
+                        <a href="rekap_poin.php" class="nav-link text-white">Rekap Poin</a>
                     </li>
 
                     <!-- LAPORAN KHUSUS WALI KELAS -->
@@ -300,11 +252,7 @@ if (!$query) {
                 <div class="bg-white rounded shadow-sm p-4 mb-4">
 
                     <h2 class="fw-bold mb-2">
-<<<<<<< HEAD
                         Riwayat Pelanggaran
-=======
-                        Rekap Poin Pelanggaran
->>>>>>> b21012ec88879e0955064b556fa42916a769c862
                     </h2>
 
                     <p class="text-secondary mb-0">
@@ -314,11 +262,10 @@ if (!$query) {
 
                 </div>
 
-                <!-- CARD REKAP -->
+                <!-- CARD RIWAYAT -->
                 <div class="card border-0 shadow-sm">
 
                     <div class="card-header bg-white p-3">
-<<<<<<< HEAD
 
                         <h5 class="fw-bold mb-0">
                             Daftar Pelanggaran
@@ -332,29 +279,19 @@ if (!$query) {
 
                             <table class="table table-bordered table-hover align-middle"
                                    id="tabelRiwayat">
-=======
-
-                        <h5 class="fw-bold mb-0">
-                            Data Rekap Poin Siswa
-                        </h5>
-
-                    </div>
-
-                    <div class="card-body p-4">
-
-                        <div class="table-responsive">
-
-                            <table class="table table-bordered table-hover align-middle"
-                                   id="tabelRekapPoin">
->>>>>>> b21012ec88879e0955064b556fa42916a769c862
 
                                 <thead class="table-primary">
                                     <tr>
                                         <th>No</th>
                                         <th>Nama Siswa</th>
-                                        <th>Kelas</th>
-                                        <th>Jumlah Pelanggaran</th>
-                                        <th>Total Poin</th>
+                                        <th>Pelanggaran</th>
+                                        <th>Kategori</th>
+                                        <th>Tanggal</th>
+                                        <th>Poin</th>
+                                        <th>Guru Pencatat</th>
+                                        <th>Keterangan</th>
+                                        <th>Tindakan</th>
+                                        <th>Status</th>
                                     </tr>
                                 </thead>
 
@@ -363,11 +300,9 @@ if (!$query) {
                                     <?php
                                     $no = 1;
 
-                                    if (mysqli_num_rows($query) > 0) {
-                                        while ($data = mysqli_fetch_assoc($query)) {
+                                    while ($data = mysqli_fetch_assoc($query)) {
                                     ?>
 
-<<<<<<< HEAD
                                     <tr>
 
                                         <td><?= $no++; ?></td>
@@ -411,42 +346,6 @@ if (!$query) {
                                         </td>
 
                                     </tr>
-=======
-                                        <tr>
-
-                                            <td><?= $no++; ?></td>
-
-                                            <td>
-                                                <?= htmlspecialchars($data['nama_siswa'] ?? '-'); ?>
-                                            </td>
-
-                                            <td>
-                                                <?= htmlspecialchars($data['nama_kelas'] ?? '-'); ?>
-                                            </td>
-
-                                            <td>
-                                                <?= htmlspecialchars($data['jumlah_pelanggaran'] ?? '0'); ?>
-                                            </td>
-
-                                            <td>
-                                                <span class="badge bg-primary">
-                                                    <?= htmlspecialchars($data['total_poin'] ?? '0'); ?> poin
-                                                </span>
-                                            </td>
-
-                                        </tr>
-
-                                    <?php
-                                        }
-                                    } else {
-                                    ?>
-
-                                        <tr>
-                                            <td colspan="5" class="text-center">
-                                                Belum ada data rekap poin.
-                                            </td>
-                                        </tr>
->>>>>>> b21012ec88879e0955064b556fa42916a769c862
 
                                     <?php } ?>
 
@@ -481,7 +380,7 @@ if (!$query) {
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    new DataTable('#tabelRekapPoin', {
+    new DataTable('#tabelRiwayat', {
 
         pageLength: 10,
 
@@ -497,7 +396,7 @@ document.addEventListener('DOMContentLoaded', function () {
             infoEmpty: 'Tidak ada data',
             infoFiltered: '(difilter dari _MAX_ total data)',
             zeroRecords: 'Data tidak ditemukan',
-            emptyTable: 'Belum ada data rekap poin',
+            emptyTable: 'Belum ada catatan pelanggaran',
 
             paginate: {
                 first: 'Pertama',
