@@ -73,6 +73,22 @@ if (isset($_POST['simpan'])) {
         exit;
     } else {
         echo "Data siswa gagal ditambahkan: " . mysqli_error($koneksi);
+    } 
+
+    $cek = mysqli_query($koneksi, "
+        SELECT id FROM t_siswa
+        WHERE (nis='$nis' OR (nisn='$nisn' AND nisn!=''))
+        AND id!='id'
+        ");
+
+    if (!$cek) {
+        die("Gagal mengecek data: " . mysqli_error());
+
+    }
+
+    if (mysqli_num_rows($cek) >0 ) {
+        echo "<script>alert('NIS atau NISN sudah digunakan!');history.back();</script>";
+        exit(); 
     }
 
 } else {

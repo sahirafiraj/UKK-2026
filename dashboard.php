@@ -88,7 +88,7 @@ $total_guru = mysqli_fetch_assoc($query_guru_total)['total'] ?? 0;
 
 $query_pelanggaran = mysqli_query($koneksi, "
     SELECT COUNT(*) AS total
-    FROM t_pelanggaran_siswa
+    FROM t_pelanggaran
 ");
 
 $total_pelanggaran = mysqli_fetch_assoc($query_pelanggaran)['total'] ?? 0;

@@ -712,6 +712,13 @@ if (isset($_GET['cetak'])) {
                         </a>
                     </li>
 
+                    <li class="nav-item">
+                    <a href="about_me.php"
+                       class="nav-link <?= $halaman == 'about_me.php' ? 'active' : 'text-white'; ?>">
+                        About Me
+                    </a>
+                </li>
+
                 <?php } else { ?>
 
                     <li class="nav-item">
@@ -756,13 +763,6 @@ if (isset($_GET['cetak'])) {
                     </li>
 
                 <?php } ?>
-
-                <li class="nav-item">
-                    <a href="about_me.php"
-                       class="nav-link <?= $halaman == 'about_me.php' ? 'active' : 'text-white'; ?>">
-                        About Me
-                    </a>
-                </li>
 
                 <hr class="border-white">
 
